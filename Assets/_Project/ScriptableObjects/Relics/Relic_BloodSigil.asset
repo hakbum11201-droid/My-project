@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b27e3864c32e2f4b9c3a3dc6185ab63, type: 3}
+  m_Name: Relic_BloodSigil
+  m_EditorClassIdentifier: Assembly-CSharp::RelicData
+  relicName: Blood Sigil
+  description: Chance to heal when killing enemies.
+  icon: {fileID: 0}
+  relicType: 2
+  intValue: 1
+  floatValue: 0.5
+  secondaryFloatValue: 0
+  canStack: 0
+  maxStack: 1
