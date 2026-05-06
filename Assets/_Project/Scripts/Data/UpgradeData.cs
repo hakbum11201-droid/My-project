@@ -9,7 +9,8 @@ public enum UpgradeType
     MoveSpeed,
     PickupRange,
     Defense,
-    CriticalChance
+    CriticalChance,
+    WeaponUnlock
 }
 
 [CreateAssetMenu(fileName = "Upgrade_", menuName = "_Project/Upgrades/Upgrade Data")]
@@ -25,6 +26,9 @@ public class UpgradeData : ScriptableObject
     [SerializeField] private int intValue;
     [SerializeField] private float floatValue;
 
+    [Header("Weapon Unlock")]
+    [SerializeField] private string weaponId;
+
     public string UpgradeName => upgradeName;
     public string Description => description;
     public Sprite Icon => icon;
@@ -32,4 +36,6 @@ public class UpgradeData : ScriptableObject
     public UpgradeType UpgradeType => upgradeType;
     public int IntValue => intValue;
     public float FloatValue => floatValue;
+
+    public string WeaponId => weaponId;
 }

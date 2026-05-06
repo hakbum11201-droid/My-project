@@ -7,9 +7,11 @@ public class LevelUpUI : MonoBehaviour
 {
     [Header("Target")]
     [SerializeField] private PlayerHealth playerHealth;
+    [SerializeField] private PauseManager pauseManager;
     [SerializeField] private PlayerMeleeAutoAttack playerWeapon;
     [SerializeField] private PlayerController playerController;
     [SerializeField] private PlayerPickupRange playerPickupRange;
+    [SerializeField] private PlayerMagicBoltAutoAttack playerMagicBolt;
 
     [Header("Upgrade Data")]
     [SerializeField] private List<UpgradeData> availableUpgrades = new List<UpgradeData>();
@@ -39,8 +41,42 @@ public class LevelUpUI : MonoBehaviour
     private void Awake()
     {
         AutoBindIfNeeded();
+        ValidateRequiredReferences();
         RegisterButtonEvents();
         ClosePanelOnly();
+    }
+
+    private void ValidateRequiredReferences()
+    {
+        if (levelUpPanel == null)
+        {
+            Debug.LogWarning("[LevelUpUI] levelUpPanel이 비어 있습니다. Hierarchy의 LevelUpPanel 연결을 확인하세요.", this);
+        }
+
+        if (damageButton == null || attackSpeedButton == null || attackRangeButton == null)
+        {
+            Debug.LogWarning("[LevelUpUI] 강화 선택 버튼 참조가 일부 비어 있습니다. Damage/AttackSpeed/AttackRange 버튼 연결을 확인하세요.", this);
+        }
+
+        if (damageButtonText == null || attackSpeedButtonText == null || attackRangeButtonText == null)
+        {
+            Debug.LogWarning("[LevelUpUI] 버튼 TMP_Text 참조가 일부 비어 있습니다. damage/attackSpeed/attackRangeButtonText 필드 연결을 확인하세요.", this);
+        }
+
+        if (playerHealth == null)
+        {
+            Debug.LogWarning("[LevelUpUI] playerHealth가 비어 있습니다. Player 오브젝트의 PlayerHealth를 연결하세요.", this);
+        }
+
+        if (pauseManager == null)
+        {
+            pauseManager = FindFirstObjectByType<PauseManager>();
+        }
+
+        if (pauseManager == null)
+        {
+            Debug.LogWarning("[LevelUpUI] pauseManager가 비어 있습니다. PauseManager 연결을 권장합니다. (없으면 Time.timeScale 폴백 사용)", this);
+        }
     }
 
     private void AutoBindIfNeeded()
@@ -109,6 +145,16 @@ public class LevelUpUI : MonoBehaviour
         {
             playerPickupRange = playerController.GetComponent<PlayerPickupRange>();
         }
+
+        if (playerMagicBolt == null && playerHealth != null)
+        {
+            playerMagicBolt = playerHealth.GetComponent<PlayerMagicBoltAutoAttack>();
+        }
+
+        if (playerMagicBolt == null && playerController != null)
+        {
+            playerMagicBolt = playerController.GetComponent<PlayerMagicBoltAutoAttack>();
+        }
     }
 
     private TMP_Text FindTMP(string objectName)
@@ -158,6 +204,12 @@ public class LevelUpUI : MonoBehaviour
 
     public void Open(int levelUpCount)
     {
+        if (levelUpPanel == null)
+        {
+            Debug.LogWarning("[LevelUpUI] levelUpPanel이 없어 레벨업 UI를 열 수 없습니다.", this);
+            return;
+        }
+
         pendingLevelUps += levelUpCount;
 
         if (pendingLevelUps <= 0)
@@ -166,7 +218,7 @@ public class LevelUpUI : MonoBehaviour
         }
 
         isOpen = true;
-        Time.timeScale = 0f;
+        RequestPause();
 
         if (levelUpPanel != null)
         {
@@ -185,10 +237,15 @@ public class LevelUpUI : MonoBehaviour
 
         for (int i = 0; i < availableUpgrades.Count; i++)
         {
-            if (availableUpgrades[i] != null)
-            {
-                pool.Add(availableUpgrades[i]);
-            }
+            UpgradeData upgrade = availableUpgrades[i];
+
+            if (upgrade == null)
+                continue;
+
+            if (!CanAppearInChoices(upgrade))
+                continue;
+
+            pool.Add(upgrade);
         }
 
         int choiceCount = Mathf.Min(3, pool.Count);
@@ -199,6 +256,25 @@ public class LevelUpUI : MonoBehaviour
             currentChoices.Add(pool[randomIndex]);
             pool.RemoveAt(randomIndex);
         }
+    }
+
+    private bool CanAppearInChoices(UpgradeData upgrade)
+    {
+        if (upgrade == null)
+            return false;
+
+        if (upgrade.UpgradeType != UpgradeType.WeaponUnlock)
+            return true;
+
+        if (upgrade.WeaponId == "magic_bolt")
+        {
+            if (playerMagicBolt == null)
+                return true;
+
+            return !playerMagicBolt.IsUnlocked;
+        }
+
+        return true;
     }
 
     private void ChooseUpgrade(int choiceIndex)
@@ -236,6 +312,11 @@ public class LevelUpUI : MonoBehaviour
                 {
                     playerWeapon.AddDamage(upgrade.IntValue);
                 }
+
+                if (playerMagicBolt != null)
+                {
+                    playerMagicBolt.AddDamage(upgrade.IntValue);
+                }
                 break;
 
             case UpgradeType.AttackSpeed:
@@ -243,12 +324,22 @@ public class LevelUpUI : MonoBehaviour
                 {
                     playerWeapon.ImproveAttackSpeed(upgrade.FloatValue);
                 }
+
+                if (playerMagicBolt != null)
+                {
+                    playerMagicBolt.ImproveAttackSpeed(upgrade.FloatValue);
+                }
                 break;
 
             case UpgradeType.AttackRange:
                 if (playerWeapon != null)
                 {
                     playerWeapon.ImproveAttackRange(upgrade.FloatValue);
+                }
+
+                if (playerMagicBolt != null)
+                {
+                    playerMagicBolt.ImproveAttackRange(upgrade.FloatValue);
                 }
                 break;
 
@@ -286,6 +377,37 @@ public class LevelUpUI : MonoBehaviour
                     playerWeapon.AddCriticalChance(upgrade.FloatValue);
                 }
                 break;
+
+            case UpgradeType.WeaponUnlock:
+                UnlockWeapon(upgrade.WeaponId);
+                break;
+        }
+    }
+
+    private void UnlockWeapon(string weaponId)
+    {
+        if (string.IsNullOrEmpty(weaponId))
+        {
+            Debug.LogWarning("Weapon unlock failed. WeaponId is empty.");
+            return;
+        }
+
+        switch (weaponId)
+        {
+            case "magic_bolt":
+                if (playerMagicBolt != null)
+                {
+                    playerMagicBolt.Unlock();
+                }
+                else
+                {
+                    Debug.LogWarning("Magic Bolt unlock failed. PlayerMagicBoltAutoAttack is not found on Player.");
+                }
+                break;
+
+            default:
+                Debug.LogWarning($"Unknown weapon id: {weaponId}");
+                break;
         }
     }
 
@@ -301,8 +423,39 @@ public class LevelUpUI : MonoBehaviour
         }
 
         isOpen = false;
-        Time.timeScale = 1f;
+        ReleasePause();
         ClosePanelOnly();
+    }
+
+    private void OnDisable()
+    {
+        if (isOpen)
+        {
+            ReleasePause();
+            isOpen = false;
+        }
+    }
+
+    private void RequestPause()
+    {
+        if (pauseManager != null)
+        {
+            pauseManager.RequestPause(this);
+            return;
+        }
+
+        Time.timeScale = 0f;
+    }
+
+    private void ReleasePause()
+    {
+        if (pauseManager != null)
+        {
+            pauseManager.ReleasePause(this);
+            return;
+        }
+
+        Time.timeScale = 1f;
     }
 
     private void ClosePanelOnly()

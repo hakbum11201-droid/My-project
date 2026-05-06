@@ -1,12 +1,16 @@
 using System.Collections.Generic;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class RelicSelectUI : MonoBehaviour
 {
+    public event Action OnOwnedRelicsChanged;
+
     [Header("Target")]
     [SerializeField] private PlayerHealth playerHealth;
+    [SerializeField] private PauseManager pauseManager;
     [SerializeField] private PlayerMeleeAutoAttack playerWeapon;
     [SerializeField] private PlayerPickupRange playerPickupRange;
     [SerializeField] private PlayerRelicEffects playerRelicEffects;
@@ -43,8 +47,42 @@ public class RelicSelectUI : MonoBehaviour
     private void Awake()
     {
         AutoBindIfNeeded();
+        ValidateRequiredReferences();
         RegisterButtonEvents();
         ClosePanelOnly();
+    }
+
+    private void ValidateRequiredReferences()
+    {
+        if (relicSelectPanel == null)
+        {
+            Debug.LogWarning("[RelicSelectUI] relicSelectPanel이 비어 있습니다. Hierarchy의 RelicSelectPanel 연결을 확인하세요.", this);
+        }
+
+        if (relicButton01 == null || relicButton02 == null || relicButton03 == null)
+        {
+            Debug.LogWarning("[RelicSelectUI] 유물 선택 버튼 참조가 일부 비어 있습니다. RelicButton_01~03 연결을 확인하세요.", this);
+        }
+
+        if (relicButtonText01 == null || relicButtonText02 == null || relicButtonText03 == null)
+        {
+            Debug.LogWarning("[RelicSelectUI] 버튼 TMP_Text 참조가 일부 비어 있습니다. RelicButtonText01~03 필드 연결을 확인하세요.", this);
+        }
+
+        if (playerHealth == null)
+        {
+            Debug.LogWarning("[RelicSelectUI] playerHealth가 비어 있습니다. Player 오브젝트의 PlayerHealth를 연결하세요.", this);
+        }
+
+        if (pauseManager == null)
+        {
+            pauseManager = FindFirstObjectByType<PauseManager>();
+        }
+
+        if (pauseManager == null)
+        {
+            Debug.LogWarning("[RelicSelectUI] pauseManager가 비어 있습니다. PauseManager 연결을 권장합니다. (없으면 Time.timeScale 폴백 사용)", this);
+        }
     }
 
     private void AutoBindIfNeeded()
@@ -156,6 +194,12 @@ public class RelicSelectUI : MonoBehaviour
 
     public void Open()
     {
+        if (relicSelectPanel == null)
+        {
+            Debug.LogWarning("[RelicSelectUI] relicSelectPanel이 없어 UI를 열 수 없습니다.", this);
+            return;
+        }
+
         PickChoices();
 
         if (currentChoices.Count <= 0)
@@ -165,7 +209,7 @@ public class RelicSelectUI : MonoBehaviour
         }
 
         isOpen = true;
-        Time.timeScale = 0f;
+        RequestPause();
 
         if (relicSelectPanel != null)
         {
@@ -198,7 +242,7 @@ public class RelicSelectUI : MonoBehaviour
 
         for (int i = 0; i < choiceCount; i++)
         {
-            int randomIndex = Random.Range(0, pool.Count);
+            int randomIndex = UnityEngine.Random.Range(0, pool.Count);
             currentChoices.Add(pool[randomIndex]);
             pool.RemoveAt(randomIndex);
         }
@@ -219,14 +263,46 @@ public class RelicSelectUI : MonoBehaviour
         if (!ownedRelics.Contains(relic))
         {
             ownedRelics.Add(relic);
+            OnOwnedRelicsChanged?.Invoke();
         }
 
         Debug.Log($"Relic acquired: {relic.RelicName}");
 
         isOpen = false;
-        Time.timeScale = 1f;
+        ReleasePause();
 
         ClosePanelOnly();
+    }
+
+    private void OnDisable()
+    {
+        if (isOpen)
+        {
+            ReleasePause();
+            isOpen = false;
+        }
+    }
+
+    private void RequestPause()
+    {
+        if (pauseManager != null)
+        {
+            pauseManager.RequestPause(this);
+            return;
+        }
+
+        Time.timeScale = 0f;
+    }
+
+    private void ReleasePause()
+    {
+        if (pauseManager != null)
+        {
+            pauseManager.ReleasePause(this);
+            return;
+        }
+
+        Time.timeScale = 1f;
     }
 
     private void ApplyRelicEffect(RelicData relic)

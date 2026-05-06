@@ -16,6 +16,8 @@ public class EnemyHealth : MonoBehaviour
     [SerializeField] private bool midBossAlwaysDropSmallHeal = true;
     [SerializeField] private float smallHealDropOffsetMin = 0.35f;
     [SerializeField] private float smallHealDropOffsetMax = 0.75f;
+    [SerializeField] private float expGemDropOffsetRadius = 0.15f;
+    [SerializeField] private float minDistanceBetweenDrops = 0.3f;
 
     [Header("Boss Visual")]
     [SerializeField] private float normalScale = 0.8f;
@@ -42,6 +44,7 @@ public class EnemyHealth : MonoBehaviour
     private Color originalColor;
     private Vector3 baseScale;
     private Coroutine hitFlashCoroutine;
+    private EnemySpawner ownerSpawner;
 
     public bool IsMidBoss => isMidBoss;
 
@@ -60,13 +63,21 @@ public class EnemyHealth : MonoBehaviour
         }
     }
 
-    public void Initialize(int newMaxHealth, int newExpReward, bool isBoss)
+    public void Initialize(int newMaxHealth, int newExpReward, bool isBoss, EnemySpawner spawner = null)
     {
+        ownerSpawner = spawner;
         isMidBoss = isBoss;
+        isDead = false;
 
         maxHealth = Mathf.Max(1, newMaxHealth);
         currentHealth = maxHealth;
         expReward = Mathf.Max(1, newExpReward);
+
+        if (hitFlashCoroutine != null)
+        {
+            StopCoroutine(hitFlashCoroutine);
+            hitFlashCoroutine = null;
+        }
 
         ApplyVisual();
     }
@@ -183,12 +194,19 @@ public class EnemyHealth : MonoBehaviour
 
         NotifyEnemyKilled();
 
-        DropExpGem();
-        DropSmallHeal();
+        Vector3 expGemDropPosition = GetExpGemDropPosition();
+        DropExpGem(expGemDropPosition);
+        DropSmallHeal(expGemDropPosition);
 
         if (isMidBoss)
         {
             OpenRelicSelectUI();
+        }
+
+        if (ownerSpawner != null)
+        {
+            ownerSpawner.DespawnEnemy(gameObject);
+            return;
         }
 
         Destroy(gameObject);
@@ -204,12 +222,12 @@ public class EnemyHealth : MonoBehaviour
         relicEffects.OnEnemyKilled();
     }
 
-    private void DropExpGem()
+    private void DropExpGem(Vector3 dropPosition)
     {
         if (expGemPrefab == null)
             return;
 
-        GameObject expGem = Instantiate(expGemPrefab, transform.position, Quaternion.identity);
+        GameObject expGem = Instantiate(expGemPrefab, dropPosition, Quaternion.identity);
 
         ExpGem gem = expGem.GetComponent<ExpGem>();
 
@@ -219,35 +237,53 @@ public class EnemyHealth : MonoBehaviour
         }
     }
 
-    private void DropSmallHeal()
+    private void DropSmallHeal(Vector3 expGemDropPosition)
     {
         if (smallHealPrefab == null)
             return;
 
         if (isMidBoss && midBossAlwaysDropSmallHeal)
         {
-            Instantiate(smallHealPrefab, GetSmallHealDropPosition(), Quaternion.identity);
+            Instantiate(smallHealPrefab, GetSmallHealDropPosition(expGemDropPosition), Quaternion.identity);
             return;
         }
 
         if (Random.value > smallHealDropChance)
             return;
 
-        Instantiate(smallHealPrefab, GetSmallHealDropPosition(), Quaternion.identity);
+        Instantiate(smallHealPrefab, GetSmallHealDropPosition(expGemDropPosition), Quaternion.identity);
     }
 
-    private Vector3 GetSmallHealDropPosition()
+    private Vector3 GetExpGemDropPosition()
     {
-        Vector2 randomDirection = Random.insideUnitCircle.normalized;
+        Vector2 randomOffset = Random.insideUnitCircle * expGemDropOffsetRadius;
+        return transform.position + (Vector3)randomOffset;
+    }
 
-        if (randomDirection.sqrMagnitude <= 0.01f)
+    private Vector3 GetSmallHealDropPosition(Vector3 expGemDropPosition)
+    {
+        Vector3 smallHealPosition = transform.position;
+        int maxRetryCount = 5;
+
+        for (int i = 0; i < maxRetryCount; i++)
         {
-            randomDirection = Vector2.right;
+            Vector2 randomDirection = Random.insideUnitCircle.normalized;
+
+            if (randomDirection.sqrMagnitude <= 0.01f)
+            {
+                randomDirection = Vector2.right;
+            }
+
+            float distance = Random.Range(smallHealDropOffsetMin, smallHealDropOffsetMax);
+            smallHealPosition = transform.position + (Vector3)(randomDirection * distance);
+
+            if ((smallHealPosition - expGemDropPosition).sqrMagnitude >= minDistanceBetweenDrops * minDistanceBetweenDrops)
+            {
+                break;
+            }
         }
 
-        float distance = Random.Range(smallHealDropOffsetMin, smallHealDropOffsetMax);
-
-        return transform.position + (Vector3)(randomDirection * distance);
+        return smallHealPosition;
     }
 
     private void OpenRelicSelectUI()

@@ -1,6 +1,6 @@
 ﻿# EXPERT GPT / DEV SNAPSHOT
 
-Generated: 2026-05-04 02:17:31
+Generated: 2026-05-07 06:21:56
 Unity Version: 6000.3.10f1
 Active Scene: Main
 Scene Path: Assets/_Project/Scenes/Main.unity
@@ -27,12 +27,12 @@ Project Root: Assets/_Project
 
 ## Executive Summary
 
-- Scene Objects: 60
-- C# Scripts: 25
-- Prefabs: 6
-- Asset Files: 20
-- Changed Files: Added 0, Modified 4, Deleted 0
-- Diagnostics: HIGH 24, MEDIUM 4, LOW 11
+- Scene Objects: 61
+- C# Scripts: 28
+- Prefabs: 7
+- Asset Files: 21
+- Changed Files: Added 1, Modified 14, Deleted 0
+- Diagnostics: HIGH 24, MEDIUM 4, LOW 14
 
 ### Key Existing Systems Detected
 
@@ -224,15 +224,15 @@ Assets/_Project
 1. **HUD DebugUI and Official HUD UI Coexist**
    - Detail: HUDDebugUI.cs와 HUDCanvasUI.cs가 동시에 존재함.
    - Suggestion: 신규 HUD 작업은 HUDCanvasUI 기준으로 진행하고, HUDDebugUI는 디버그/보류 후보로 분류한다.
-2. **No Persistent Relic HUD Display**
+2. **Possible Missing Inspector Reference**
+   - Detail: Player / PlayerMagicBoltAutoAttack.projectileSpawnPoint = None
+   - Suggestion: 이 필드가 필수 연결인지 확인한다. 필수라면 Inspector에서 연결한다.
+3. **No Persistent Relic HUD Display**
    - Detail: 유물 선택 UI는 있으나 HUD에 보유 유물을 지속 표시하는 구조가 감지되지 않음.
    - Suggestion: 새 UI를 만들기 전 HUDCanvasUI와 기존 HUDPanel 구조를 먼저 확인하고 통합 방식을 결정한다.
-3. **Drop Items May Overlap**
+4. **Drop Items May Overlap**
    - Detail: EnemyHealth에서 ExpGem과 SmallHeal이 같은 transform.position으로 생성될 가능성이 있음.
    - Suggestion: SmallHeal 드랍 위치를 약간 오프셋하여 ExpGem과 겹치지 않게 한다.
-4. **Only One Weapon Script Detected**
-   - Detail: Weapons 폴더에 무기 스크립트가 1개 이하로 감지됨.
-   - Suggestion: 근접 무기 단조로움 해소를 위해 두 번째 무기 구조를 계획한다. 단, HUD/드랍/웨이브 정리 후 진행.
 
 ### LOW
 
@@ -242,31 +242,40 @@ Assets/_Project
 2. **OnGUI Usage Detected**
    - Detail: Assets/_Project/Scripts/Editor/DevSnapshotTool.cs에서 OnGUI 사용 감지.
    - Suggestion: OnGUI는 테스트/디버그용으로만 유지하고 출시형 UI는 Canvas 기반으로 진행한다.
-3. **Direct TimeScale Control**
+3. **FindFirstObjectByType Usage**
+   - Detail: Assets/_Project/Scripts/Core/GameFlowManager.cs에서 FindFirstObjectByType 사용 감지.
+   - Suggestion: 초기 단계에서는 허용 가능. 호출 빈도가 높거나 확장되면 Inspector 참조 또는 이벤트 구조로 교체 검토.
+4. **Direct TimeScale Control**
    - Detail: Assets/_Project/Scripts/Core/GameFlowManager.cs에서 Time.timeScale 직접 제어 감지.
    - Suggestion: 여러 UI가 동시에 pause를 제어하면 충돌 가능. 나중에 PauseManager로 통합 검토.
-4. **FindFirstObjectByType Usage**
+5. **FindFirstObjectByType Usage**
    - Detail: Assets/_Project/Scripts/Editor/DevSnapshotTool.cs에서 FindFirstObjectByType 사용 감지.
    - Suggestion: 초기 단계에서는 허용 가능. 호출 빈도가 높거나 확장되면 Inspector 참조 또는 이벤트 구조로 교체 검토.
-5. **Direct TimeScale Control**
+6. **Direct TimeScale Control**
    - Detail: Assets/_Project/Scripts/Editor/DevSnapshotTool.cs에서 Time.timeScale 직접 제어 감지.
    - Suggestion: 여러 UI가 동시에 pause를 제어하면 충돌 가능. 나중에 PauseManager로 통합 검토.
-6. **FindFirstObjectByType Usage**
+7. **FindFirstObjectByType Usage**
    - Detail: Assets/_Project/Scripts/Enemy/EnemyHealth.cs에서 FindFirstObjectByType 사용 감지.
    - Suggestion: 초기 단계에서는 허용 가능. 호출 빈도가 높거나 확장되면 Inspector 참조 또는 이벤트 구조로 교체 검토.
-7. **Destroy Enemy Object**
+8. **Destroy Enemy Object**
    - Detail: Assets/_Project/Scripts/Enemy/EnemyHealth.cs에서 Destroy(gameObject) 사용.
    - Suggestion: 5분 MVP에서는 허용. 적 수가 많아지면 Object Pooling 검토.
-8. **FindFirstObjectByType Usage**
+9. **FindFirstObjectByType Usage**
    - Detail: Assets/_Project/Scripts/Spawning/WaveManager.cs에서 FindFirstObjectByType 사용 감지.
    - Suggestion: 초기 단계에서는 허용 가능. 호출 빈도가 높거나 확장되면 Inspector 참조 또는 이벤트 구조로 교체 검토.
-9. **FindFirstObjectByType Usage**
+10. **FindFirstObjectByType Usage**
    - Detail: Assets/_Project/Scripts/UI/HUDCanvasUI.cs에서 FindFirstObjectByType 사용 감지.
    - Suggestion: 초기 단계에서는 허용 가능. 호출 빈도가 높거나 확장되면 Inspector 참조 또는 이벤트 구조로 교체 검토.
-10. **Direct TimeScale Control**
+11. **FindFirstObjectByType Usage**
+   - Detail: Assets/_Project/Scripts/UI/LevelUpUI.cs에서 FindFirstObjectByType 사용 감지.
+   - Suggestion: 초기 단계에서는 허용 가능. 호출 빈도가 높거나 확장되면 Inspector 참조 또는 이벤트 구조로 교체 검토.
+12. **Direct TimeScale Control**
    - Detail: Assets/_Project/Scripts/UI/LevelUpUI.cs에서 Time.timeScale 직접 제어 감지.
    - Suggestion: 여러 UI가 동시에 pause를 제어하면 충돌 가능. 나중에 PauseManager로 통합 검토.
-11. **Direct TimeScale Control**
+13. **FindFirstObjectByType Usage**
+   - Detail: Assets/_Project/Scripts/UI/RelicSelectUI.cs에서 FindFirstObjectByType 사용 감지.
+   - Suggestion: 초기 단계에서는 허용 가능. 호출 빈도가 높거나 확장되면 Inspector 참조 또는 이벤트 구조로 교체 검토.
+14. **Direct TimeScale Control**
    - Detail: Assets/_Project/Scripts/UI/RelicSelectUI.cs에서 Time.timeScale 직접 제어 감지.
    - Suggestion: 여러 UI가 동시에 pause를 제어하면 충돌 가능. 나중에 PauseManager로 통합 검토.
 
@@ -275,7 +284,6 @@ Assets/_Project
 1. HIGH 진단 항목이 있으므로 새 기능 추가 전에 연결 누락/중복/누락 스크립트부터 정리한다.
 2. 유물 보유 표시를 추가할 때는 새 HUD Canvas부터 만들지 말고, 기존 HUDCanvas/HUDPanel/HUDCanvasUI 구조를 먼저 검토한 뒤 통합 여부를 결정한다.
 3. SmallHeal과 ExpGem이 같은 위치에 드랍될 가능성이 높다. 다음 작업은 EnemyHealth 드랍 위치 오프셋 분리로 잡는 것이 안전하다.
-4. 무기 스크립트가 근접 자동공격 1개 중심이다. 전투 단조로움 해결은 Brute 추가보다 MagicBolt 같은 두 번째 무기 구조를 곧 검토해야 한다.
 
 ## Existing Systems To Reuse
 
@@ -302,7 +310,7 @@ Assets/_Project
 ```text
 - Main Camera [Transform, Camera, AudioListener, UniversalAdditionalCameraData, CameraFollow2D]
 - Global Light 2D [Transform, Light2D]
-- Player [Transform, SpriteRenderer, Rigidbody2D, BoxCollider2D, PlayerController, PlayerMeleeAutoAttack, PlayerHealth, PlayerExp, PlayerPickupRange, PlayerRelicEffects]
+- Player [Transform, SpriteRenderer, Rigidbody2D, BoxCollider2D, PlayerController, PlayerMeleeAutoAttack, PlayerHealth, PlayerExp, PlayerPickupRange, PlayerRelicEffects, PlayerMagicBoltAutoAttack]
   - MeleeSlashVisual (inactive) [Transform, SpriteRenderer]
 - EnemySpawner [Transform, EnemySpawner]
 - WaveManager [Transform, WaveManager]
@@ -360,6 +368,7 @@ Assets/_Project
     - WaveText [RectTransform, CanvasRenderer, TextMeshProUGUI]
     - RelicText [RectTransform, CanvasRenderer, TextMeshProUGUI]
   - TimerText [RectTransform, CanvasRenderer, TextMeshProUGUI]
+- PauseManager [Transform, PauseManager]
 ```
 
 ## Important Scene Objects / Inspector Snapshot
@@ -368,7 +377,7 @@ Assets/_Project
 - Active: True
 - Tag: Untagged
 - Layer: Default
-- Components: Transform, SpriteRenderer, Rigidbody2D, BoxCollider2D, PlayerController, PlayerMeleeAutoAttack, PlayerHealth, PlayerExp, PlayerPickupRange, PlayerRelicEffects
+- Components: Transform, SpriteRenderer, Rigidbody2D, BoxCollider2D, PlayerController, PlayerMeleeAutoAttack, PlayerHealth, PlayerExp, PlayerPickupRange, PlayerRelicEffects, PlayerMagicBoltAutoAttack
 
 #### Transform
 ```text
@@ -456,6 +465,21 @@ bloodSigilHealChance: 0.05
 bloodSigilHealAmount: 1
 ```
 
+#### PlayerMagicBoltAutoAttack
+```text
+isUnlocked: False
+projectilePrefab: MagicBolt (GameObject)
+projectileSpawnPoint: None
+useProjectilePooling: True
+projectilePoolPrewarmCount: 12
+damage: 8
+attackInterval: 1.2
+attackRange: 6
+enemyLayer: 64
+minimumAttackInterval: 0.25
+maximumAttackRange: 10
+```
+
 ### Player/MeleeSlashVisual
 - Active: False
 - Tag: Untagged
@@ -495,6 +519,8 @@ enemySpawnEntries: Array/List Size: 2
 spawnInterval: 2
 spawnRadius: 10
 maxEnemies: 10
+useEnemyPooling: True
+prewarmPerEnemyType: 6
 ```
 
 ### WaveManager
@@ -534,7 +560,7 @@ midBossExpMultiplier: 4
 
 #### RectTransform
 ```text
-Local Position: (621.00, 255.50, 0.00)
+Local Position: (573.00, 256.00, 0.00)
 Local Rotation: (0.00, 0.00, 0.00)
 Local Scale: (1.00, 1.00, 1.00)
 ```
@@ -557,6 +583,7 @@ No visible serialized fields
 #### RelicSelectUI
 ```text
 playerHealth: Player (PlayerHealth)
+pauseManager: PauseManager (PauseManager)
 playerWeapon: Player (PlayerMeleeAutoAttack)
 playerPickupRange: Player (PlayerPickupRange)
 playerRelicEffects: Player (PlayerRelicEffects)
@@ -910,6 +937,7 @@ Local Scale: (1.00, 1.00, 1.00)
 ```text
 playerHealth: Player (PlayerHealth)
 gameTimer: GameTimer (GameTimer)
+pauseManager: PauseManager (PauseManager)
 startMenuCanvas: StartMenuCanvas (GameObject)
 gameOverCanvas: GameOverCanvas (GameObject)
 hudCanvas: HUDCanvas (GameObject)
@@ -924,9 +952,9 @@ showStartMenuOnLoad: True
 
 #### RectTransform
 ```text
-Local Position: (621.00, 255.50, 0.00)
+Local Position: (573.00, 256.00, 0.00)
 Local Rotation: (0.00, 0.00, 0.00)
-Local Scale: (0.55, 0.55, 0.55)
+Local Scale: (0.53, 0.53, 0.53)
 ```
 
 #### Canvas
@@ -1154,7 +1182,7 @@ checkPaddingRequired: False
 
 #### RectTransform
 ```text
-Local Position: (621.00, 255.50, 0.00)
+Local Position: (573.00, 256.00, 0.00)
 Local Rotation: (0.00, 0.00, 0.00)
 Local Scale: (1.00, 1.00, 1.00)
 ```
@@ -1177,10 +1205,12 @@ No visible serialized fields
 #### LevelUpUI
 ```text
 playerHealth: Player (PlayerHealth)
+pauseManager: PauseManager (PauseManager)
 playerWeapon: Player (PlayerMeleeAutoAttack)
 playerController: Player (PlayerController)
 playerPickupRange: Player (PlayerPickupRange)
-availableUpgrades: Array/List Size: 8
+playerMagicBolt: Player (PlayerMagicBoltAutoAttack)
+availableUpgrades: Array/List Size: 9
 levelUpPanel: LevelUpPanel (GameObject)
 titleText: TitleText (TextMeshProUGUI)
 pendingText: PendingText (TextMeshProUGUI)
@@ -1451,9 +1481,9 @@ logInterval: 10
 
 #### RectTransform
 ```text
-Local Position: (621.00, 255.50, 0.00)
+Local Position: (573.00, 256.00, 0.00)
 Local Rotation: (0.00, 0.00, 0.00)
-Local Scale: (0.55, 0.55, 0.55)
+Local Scale: (0.53, 0.53, 0.53)
 ```
 
 #### Canvas
@@ -1485,6 +1515,7 @@ waveText: WaveText (TextMeshProUGUI)
 relicText: RelicText (TextMeshProUGUI)
 relicTitle: RELICS
 emptyRelicText: ""
+waveUiRefreshInterval: 0.2
 ```
 
 ### HUDCanvas/HUDPanel
@@ -1518,7 +1549,7 @@ No visible serialized fields
 
 #### RectTransform
 ```text
-Local Position: (-822.49, 406.83, 0.00)
+Local Position: (-777.18, 426.25, 0.00)
 Local Rotation: (0.00, 0.00, 0.00)
 Local Scale: (1.00, 1.00, 1.00)
 ```
@@ -1631,7 +1662,7 @@ No visible serialized fields
 
 #### RectTransform
 ```text
-Local Position: (-822.49, 406.83, 0.00)
+Local Position: (-777.18, 426.25, 0.00)
 Local Rotation: (0.00, 0.00, 0.00)
 Local Scale: (1.00, 1.00, 1.00)
 ```
@@ -1655,7 +1686,7 @@ checkPaddingRequired: False
 
 #### RectTransform
 ```text
-Local Position: (-822.49, 351.83, 0.00)
+Local Position: (-777.18, 371.25, 0.00)
 Local Rotation: (0.00, 0.00, 0.00)
 Local Scale: (1.00, 1.00, 1.00)
 ```
@@ -1768,7 +1799,7 @@ No visible serialized fields
 
 #### RectTransform
 ```text
-Local Position: (-822.49, 351.83, 0.00)
+Local Position: (-777.18, 371.25, 0.00)
 Local Rotation: (0.00, 0.00, 0.00)
 Local Scale: (1.00, 1.00, 1.00)
 ```
@@ -1792,7 +1823,7 @@ checkPaddingRequired: False
 
 #### RectTransform
 ```text
-Local Position: (-822.49, 301.83, 0.00)
+Local Position: (-777.18, 321.25, 0.00)
 Local Rotation: (0.00, 0.00, 0.00)
 Local Scale: (1.00, 1.00, 1.00)
 ```
@@ -1816,7 +1847,7 @@ checkPaddingRequired: False
 
 #### RectTransform
 ```text
-Local Position: (-1942.49, 691.83, 0.00)
+Local Position: (-1897.18, 711.25, 0.00)
 Local Rotation: (0.00, 0.00, 0.00)
 Local Scale: (1.00, 1.00, 1.00)
 ```
@@ -1840,7 +1871,7 @@ checkPaddingRequired: False
 
 #### RectTransform
 ```text
-Local Position: (0.00, 421.83, 0.00)
+Local Position: (0.00, 441.25, 0.00)
 Local Rotation: (0.00, 0.00, 0.00)
 Local Scale: (1.00, 1.00, 1.00)
 ```
@@ -1854,6 +1885,24 @@ No visible serialized fields
 ```text
 parentLinkedComponent: None
 checkPaddingRequired: False
+```
+
+### PauseManager
+- Active: True
+- Tag: Untagged
+- Layer: Default
+- Components: Transform, PauseManager
+
+#### Transform
+```text
+Local Position: (-0.95, 1.23, 0.00)
+Local Rotation: (0.00, 0.00, 0.00)
+Local Scale: (1.00, 1.00, 1.00)
+```
+
+#### PauseManager
+```text
+No visible serialized fields
 ```
 
 ## UI Structure Analysis
@@ -1996,6 +2045,7 @@ icon: None
 upgradeType: Attack Range
 intValue: 0
 floatValue: 0.12
+weaponId: ""
 ```
 
 ### Assets/_Project/ScriptableObjects/Upgrades/Upgrade_AttackSpeed.asset
@@ -2007,6 +2057,7 @@ icon: None
 upgradeType: Attack Speed
 intValue: 0
 floatValue: 0.15
+weaponId: ""
 ```
 
 ### Assets/_Project/ScriptableObjects/Upgrades/Upgrade_CriticalChance.asset
@@ -2018,6 +2069,7 @@ icon: None
 upgradeType: Critical Chance
 intValue: 0
 floatValue: 0.05
+weaponId: ""
 ```
 
 ### Assets/_Project/ScriptableObjects/Upgrades/Upgrade_Damage.asset
@@ -2029,6 +2081,7 @@ icon: None
 upgradeType: Damage
 intValue: 5
 floatValue: 0
+weaponId: ""
 ```
 
 ### Assets/_Project/ScriptableObjects/Upgrades/Upgrade_Defense.asset
@@ -2040,6 +2093,19 @@ icon: None
 upgradeType: Defense
 intValue: 1
 floatValue: 0
+weaponId: ""
+```
+
+### Assets/_Project/ScriptableObjects/Upgrades/Upgrade_MagicBolt.asset
+- Type: UpgradeData
+```text
+upgradeName: MAGIC BOLT
+description: Unlocks a magic bolt that automatically attacks nearby enemies.
+icon: None
+upgradeType: Weapon Unlock
+intValue: 0
+floatValue: 0
+weaponId: magic_bolt
 ```
 
 ### Assets/_Project/ScriptableObjects/Upgrades/Upgrade_MaxHealth.asset
@@ -2051,6 +2117,7 @@ icon: None
 upgradeType: Max Health
 intValue: 10
 floatValue: 0
+weaponId: ""
 ```
 
 ### Assets/_Project/ScriptableObjects/Upgrades/Upgrade_MoveSpeed.asset
@@ -2062,6 +2129,7 @@ icon: None
 upgradeType: Move Speed
 intValue: 0
 floatValue: 0.05
+weaponId: ""
 ```
 
 ### Assets/_Project/ScriptableObjects/Upgrades/Upgrade_PickupRange.asset
@@ -2073,6 +2141,7 @@ icon: None
 upgradeType: Pickup Range
 intValue: 0
 floatValue: 0.15
+weaponId: ""
 ```
 
 ## Prefabs Snapshot
@@ -2102,21 +2171,301 @@ floatValue: 0.15
 - SmallHeal [Transform, SpriteRenderer, BoxCollider2D, SmallHealPickup]
 ```
 
+### Assets/_Project/Prefabs/Projectiles/MagicBolt.prefab
+```text
+- MagicBolt [Transform, SpriteRenderer, CircleCollider2D, MagicBoltProjectile]
+```
+
 ## File Change Summary
 
-- Added: 0
-- Modified: 4
+- Added: 1
+- Modified: 14
 - Deleted: 0
-- Total tracked files: 61
+- Total tracked files: 66
+
+### Added
+
+- Assets/_Project/Scripts/Core/PauseManager.cs
 
 ### Modified
 
 - Assets/_Project/Scenes/Main.unity
+- Assets/_Project/Scripts/Core/GameFlowManager.cs
+- Assets/_Project/Scripts/Enemy/EnemyContactDamage.cs
 - Assets/_Project/Scripts/Enemy/EnemyHealth.cs
+- Assets/_Project/Scripts/Enemy/EnemyMovement.cs
+- Assets/_Project/Scripts/Player/PlayerExp.cs
+- Assets/_Project/Scripts/Player/PlayerHealth.cs
+- Assets/_Project/Scripts/Projectiles/MagicBoltProjectile.cs
+- Assets/_Project/Scripts/Spawning/EnemySpawner.cs
+- Assets/_Project/Scripts/Spawning/WaveManager.cs
 - Assets/_Project/Scripts/UI/HUDCanvasUI.cs
+- Assets/_Project/Scripts/UI/LevelUpUI.cs
 - Assets/_Project/Scripts/UI/RelicSelectUI.cs
+- Assets/_Project/Scripts/Weapons/PlayerMagicBoltAutoAttack.cs
 
 ## Code Change Preview
+
+### Assets/_Project/Scripts/Core/PauseManager.cs
+
+```text
+Classes:
+- PauseManager
+Methods:
+- RequestPause()
+- ReleasePause()
+- ClearAllPauseRequests()
+- OnDestroy()
+- UpdateTimeScale()
+```
+
+Changed code preview:
+```diff
++ using System.Collections.Generic;
++ using UnityEngine;
++ 
++ public class PauseManager : MonoBehaviour
++ {
++     private readonly HashSet<Object> pauseRequesters = new HashSet<Object>();
++ 
++     public bool IsPaused => pauseRequesters.Count > 0;
++     public int PauseRequestCount => pauseRequesters.Count;
++ 
++     public void RequestPause(Object requester)
++     {
++         if (requester == null)
++         {
++             Debug.LogWarning("[PauseManager] requester가 null이라 일시정지 요청이 무시되었습니다.", this);
++             return;
++         }
++ 
++         pauseRequesters.Add(requester);
++         UpdateTimeScale();
++     }
++ 
++     public void ReleasePause(Object requester)
++     {
++         if (requester == null)
++         {
++             return;
++         }
++ 
++         pauseRequesters.Remove(requester);
++         UpdateTimeScale();
++     }
++ 
++     public void ClearAllPauseRequests()
++     {
++         pauseRequesters.Clear();
++         UpdateTimeScale();
++     }
++ 
++     private void OnDestroy()
++     {
++         // 씬 전환/종료 시 게임이 멈춘 상태로 남지 않도록 안전하게 복구합니다.
++         Time.timeScale = 1f;
++     }
++ 
++     private void UpdateTimeScale()
++     {
++         Time.timeScale = IsPaused ? 0f : 1f;
++     }
++ }
++ 
+```
+
+### Assets/_Project/Scripts/Core/GameFlowManager.cs
+
+```text
+Classes:
+- GameFlowManager
+Methods:
+- Start()
+- Update()
+- ShowStartMenu()
+- StartGame()
+- GameOver()
+- RestartGame()
+- QuitGame()
+- ValidateRequiredReferences()
+- RequestPause()
+- ReleasePause()
+```
+
+Changed code preview:
+```diff
+- 
++     [SerializeField] private PauseManager pauseManager;
+-     [Header("UI")]
++ 
+-     [SerializeField] private GameObject startMenuCanvas;
++     [Header("UI")]
+-     [SerializeField] private GameObject gameOverCanvas;
++     [SerializeField] private GameObject startMenuCanvas;
+-     [SerializeField] private GameObject hudCanvas;
++     [SerializeField] private GameObject gameOverCanvas;
+- 
++     [SerializeField] private GameObject hudCanvas;
+-     [Header("Settings")]
++ 
+-     [SerializeField] private bool showStartMenuOnLoad = true;
++     [Header("Settings")]
+- 
++     [SerializeField] private bool showStartMenuOnLoad = true;
+-     private bool isGameStarted;
++ 
+-     private bool isGameOver;
++     private bool isGameStarted;
+- 
++     private bool isGameOver;
+-     private void Start()
++ 
+-     {
++     private void Start()
+-         if (gameTimer != null)
++     {
+-         {
++         ValidateRequiredReferences();
+-             gameTimer.ResetTimer();
++ 
+-             gameTimer.StopTimer();
++         if (gameTimer != null)
+-         }
++         {
+- 
++             gameTimer.ResetTimer();
+-         if (showStartMenuOnLoad)
++             gameTimer.StopTimer();
+-         {
++         }
+-             ShowStartMenu();
++ 
+-         }
++         if (showStartMenuOnLoad)
+-         else
++         {
+-         {
++             ShowStartMenu();
+-             StartGame();
++         }
+-         }
++         else
+-     }
++         {
+- 
++             StartGame();
+-     private void Update()
++         }
+-     {
++     }
+-         if (!isGameStarted)
++ 
+-             return;
++     private void Update()
+- 
++     {
+-         if (isGameOver)
++         if (!isGameStarted)
+-         if (playerHealth != null && playerHealth.IsDead)
++         if (isGameOver)
+-         {
++             return;
+-             GameOver();
++ 
+-         }
++         if (playerHealth != null && playerHealth.IsDead)
+-     }
++         {
+- 
++             GameOver();
+-     private void ShowStartMenu()
++         }
+-     {
++     }
+-         isGameStarted = false;
++ 
+-         isGameOver = false;
++     private void ShowStartMenu()
+- 
++     {
+-         Time.timeScale = 0f;
++         isGameStarted = false;
+- 
++         isGameOver = false;
+-         if (gameTimer != null)
++ 
+# ... 변경 내용 일부만 표시됨
+```
+
+### Assets/_Project/Scripts/Enemy/EnemyContactDamage.cs
+
+```text
+Classes:
+- EnemyContactDamage
+Methods:
+- Initialize()
+- Update()
+- OnTriggerStay2D()
+```
+
+Changed code preview:
+```diff
+-     }
++         damageTimer = 0f;
+- 
++     }
+-     private void Update()
++ 
+-     {
++     private void Update()
+-         if (damageTimer > 0f)
++     {
+-         {
++         if (damageTimer > 0f)
+-             damageTimer -= Time.deltaTime;
++         {
+-         }
++             damageTimer -= Time.deltaTime;
+-     }
++         }
+- 
++     }
+-     private void OnTriggerStay2D(Collider2D other)
++ 
+-     {
++     private void OnTriggerStay2D(Collider2D other)
+-         if (damageTimer > 0f)
++     {
+-             return;
++         if (damageTimer > 0f)
+- 
++             return;
+-         PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
++ 
+- 
++         PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
+-         if (playerHealth == null)
++ 
+-             return;
++         if (playerHealth == null)
+- 
++             return;
+-         Vector2 hitDirection = other.transform.position - transform.position;
++ 
+- 
++         Vector2 hitDirection = other.transform.position - transform.position;
+-         playerHealth.TakeDamage(damage, hitDirection);
++ 
+- 
++         playerHealth.TakeDamage(damage, hitDirection);
+-         damageTimer = damageInterval;
++ 
+-     }
++         damageTimer = damageInterval;
+- }
++     }
++ }
+```
 
 ### Assets/_Project/Scripts/Enemy/EnemyHealth.cs
 
@@ -2134,6 +2483,7 @@ Methods:
 - NotifyEnemyKilled()
 - DropExpGem()
 - DropSmallHeal()
+- GetExpGemDropPosition()
 - GetSmallHealDropPosition()
 - OpenRelicSelectUI()
 ```
@@ -2141,9 +2491,9 @@ Methods:
 Changed code preview:
 ```diff
 - 
-+     [SerializeField] private float smallHealDropOffsetMin = 0.35f;
++     [SerializeField] private float expGemDropOffsetRadius = 0.15f;
 -     [Header("Boss Visual")]
-+     [SerializeField] private float smallHealDropOffsetMax = 0.75f;
++     [SerializeField] private float minDistanceBetweenDrops = 0.3f;
 -     [SerializeField] private float normalScale = 0.8f;
 + 
 -     [SerializeField] private float midBossScale = 1.8f;
@@ -2194,52 +2544,781 @@ Changed code preview:
 +     private Vector3 baseScale;
 -     public bool IsMidBoss => isMidBoss;
 +     private Coroutine hitFlashCoroutine;
+- 
++     private EnemySpawner ownerSpawner;
 -     private void Awake()
-+     public bool IsMidBoss => isMidBoss;
++ 
 -     {
-+ 
++     public bool IsMidBoss => isMidBoss;
 -         currentHealth = maxHealth;
-+     private void Awake()
-- 
-+     {
--         spriteRenderer = GetComponent<SpriteRenderer>();
-+         currentHealth = maxHealth;
--         enemyMovement = GetComponent<EnemyMovement>();
 + 
 - 
-+         spriteRenderer = GetComponent<SpriteRenderer>();
++     private void Awake()
+-         spriteRenderer = GetComponent<SpriteRenderer>();
++     {
+-         enemyMovement = GetComponent<EnemyMovement>();
++         currentHealth = maxHealth;
 -         baseScale = transform.localScale;
++         spriteRenderer = GetComponent<SpriteRenderer>();
+- 
 +         enemyMovement = GetComponent<EnemyMovement>();
 -         if (spriteRenderer != null)
-+         baseScale = transform.localScale;
--         {
 + 
+-         {
++         baseScale = transform.localScale;
 -             originalColor = spriteRenderer.color;
-+         if (spriteRenderer != null)
++ 
 -         }
-+         {
++         if (spriteRenderer != null)
 -     }
++         {
+- 
 +             originalColor = spriteRenderer.color;
+-     public void Initialize(int newMaxHealth, int newExpReward, bool isBoss)
++         }
+-     {
++     }
+-         isMidBoss = isBoss;
++ 
+- 
++     public void Initialize(int newMaxHealth, int newExpReward, bool isBoss, EnemySpawner spawner = null)
+-         maxHealth = Mathf.Max(1, newMaxHealth);
++     {
+-         currentHealth = maxHealth;
++         ownerSpawner = spawner;
+-         expReward = Mathf.Max(1, newExpReward);
++         isMidBoss = isBoss;
+- 
++         isDead = false;
+# ... 변경 내용 일부만 표시됨
+```
+
+### Assets/_Project/Scripts/Enemy/EnemyMovement.cs
+
+```text
+Classes:
+- EnemyMovement
+Methods:
+- OnEnable()
+- OnDisable()
+- Awake()
+- FixedUpdate()
+- SetTarget()
+- ApplyKnockback()
+- UpdateTargetOffsetTimer()
+- PickNewTargetOffset()
+- MoveToTargetArea()
+- GetSeparationDirection()
+- OnDrawGizmosSelected()
+```
+
+Changed code preview:
+```diff
+-     }
++ 
+- 
++         knockbackVelocity = Vector2.zero;
+-     private void OnDisable()
++         knockbackTimer = 0f;
+-     {
++         PickNewTargetOffset();
+-         ActiveEnemies.Remove(this);
++         offsetTimer = Random.Range(0f, offsetChangeInterval);
+-     private void Awake()
++     private void OnDisable()
+-         rb = GetComponent<Rigidbody2D>();
++         ActiveEnemies.Remove(this);
+- 
++     }
+-         moveSpeed = baseMoveSpeed * Random.Range(0.9f, 1.12f);
++ 
+-         PickNewTargetOffset();
++     private void Awake()
+-         offsetTimer = Random.Range(0f, offsetChangeInterval);
++     {
+-     }
++         rb = GetComponent<Rigidbody2D>();
+-     private void FixedUpdate()
++         moveSpeed = baseMoveSpeed * Random.Range(0.9f, 1.12f);
+-     {
++         PickNewTargetOffset();
+-         if (knockbackTimer > 0f)
++         offsetTimer = Random.Range(0f, offsetChangeInterval);
+-         {
++     }
+-             knockbackTimer -= Time.fixedDeltaTime;
++ 
+-             rb.linearVelocity = knockbackVelocity;
++     private void FixedUpdate()
+-             return;
++     {
+-         }
++         if (knockbackTimer > 0f)
+- 
++         {
+-         UpdateTargetOffsetTimer();
++             knockbackTimer -= Time.fixedDeltaTime;
+-         MoveToTargetArea();
++             rb.linearVelocity = knockbackVelocity;
+-     }
++             return;
 - 
 +         }
--     public void Initialize(int newMaxHealth, int newExpReward, bool isBoss)
-+     }
--     {
+-     public void SetTarget(Transform newTarget)
 + 
--         isMidBoss = isBoss;
-+     public void Initialize(int newMaxHealth, int newExpReward, bool isBoss)
+-     {
++         UpdateTargetOffsetTimer();
+-         target = newTarget;
++         MoveToTargetArea();
+-     public void ApplyKnockback(Vector2 direction, float force, float duration)
++     public void SetTarget(Transform newTarget)
+-         if (direction.sqrMagnitude <= 0.01f)
++         target = newTarget;
+-             return;
++     }
+-         knockbackVelocity = direction.normalized * force;
++     public void ApplyKnockback(Vector2 direction, float force, float duration)
+-         knockbackTimer = duration;
++     {
+-     }
++         if (direction.sqrMagnitude <= 0.01f)
+- 
++             return;
+-     private void UpdateTargetOffsetTimer()
++ 
+-     {
++         knockbackVelocity = direction.normalized * force;
+-         offsetTimer -= Time.fixedDeltaTime;
++         knockbackTimer = duration;
+- 
++     }
+-         if (offsetTimer <= 0f)
++ 
+-         {
++     private void UpdateTargetOffsetTimer()
+-             PickNewTargetOffset();
++     {
+-             offsetTimer = offsetChangeInterval;
++         offsetTimer -= Time.fixedDeltaTime;
+-         }
++ 
+-     }
++         if (offsetTimer <= 0f)
+- 
++         {
+-     private void PickNewTargetOffset()
++             PickNewTargetOffset();
+-     {
++             offsetTimer = offsetChangeInterval;
+-         Vector2 direction = Random.insideUnitCircle;
++         }
+- 
++     }
+# ... 변경 내용 일부만 표시됨
+```
+
+### Assets/_Project/Scripts/Player/PlayerExp.cs
+
+```text
+Classes:
+- PlayerExp
+Methods:
+- AddExp()
+- LevelUp()
+- NotifyExpChanged()
+```
+
+Changed code preview:
+```diff
+- 
++ using System;
+- public class PlayerExp : MonoBehaviour
++ 
+- {
++ public class PlayerExp : MonoBehaviour
+-     [Header("Level")]
++ {
+-     [SerializeField] private int level = 1;
++     public event Action OnExpChanged;
+-     [SerializeField] private int currentExp = 0;
++ 
+-     [SerializeField] private int expToNextLevel = 20;
++     [Header("Level")]
+- 
++     [SerializeField] private int level = 1;
+-     [Header("UI")]
++     [SerializeField] private int currentExp = 0;
+-     [SerializeField] private LevelUpUI levelUpUI;
++     [SerializeField] private int expToNextLevel = 20;
+-     public int Level => level;
++     [Header("UI")]
+-     public int CurrentExp => currentExp;
++     [SerializeField] private LevelUpUI levelUpUI;
+-     public int ExpToNextLevel => expToNextLevel;
++ 
+- 
++     public int Level => level;
+-     public void AddExp(int amount)
++     public int CurrentExp => currentExp;
+-     {
++     public int ExpToNextLevel => expToNextLevel;
+-         if (amount <= 0)
++ 
+-             return;
++     public void AddExp(int amount)
 - 
 +     {
--         maxHealth = Mathf.Max(1, newMaxHealth);
-+         isMidBoss = isBoss;
--         currentHealth = maxHealth;
-+ 
--         expReward = Mathf.Max(1, newExpReward);
-+         maxHealth = Mathf.Max(1, newMaxHealth);
+-         currentExp += amount;
++         if (amount <= 0)
 - 
++             return;
+-         Debug.Log($"EXP +{amount} / {currentExp}/{expToNextLevel}");
++ 
+- 
++         currentExp += amount;
+-         int levelUpCount = 0;
++ 
+- 
++         Debug.Log($"EXP +{amount} / {currentExp}/{expToNextLevel}");
+-         while (currentExp >= expToNextLevel)
++ 
+-         {
++         int levelUpCount = 0;
+-             currentExp -= expToNextLevel;
++ 
+-             LevelUp();
++         while (currentExp >= expToNextLevel)
+-             levelUpCount++;
++         {
+-         }
++             currentExp -= expToNextLevel;
+- 
++             LevelUp();
+-         if (levelUpCount > 0 && levelUpUI != null)
++             levelUpCount++;
+-         {
++         }
+-             levelUpUI.Open(levelUpCount);
++ 
+-         }
++         if (levelUpCount > 0 && levelUpUI != null)
+-     }
++         {
+- 
++             levelUpUI.Open(levelUpCount);
+-     private void LevelUp()
++         }
+-     {
++ 
+-         level++;
++         NotifyExpChanged();
+-         expToNextLevel = Mathf.RoundToInt(expToNextLevel * 1.35f + 5f);
++     }
+-         Debug.Log($"Level Up! Current Level: {level}");
++     private void LevelUp()
+-     }
++     {
+- }
++         level++;
++         expToNextLevel = Mathf.RoundToInt(expToNextLevel * 1.35f + 5f);
++ 
++         Debug.Log($"Level Up! Current Level: {level}");
++     }
++ 
++     private void NotifyExpChanged()
++     {
++         OnExpChanged?.Invoke();
++     }
++ }
+# ... 변경 내용 일부만 표시됨
+```
+
+### Assets/_Project/Scripts/Player/PlayerHealth.cs
+
+```text
+Classes:
+- PlayerHealth
+Methods:
+- Awake()
+- TakeDamage()
+- AddMaxHealth()
+- Heal()
+- AddDefense()
+- InvincibleRoutine()
+- Die()
+- NotifyHealthChanged()
+```
+
+Changed code preview:
+```diff
+- using UnityEngine;
++ using System;
+- 
++ using UnityEngine;
+- [RequireComponent(typeof(PlayerController))]
++ 
+- public class PlayerHealth : MonoBehaviour
++ [RequireComponent(typeof(PlayerController))]
+- {
++ public class PlayerHealth : MonoBehaviour
+-     [Header("Health")]
++ {
+-     [SerializeField] private int maxHealth = 100;
++     public event Action OnHealthChanged;
+- 
++     public event Action OnDied;
+-     [Header("Defense")]
++ 
+-     [SerializeField] private int defense = 0;
++     [Header("Health")]
+-     [SerializeField] private int maximumDefense = 20;
++     [SerializeField] private int maxHealth = 100;
+-     [Header("Hit Reaction")]
++     [Header("Defense")]
+-     [SerializeField] private float invincibleDuration = 0.6f;
++     [SerializeField] private int defense = 0;
+-     [SerializeField] private float knockbackForce = 5f;
++     [SerializeField] private int maximumDefense = 20;
+-     [SerializeField] private float knockbackDuration = 0.15f;
++ 
+-     [SerializeField] private Color hitColor = Color.red;
++     [Header("Hit Reaction")]
+-     [SerializeField] private float blinkInterval = 0.08f;
++     [SerializeField] private float invincibleDuration = 0.6f;
+- 
++     [SerializeField] private float knockbackForce = 5f;
+-     private int currentHealth;
++     [SerializeField] private float knockbackDuration = 0.15f;
+-     private bool isDead;
++     [SerializeField] private Color hitColor = Color.red;
+-     private bool isInvincible;
++     [SerializeField] private float blinkInterval = 0.08f;
+-     private PlayerController playerController;
++     private int currentHealth;
+-     private PlayerMeleeAutoAttack playerWeapon;
++     private bool isDead;
+-     private Rigidbody2D rb;
++     private bool isInvincible;
+-     private SpriteRenderer spriteRenderer;
++ 
+-     private Color originalColor;
++     private PlayerController playerController;
+- 
++     private PlayerMeleeAutoAttack playerWeapon;
+-     public int CurrentHealth => currentHealth;
++     private Rigidbody2D rb;
+-     public int MaxHealth => maxHealth;
++     private SpriteRenderer spriteRenderer;
+-     public int Defense => defense;
++     private Color originalColor;
+-     public float HealthRate => maxHealth <= 0 ? 0f : (float)currentHealth / maxHealth;
++ 
+-     public bool IsDead => isDead;
++     public int CurrentHealth => currentHealth;
+- 
++     public int MaxHealth => maxHealth;
+-     private void Awake()
++     public int Defense => defense;
+-     {
++     public float HealthRate => maxHealth <= 0 ? 0f : (float)currentHealth / maxHealth;
+-         currentHealth = maxHealth;
++     public bool IsDead => isDead;
+-         playerController = GetComponent<PlayerController>();
++     private void Awake()
+-         playerWeapon = GetComponent<PlayerMeleeAutoAttack>();
++     {
+-         rb = GetComponent<Rigidbody2D>();
 +         currentHealth = maxHealth;
--         ApplyVisual();
-+         expReward = Mathf.Max(1, newExpReward);
+-         spriteRenderer = GetComponent<SpriteRenderer>();
++ 
+- 
++         playerController = GetComponent<PlayerController>();
+-         if (spriteRenderer != null)
++         playerWeapon = GetComponent<PlayerMeleeAutoAttack>();
+-         {
++         rb = GetComponent<Rigidbody2D>();
+-             originalColor = spriteRenderer.color;
++         spriteRenderer = GetComponent<SpriteRenderer>();
+-         }
++ 
+-     }
++         if (spriteRenderer != null)
+- 
++         {
+-     public void TakeDamage(int damage)
++             originalColor = spriteRenderer.color;
+-     {
++         }
+-         TakeDamage(damage, Vector2.zero);
++ 
+# ... 변경 내용 일부만 표시됨
+```
+
+### Assets/_Project/Scripts/Projectiles/MagicBoltProjectile.cs
+
+```text
+Classes:
+- MagicBoltProjectile
+Methods:
+- SetOwner()
+- Initialize()
+- Update()
+- OnTriggerEnter2D()
+- OnDisable()
+- Release()
+```
+
+Changed code preview:
+```diff
+- 
++     private float lifeTimer;
+-     public void Initialize(Vector2 direction, int newDamage, LayerMask newEnemyLayer)
++     private PlayerMagicBoltAutoAttack owner;
+-     {
++ 
+-         moveDirection = direction.normalized;
++     public void SetOwner(PlayerMagicBoltAutoAttack projectileOwner)
+-         damage = Mathf.Max(1, newDamage);
++     {
+-         enemyLayer = newEnemyLayer;
++         owner = projectileOwner;
+-         hasHit = false;
++     }
+-         Destroy(gameObject, lifeTime);
++     public void Initialize(Vector2 direction, int newDamage, LayerMask newEnemyLayer)
+-     }
++     {
+- 
++         moveDirection = direction.normalized;
+-     private void Update()
++         damage = Mathf.Max(1, newDamage);
+-     {
++         enemyLayer = newEnemyLayer;
+-         transform.position += (Vector3)(moveDirection * moveSpeed * Time.deltaTime);
++         hasHit = false;
+-     }
++         lifeTimer = lifeTime;
+- 
++     }
+-     private void OnTriggerEnter2D(Collider2D other)
++ 
+-     {
++     private void Update()
+-         if (hasHit)
++     {
+-             return;
++         if (hasHit)
+- 
++             return;
+-         bool isEnemyLayer = ((1 << other.gameObject.layer) & enemyLayer.value) != 0;
++ 
+- 
++         lifeTimer -= Time.deltaTime;
+-         if (!isEnemyLayer)
++ 
+-             return;
++         if (lifeTimer <= 0f)
+- 
++         {
+-         EnemyHealth enemyHealth = other.GetComponent<EnemyHealth>();
++             Release();
+- 
++             return;
+-         if (enemyHealth == null)
++         }
+-             return;
++ 
+- 
++         transform.position += (Vector3)(moveDirection * moveSpeed * Time.deltaTime);
+-         hasHit = true;
++     }
+-         enemyHealth.TakeDamage(damage, transform.position);
++     private void OnTriggerEnter2D(Collider2D other)
+- 
++     {
+-         Destroy(gameObject);
++         if (hasHit)
+-     }
++             return;
+- }
++ 
++         bool isEnemyLayer = ((1 << other.gameObject.layer) & enemyLayer.value) != 0;
++ 
++         if (!isEnemyLayer)
++             return;
++ 
++         EnemyHealth enemyHealth = other.GetComponent<EnemyHealth>();
++ 
++         if (enemyHealth == null)
++             return;
++ 
++         hasHit = true;
++ 
++         enemyHealth.TakeDamage(damage, transform.position);
++ 
++         Release();
++     }
++ 
++     private void OnDisable()
++     {
++         hasHit = true;
++     }
++ 
++     private void Release()
++     {
++         hasHit = true;
++ 
++         if (owner != null)
++         {
+# ... 변경 내용 일부만 표시됨
+```
+
+### Assets/_Project/Scripts/Spawning/EnemySpawner.cs
+
+```text
+Classes:
+- EnemySpawner
+- EnemySpawnEntry
+Methods:
+- Awake()
+- Update()
+- HasValidEnemyPrefab()
+- TrySpawnEnemy()
+- SpawnEnemy()
+- DespawnEnemy()
+- GetRandomEnemyPrefab()
+- GetTotalSpawnWeight()
+- IsValidEntry()
+- GetSpawnPositionAroundPlayer()
+- RemoveDeadEnemies()
+- BuildEnemyPool()
+- GetOrCreateEnemy()
+```
+
+Changed code preview:
+```diff
+- 
++     [SerializeField] private bool useEnemyPooling = true;
+-     private readonly List<GameObject> spawnedEnemies = new List<GameObject>();
++     [SerializeField] private int prewarmPerEnemyType = 6;
+-     private float spawnTimer;
++     private readonly List<GameObject> spawnedEnemies = new List<GameObject>();
+-     private PlayerHealth playerHealth;
++     private readonly Dictionary<GameObject, Queue<GameObject>> enemyPoolByPrefab = new Dictionary<GameObject, Queue<GameObject>>();
+- 
++     private readonly Dictionary<GameObject, GameObject> activeEnemyPrefabMap = new Dictionary<GameObject, GameObject>();
+-     private void Awake()
++ 
+-     {
++     private float spawnTimer;
+-         if (playerTarget != null)
++     private PlayerHealth playerHealth;
+-         {
++ 
+-             playerHealth = playerTarget.GetComponent<PlayerHealth>();
++     private void Awake()
+-         }
++     {
+-     }
++         if (playerTarget != null)
+- 
++         {
+-     private void Update()
++             playerHealth = playerTarget.GetComponent<PlayerHealth>();
+-     {
++         }
+-         if (playerTarget == null || waveManager == null)
++ 
+-             return;
++         if (useEnemyPooling)
+- 
++         {
+-         if (!HasValidEnemyPrefab())
++             BuildEnemyPool();
+-             return;
++         }
+- 
++     }
+-         if (playerHealth != null && playerHealth.IsDead)
++ 
+-             return;
++     private void Update()
+- 
++     {
+-         RemoveDeadEnemies();
++         if (playerTarget == null || waveManager == null)
+- 
++             return;
+-         spawnTimer -= Time.deltaTime;
++ 
+- 
++         if (!HasValidEnemyPrefab())
+-         if (spawnTimer <= 0f)
++             return;
+-         {
++ 
+-             TrySpawnEnemy();
++         if (playerHealth != null && playerHealth.IsDead)
+-             spawnTimer = spawnInterval;
++             return;
+-         }
++ 
+-     }
++         RemoveDeadEnemies();
+-     private bool HasValidEnemyPrefab()
++         spawnTimer -= Time.deltaTime;
+-     {
++ 
+-         for (int i = 0; i < enemySpawnEntries.Count; i++)
++         if (spawnTimer <= 0f)
+-             EnemySpawnEntry entry = enemySpawnEntries[i];
++             TrySpawnEnemy();
+- 
++             spawnTimer = spawnInterval;
+-             if (entry == null)
++         }
+-                 continue;
++     }
+-             if (!entry.enabled)
++     private bool HasValidEnemyPrefab()
+-                 continue;
++     {
+- 
++         for (int i = 0; i < enemySpawnEntries.Count; i++)
+-             if (entry.enemyPrefab == null)
++         {
+-                 continue;
++             EnemySpawnEntry entry = enemySpawnEntries[i];
+-             if (entry.spawnWeight <= 0f)
++             if (entry == null)
+-             return true;
++             if (!entry.enabled)
+-         }
++                 continue;
+-         return false;
++             if (entry.enemyPrefab == null)
+# ... 변경 내용 일부만 표시됨
+```
+
+### Assets/_Project/Scripts/Spawning/WaveManager.cs
+
+```text
+Classes:
+- WaveManager
+Methods:
+- Awake()
+- Update()
+- AdvanceWave()
+- ShouldSpawnFirstMidBoss()
+- MarkFirstMidBossSpawned()
+- IsMidBossWave()
+- GetEnemyHealth()
+- GetEnemyDamage()
+- GetExpReward()
+```
+
+Changed code preview:
+```diff
+- 
++ using System;
+- public class WaveManager : MonoBehaviour
++ 
+- {
++ public class WaveManager : MonoBehaviour
+-     [Header("References")]
++ {
+-     [SerializeField] private GameTimer gameTimer;
++     public event Action OnWaveChanged;
+-     [Header("Wave")]
++     [Header("References")]
+-     [SerializeField] private int currentWave = 1;
++     [SerializeField] private GameTimer gameTimer;
+-     [SerializeField] private float waveDuration = 30f;
++ 
+- 
++     [Header("Wave")]
+-     [Header("Difficulty")]
++     [SerializeField] private int currentWave = 1;
+-     [SerializeField] private int baseEnemyHealth = 30;
++     [SerializeField] private float waveDuration = 30f;
+-     [SerializeField] private int healthPerWave = 5;
++ 
+-     [SerializeField] private int baseEnemyDamage = 8;
++     [Header("Difficulty")]
+-     [SerializeField] private int damagePerWave = 1;
++     [SerializeField] private int baseEnemyHealth = 30;
+-     [SerializeField] private int baseExpReward = 5;
++     [SerializeField] private int healthPerWave = 5;
+- 
++     [SerializeField] private int baseEnemyDamage = 8;
+-     [Header("Timed Mid Boss")]
++     [SerializeField] private int damagePerWave = 1;
+-     [SerializeField] private float firstMidBossSpawnTime = 300f;
++     [SerializeField] private int baseExpReward = 5;
+-     [SerializeField] private float midBossHealthMultiplier = 3f;
++ 
+-     [SerializeField] private float midBossDamageMultiplier = 1.5f;
++     [Header("Timed Mid Boss")]
+-     [SerializeField] private float midBossExpMultiplier = 4f;
++     [SerializeField] private float firstMidBossSpawnTime = 300f;
+- 
++     [SerializeField] private float midBossHealthMultiplier = 3f;
+-     private float waveTimer;
++     [SerializeField] private float midBossDamageMultiplier = 1.5f;
+-     private bool firstMidBossSpawned;
++     [SerializeField] private float midBossExpMultiplier = 4f;
+-     public int CurrentWave => currentWave;
++     private float waveTimer;
+-     public float WaveTimer => waveTimer;
++     private bool firstMidBossSpawned;
+-     public float WaveDuration => waveDuration;
++ 
+-     public float FirstMidBossSpawnTime => firstMidBossSpawnTime;
++     public int CurrentWave => currentWave;
+-     public bool FirstMidBossSpawned => firstMidBossSpawned;
++     public float WaveTimer => waveTimer;
+- 
++     public float WaveDuration => waveDuration;
+-     private void Awake()
++     public float FirstMidBossSpawnTime => firstMidBossSpawnTime;
+-     {
++     public bool FirstMidBossSpawned => firstMidBossSpawned;
+-         if (gameTimer == null)
++ 
+-         {
++     private void Awake()
+-             gameTimer = FindFirstObjectByType<GameTimer>();
++     {
+-         }
++         if (gameTimer == null)
+- 
++         {
+-         waveTimer = waveDuration;
++             gameTimer = FindFirstObjectByType<GameTimer>();
+-     }
++         }
+-     private void Update()
++         waveTimer = waveDuration;
+-     {
++         OnWaveChanged?.Invoke();
+-         waveTimer -= Time.deltaTime;
++     }
+-         if (waveTimer <= 0f)
++     private void Update()
+-         {
++     {
+-             AdvanceWave();
++         waveTimer -= Time.deltaTime;
+-         }
++ 
+-     }
++         if (waveTimer <= 0f)
+- 
++         {
+-     private void AdvanceWave()
++             AdvanceWave();
+-     {
++         }
 # ... 변경 내용 일부만 표시됨
 ```
 
@@ -2250,7 +3329,12 @@ Classes:
 - HUDCanvasUI
 Methods:
 - Awake()
+- OnEnable()
+- OnDisable()
 - Update()
+- BindEvents()
+- UnbindEvents()
+- RefreshAllImmediate()
 - UpdateHpUI()
 - UpdateExpUI()
 - UpdateWaveUI()
@@ -2259,106 +3343,239 @@ Methods:
 
 Changed code preview:
 ```diff
-- using TMPro;
-+ using System.Collections.Generic;
-- using UnityEngine;
-+ using System.Text;
-- using UnityEngine.UI;
-+ using TMPro;
 - 
-+ using UnityEngine;
-- public class HUDCanvasUI : MonoBehaviour
-+ using UnityEngine.UI;
-- {
-+ 
--     [Header("Targets")]
-+ public class HUDCanvasUI : MonoBehaviour
--     [SerializeField] private PlayerHealth playerHealth;
-+ {
--     [SerializeField] private PlayerExp playerExp;
-+     [Header("Targets")]
--     [SerializeField] private WaveManager waveManager;
-+     [SerializeField] private PlayerHealth playerHealth;
-- 
-+     [SerializeField] private PlayerExp playerExp;
--     [Header("HP UI")]
-+     [SerializeField] private WaveManager waveManager;
--     [SerializeField] private Slider hpSlider;
-+     [SerializeField] private RelicSelectUI relicSelectUI;
--     [SerializeField] private TMP_Text hpText;
++     [SerializeField] private float waveUiRefreshInterval = 0.2f;
+-     private readonly StringBuilder relicTextBuilder = new StringBuilder();
 + 
 - 
-+     [Header("HP UI")]
--     [Header("EXP UI")]
-+     [SerializeField] private Slider hpSlider;
--     [SerializeField] private Slider expSlider;
-+     [SerializeField] private TMP_Text hpText;
--     [SerializeField] private TMP_Text expText;
-+ 
-- 
-+     [Header("EXP UI")]
--     [Header("Wave UI")]
-+     [SerializeField] private Slider expSlider;
--     [SerializeField] private TMP_Text waveText;
-+     [SerializeField] private TMP_Text expText;
--     private void Update()
-+     [Header("Wave UI")]
--     {
-+     [SerializeField] private TMP_Text waveText;
--         UpdateHpUI();
-+ 
--         UpdateExpUI();
-+     [Header("Relic UI")]
--         UpdateWaveUI();
-+     [SerializeField] private TMP_Text relicText;
--     }
-+     [SerializeField] private string relicTitle = "RELICS";
-- 
-+     [SerializeField] private string emptyRelicText = "RELICS\n- None";
--     private void UpdateHpUI()
-+ 
--     {
 +     private readonly StringBuilder relicTextBuilder = new StringBuilder();
--         if (playerHealth == null || hpSlider == null || hpText == null)
-+ 
--             return;
-+     private void Awake()
-- 
-+     {
--         float hpRatio = 0f;
-+         if (relicSelectUI == null)
-- 
-+         {
--         if (playerHealth.MaxHealth > 0)
-+             relicSelectUI = FindFirstObjectByType<RelicSelectUI>();
--         {
-+         }
--             hpRatio = (float)playerHealth.CurrentHealth / playerHealth.MaxHealth;
-+     }
--         }
-+ 
-- 
-+     private void Update()
--         hpSlider.value = Mathf.Clamp01(hpRatio);
-+     {
--         hpText.text = $"HP {playerHealth.CurrentHealth} / {playerHealth.MaxHealth}";
-+         UpdateHpUI();
--     }
-+         UpdateExpUI();
-- 
-+         UpdateWaveUI();
--     private void UpdateExpUI()
-+         UpdateRelicUI();
+-     private void Awake()
++     private float waveUiRefreshTimer;
 -     {
-+     }
--         if (playerExp == null || expSlider == null || expText == null)
 + 
+-         if (relicSelectUI == null)
++     private void Awake()
+-         {
++     {
+-             relicSelectUI = FindFirstObjectByType<RelicSelectUI>();
++         if (relicSelectUI == null)
+-         }
++         {
+-     }
++             relicSelectUI = FindFirstObjectByType<RelicSelectUI>();
+- 
++         }
+-     private void Update()
++ 
+-     {
++         if (waveUiRefreshInterval <= 0f)
+-         UpdateHpUI();
++         {
+-         UpdateExpUI();
++             waveUiRefreshInterval = 0.2f;
+-         UpdateWaveUI();
++         }
+-         UpdateRelicUI();
++     }
+-     }
++ 
+- 
++     private void OnEnable()
+-     private void UpdateHpUI()
++     {
+-     {
++         BindEvents();
+-         if (playerHealth == null || hpSlider == null || hpText == null)
++         RefreshAllImmediate();
 -             return;
-+     private void UpdateHpUI()
++     }
+-         float hpRatio = 0f;
++     private void OnDisable()
 - 
 +     {
+-         if (playerHealth.MaxHealth > 0)
++         UnbindEvents();
+-         {
++     }
+-             hpRatio = (float)playerHealth.CurrentHealth / playerHealth.MaxHealth;
++ 
+-         }
++     private void Update()
+- 
++     {
+-         hpSlider.value = Mathf.Clamp01(hpRatio);
++         // Wave 카운트다운은 초 단위 변화가 있어 저주기로만 갱신합니다.
+-         hpText.text = $"HP {playerHealth.CurrentHealth} / {playerHealth.MaxHealth}";
++         waveUiRefreshTimer -= Time.unscaledDeltaTime;
+-     }
++ 
+- 
++         if (waveUiRefreshTimer <= 0f)
+-     private void UpdateExpUI()
++         {
+-     {
++             waveUiRefreshTimer = waveUiRefreshInterval;
+-         if (playerExp == null || expSlider == null || expText == null)
++             UpdateWaveUI();
+-             return;
++         }
+- 
++     }
 -         float expRatio = 0f;
-+         if (playerHealth == null || hpSlider == null || hpText == null)
++ 
+- 
++     private void BindEvents()
+-         if (playerExp.ExpToNextLevel > 0)
++     {
+-         {
++         if (playerHealth != null)
+-             expRatio = (float)playerExp.CurrentExp / playerExp.ExpToNextLevel;
++         {
+-         }
++             playerHealth.OnHealthChanged += UpdateHpUI;
+- 
++         }
+-         expSlider.value = Mathf.Clamp01(expRatio);
++ 
+-         expText.text = $"LV {playerExp.Level}  EXP {playerExp.CurrentExp} / {playerExp.ExpToNextLevel}";
++         if (playerExp != null)
+-     }
++         {
+- 
++             playerExp.OnExpChanged += UpdateExpUI;
+# ... 변경 내용 일부만 표시됨
+```
+
+### Assets/_Project/Scripts/UI/LevelUpUI.cs
+
+```text
+Classes:
+- LevelUpUI
+Methods:
+- Awake()
+- ValidateRequiredReferences()
+- AutoBindIfNeeded()
+- FindTMP()
+- FindButton()
+- RegisterButtonEvents()
+- Open()
+- PickChoices()
+- CanAppearInChoices()
+- ChooseUpgrade()
+- CanChoose()
+- ApplyUpgrade()
+- UnlockWeapon()
+- CompleteOneChoice()
+- OnDisable()
+- RequestPause()
+- ReleasePause()
+- ClosePanelOnly()
+- UpdateTexts()
+- SetButtonText()
+```
+
+Changed code preview:
+```diff
+-     [SerializeField] private PlayerMeleeAutoAttack playerWeapon;
++     [SerializeField] private PauseManager pauseManager;
+-     [SerializeField] private PlayerController playerController;
++     [SerializeField] private PlayerMeleeAutoAttack playerWeapon;
+-     [SerializeField] private PlayerPickupRange playerPickupRange;
++     [SerializeField] private PlayerController playerController;
+-     [SerializeField] private PlayerMagicBoltAutoAttack playerMagicBolt;
++     [SerializeField] private PlayerPickupRange playerPickupRange;
+- 
++     [SerializeField] private PlayerMagicBoltAutoAttack playerMagicBolt;
+-     [Header("Upgrade Data")]
++ 
+-     [SerializeField] private List<UpgradeData> availableUpgrades = new List<UpgradeData>();
++     [Header("Upgrade Data")]
+- 
++     [SerializeField] private List<UpgradeData> availableUpgrades = new List<UpgradeData>();
+-     [Header("UI Root")]
++ 
+-     [SerializeField] private GameObject levelUpPanel;
++     [Header("UI Root")]
+- 
++     [SerializeField] private GameObject levelUpPanel;
+-     [Header("Texts")]
++ 
+-     [SerializeField] private TMP_Text titleText;
++     [Header("Texts")]
+-     [SerializeField] private TMP_Text pendingText;
++     [SerializeField] private TMP_Text titleText;
+- 
++     [SerializeField] private TMP_Text pendingText;
+-     [Header("Buttons")]
++ 
+-     [SerializeField] private Button damageButton;
++     [Header("Buttons")]
+-     [SerializeField] private Button attackSpeedButton;
++     [SerializeField] private Button damageButton;
+-     [SerializeField] private Button attackRangeButton;
++     [SerializeField] private Button attackSpeedButton;
+- 
++     [SerializeField] private Button attackRangeButton;
+-     [Header("Button Texts")]
++ 
+-     [SerializeField] private TMP_Text damageButtonText;
++     [Header("Button Texts")]
+-     [SerializeField] private TMP_Text attackSpeedButtonText;
++     [SerializeField] private TMP_Text damageButtonText;
+-     [SerializeField] private TMP_Text attackRangeButtonText;
++     [SerializeField] private TMP_Text attackSpeedButtonText;
+- 
++     [SerializeField] private TMP_Text attackRangeButtonText;
+-     private readonly List<UpgradeData> currentChoices = new List<UpgradeData>();
++ 
+- 
++     private readonly List<UpgradeData> currentChoices = new List<UpgradeData>();
+-     private int pendingLevelUps;
++ 
+-     private bool isOpen;
++     private int pendingLevelUps;
+- 
++     private bool isOpen;
+-     private void Awake()
++ 
+-     {
++     private void Awake()
+-         AutoBindIfNeeded();
++     {
+-         RegisterButtonEvents();
++         AutoBindIfNeeded();
+-         ClosePanelOnly();
++         ValidateRequiredReferences();
+-     }
++         RegisterButtonEvents();
+- 
++         ClosePanelOnly();
+-     private void AutoBindIfNeeded()
++     }
+-     {
++ 
+-         if (levelUpPanel == null)
++     private void ValidateRequiredReferences()
+-         {
++     {
+-             levelUpPanel = transform.Find("LevelUpPanel")?.gameObject;
++         if (levelUpPanel == null)
+-         }
++         {
+- 
++             Debug.LogWarning("[LevelUpUI] levelUpPanel이 비어 있습니다. Hierarchy의 LevelUpPanel 연결을 확인하세요.", this);
+-         if (titleText == null)
++         }
+-         {
++ 
+-             titleText = FindTMP("TitleText");
++         if (damageButton == null || attackSpeedButton == null || attackRangeButton == null)
+-         }
++         {
+- 
++             Debug.LogWarning("[LevelUpUI] 강화 선택 버튼 참조가 일부 비어 있습니다. Damage/AttackSpeed/AttackRange 버튼 연결을 확인하세요.", this);
+-         if (pendingText == null)
++         }
 # ... 변경 내용 일부만 표시됨
 ```
 
@@ -2369,6 +3586,7 @@ Classes:
 - RelicSelectUI
 Methods:
 - Awake()
+- ValidateRequiredReferences()
 - AutoBindIfNeeded()
 - FindTMP()
 - FindButton()
@@ -2376,6 +3594,9 @@ Methods:
 - Open()
 - PickChoices()
 - SelectRelic()
+- OnDisable()
+- RequestPause()
+- ReleasePause()
 - ApplyRelicEffect()
 - UpdateTexts()
 - SetButtonText()
@@ -2384,106 +3605,233 @@ Methods:
 
 Changed code preview:
 ```diff
+- using TMPro;
++ using System;
+- using UnityEngine;
++ using TMPro;
+- using UnityEngine.UI;
++ using UnityEngine;
 - 
-+     public IReadOnlyList<RelicData> OwnedRelics => ownedRelics;
++ using UnityEngine.UI;
+- public class RelicSelectUI : MonoBehaviour
++ 
+- {
++ public class RelicSelectUI : MonoBehaviour
+-     [Header("Target")]
++ {
+-     [SerializeField] private PlayerHealth playerHealth;
++     public event Action OnOwnedRelicsChanged;
+-     [SerializeField] private PlayerMeleeAutoAttack playerWeapon;
++ 
+-     [SerializeField] private PlayerPickupRange playerPickupRange;
++     [Header("Target")]
+-     [SerializeField] private PlayerRelicEffects playerRelicEffects;
++     [SerializeField] private PlayerHealth playerHealth;
+- 
++     [SerializeField] private PauseManager pauseManager;
+-     [Header("Relic Data")]
++     [SerializeField] private PlayerMeleeAutoAttack playerWeapon;
+-     [SerializeField] private List<RelicData> availableRelics = new List<RelicData>();
++     [SerializeField] private PlayerPickupRange playerPickupRange;
+-     [SerializeField] private bool excludeOwnedRelics = true;
++     [SerializeField] private PlayerRelicEffects playerRelicEffects;
+-     [Header("UI Root")]
++     [Header("Relic Data")]
+-     [SerializeField] private GameObject relicSelectPanel;
++     [SerializeField] private List<RelicData> availableRelics = new List<RelicData>();
+- 
++     [SerializeField] private bool excludeOwnedRelics = true;
+-     [Header("Texts")]
++ 
+-     [SerializeField] private TMP_Text titleText;
++     [Header("UI Root")]
+-     [SerializeField] private TMP_Text infoText;
++     [SerializeField] private GameObject relicSelectPanel;
+-     [Header("Buttons")]
++     [Header("Texts")]
+-     [SerializeField] private Button relicButton01;
++     [SerializeField] private TMP_Text titleText;
+-     [SerializeField] private Button relicButton02;
++     [SerializeField] private TMP_Text infoText;
+-     [SerializeField] private Button relicButton03;
++ 
+- 
++     [Header("Buttons")]
+-     [Header("Button Texts")]
++     [SerializeField] private Button relicButton01;
+-     [SerializeField] private TMP_Text relicButtonText01;
++     [SerializeField] private Button relicButton02;
+-     [SerializeField] private TMP_Text relicButtonText02;
++     [SerializeField] private Button relicButton03;
+-     [SerializeField] private TMP_Text relicButtonText03;
++ 
+- 
++     [Header("Button Texts")]
+-     private readonly List<RelicData> currentChoices = new List<RelicData>();
++     [SerializeField] private TMP_Text relicButtonText01;
+-     private readonly List<RelicData> ownedRelics = new List<RelicData>();
++     [SerializeField] private TMP_Text relicButtonText02;
+- 
++     [SerializeField] private TMP_Text relicButtonText03;
+-     private bool isOpen;
++ 
+- 
++     private readonly List<RelicData> currentChoices = new List<RelicData>();
+-     public bool IsOpen => isOpen;
++     private readonly List<RelicData> ownedRelics = new List<RelicData>();
+-     public IReadOnlyList<RelicData> OwnedRelics => ownedRelics;
++ 
+- 
++     private bool isOpen;
 -     private void Awake()
 + 
 -     {
-+     private void Awake()
++     public bool IsOpen => isOpen;
 -         AutoBindIfNeeded();
-+     {
++     public IReadOnlyList<RelicData> OwnedRelics => ownedRelics;
 -         RegisterButtonEvents();
-+         AutoBindIfNeeded();
++ 
 -         ClosePanelOnly();
-+         RegisterButtonEvents();
++     private void Awake()
 -     }
++     {
+- 
++         AutoBindIfNeeded();
+-     private void AutoBindIfNeeded()
++         ValidateRequiredReferences();
+-     {
++         RegisterButtonEvents();
+-         if (relicSelectPanel == null)
 +         ClosePanelOnly();
+-         {
++     }
+# ... 변경 내용 일부만 표시됨
+```
+
+### Assets/_Project/Scripts/Weapons/PlayerMagicBoltAutoAttack.cs
+
+```text
+Classes:
+- PlayerMagicBoltAutoAttack
+Methods:
+- Awake()
+- ValidateRequiredReferences()
+- Update()
+- Unlock()
+- AddDamage()
+- ImproveAttackSpeed()
+- ImproveAttackRange()
+- FindNearestEnemy()
+- Fire()
+- ReturnProjectileToPool()
+- PrewarmProjectilePool()
+- GetOrCreateProjectile()
+- CreateProjectileInstance()
+- OnDrawGizmosSelected()
+```
+
+Changed code preview:
+```diff
+- 
++     [SerializeField] private bool useProjectilePooling = true;
+-     [Header("Attack")]
++     [SerializeField] private int projectilePoolPrewarmCount = 12;
+-     [SerializeField] private int damage = 8;
++ 
+-     [SerializeField] private float attackInterval = 1.2f;
++     [Header("Attack")]
+-     [SerializeField] private float attackRange = 6f;
++     [SerializeField] private int damage = 8;
+-     [SerializeField] private LayerMask enemyLayer;
++     [SerializeField] private float attackInterval = 1.2f;
+- 
++     [SerializeField] private float attackRange = 6f;
+-     [Header("Limits")]
++     [SerializeField] private LayerMask enemyLayer;
+-     [SerializeField] private float minimumAttackInterval = 0.25f;
++ 
+-     [SerializeField] private float maximumAttackRange = 10f;
++     [Header("Limits")]
+- 
++     [SerializeField] private float minimumAttackInterval = 0.25f;
+-     private float attackTimer;
++     [SerializeField] private float maximumAttackRange = 10f;
+-     public bool IsUnlocked => isUnlocked;
++     private float attackTimer;
+-     public int Damage => damage;
++     private readonly System.Collections.Generic.Queue<MagicBoltProjectile> projectilePool = new System.Collections.Generic.Queue<MagicBoltProjectile>();
+-     public float AttackInterval => attackInterval;
++ 
+-     public float AttackRange => attackRange;
++     public bool IsUnlocked => isUnlocked;
+- 
++     public int Damage => damage;
+-     private void Awake()
++     public float AttackInterval => attackInterval;
+-     {
++     public float AttackRange => attackRange;
+-         enabled = isUnlocked;
++ 
+-     }
++     private void Awake()
+- 
++     {
+-     private void Update()
++         ValidateRequiredReferences();
+-     {
++         if (useProjectilePooling)
+-         if (!isUnlocked)
++         {
+-             return;
++             PrewarmProjectilePool();
+- 
++         }
+-         attackTimer -= Time.deltaTime;
++         enabled = isUnlocked;
 - 
 +     }
--     private void AutoBindIfNeeded()
+-         if (attackTimer > 0f)
++ 
+-             return;
++     private void ValidateRequiredReferences()
+- 
++     {
+-         Transform target = FindNearestEnemy();
++         if (projectilePrefab == null)
+- 
++         {
+-         if (target == null)
++             Debug.LogWarning("[PlayerMagicBoltAutoAttack] projectilePrefab이 비어 있습니다. Inspector에서 매직 볼트 프리팹을 연결하세요.", this);
+-             return;
++         }
+-         Fire(target);
++         if (projectileSpawnPoint == null)
+- 
++         {
+-         attackTimer = attackInterval;
++             Debug.LogWarning("[PlayerMagicBoltAutoAttack] projectileSpawnPoint가 비어 있습니다. 기본적으로 Player 위치에서 발사됩니다.", this);
+-     }
++         }
+- 
++     }
+-     public void Unlock()
 + 
 -     {
-+     private void AutoBindIfNeeded()
--         if (relicSelectPanel == null)
++     private void Update()
+-         if (isUnlocked)
 +     {
--         {
-+         if (relicSelectPanel == null)
--             relicSelectPanel = transform.Find("RelicSelectPanel")?.gameObject;
-+         {
--         }
-+             relicSelectPanel = transform.Find("RelicSelectPanel")?.gameObject;
+-             return;
++         if (!isUnlocked)
 - 
-+         }
--         if (titleText == null)
++             return;
+-         isUnlocked = true;
 + 
--         {
-+         if (titleText == null)
--             titleText = FindTMP("TitleText");
-+         {
--         }
-+             titleText = FindTMP("TitleText");
-- 
-+         }
--         if (infoText == null)
+-         enabled = true;
++         attackTimer -= Time.deltaTime;
+-         attackTimer = 0f;
 + 
--         {
-+         if (infoText == null)
--             infoText = FindTMP("InfoText");
-+         {
--         }
-+             infoText = FindTMP("InfoText");
 - 
-+         }
--         if (relicButton01 == null)
-+ 
--         {
-+         if (relicButton01 == null)
--             relicButton01 = FindButton("RelicButton_01");
-+         {
--         }
-+             relicButton01 = FindButton("RelicButton_01");
-- 
-+         }
--         if (relicButton02 == null)
-+ 
--         {
-+         if (relicButton02 == null)
--             relicButton02 = FindButton("RelicButton_02");
-+         {
--         }
-+             relicButton02 = FindButton("RelicButton_02");
-- 
-+         }
--         if (relicButton03 == null)
-+ 
--         {
-+         if (relicButton03 == null)
--             relicButton03 = FindButton("RelicButton_03");
-+         {
--         }
-+             relicButton03 = FindButton("RelicButton_03");
-- 
-+         }
--         if (relicButtonText01 == null && relicButton01 != null)
-+ 
--         {
-+         if (relicButtonText01 == null && relicButton01 != null)
--             relicButtonText01 = relicButton01.GetComponentInChildren<TMP_Text>(true);
-+         {
--         }
-+             relicButtonText01 = relicButton01.GetComponentInChildren<TMP_Text>(true);
-- 
-+         }
--         if (relicButtonText02 == null && relicButton02 != null)
-+ 
--         {
-+         if (relicButtonText02 == null && relicButton02 != null)
--             relicButtonText02 = relicButton02.GetComponentInChildren<TMP_Text>(true);
-+         {
--         }
-+             relicButtonText02 = relicButton02.GetComponentInChildren<TMP_Text>(true);
-- 
-+         }
++         if (attackTimer > 0f)
 # ... 변경 내용 일부만 표시됨
 ```
 
@@ -2493,6 +3841,7 @@ Changed code preview:
 - Assets/_Project/Scripts/Core/CameraFollow2D.cs
 - Assets/_Project/Scripts/Core/GameFlowManager.cs
 - Assets/_Project/Scripts/Core/GameTimer.cs
+- Assets/_Project/Scripts/Core/PauseManager.cs
 - Assets/_Project/Scripts/Core/StageTileGenerator.cs
 - Assets/_Project/Scripts/Data/UpgradeData.cs
 - Assets/_Project/Scripts/Debug/HUDDebugUI.cs
@@ -2507,6 +3856,7 @@ Changed code preview:
 - Assets/_Project/Scripts/Player/PlayerExp.cs
 - Assets/_Project/Scripts/Player/PlayerHealth.cs
 - Assets/_Project/Scripts/Player/PlayerPickupRange.cs
+- Assets/_Project/Scripts/Projectiles/MagicBoltProjectile.cs
 - Assets/_Project/Scripts/Relics/PlayerRelicEffects.cs
 - Assets/_Project/Scripts/Relics/RelicData.cs
 - Assets/_Project/Scripts/Spawning/EnemySpawner.cs
@@ -2514,6 +3864,7 @@ Changed code preview:
 - Assets/_Project/Scripts/UI/HUDCanvasUI.cs
 - Assets/_Project/Scripts/UI/LevelUpUI.cs
 - Assets/_Project/Scripts/UI/RelicSelectUI.cs
+- Assets/_Project/Scripts/Weapons/PlayerMagicBoltAutoAttack.cs
 - Assets/_Project/Scripts/Weapons/PlayerMeleeAutoAttack.cs
 ```
 
@@ -2540,6 +3891,9 @@ Methods:
 - GameOver()
 - RestartGame()
 - QuitGame()
+- ValidateRequiredReferences()
+- RequestPause()
+- ReleasePause()
 ```
 
 
@@ -2555,6 +3909,19 @@ Methods:
 - GetFormattedGameplayTime()
 - UpdateTimerText()
 - UpdateDebugLog()
+```
+
+
+### Assets/_Project/Scripts/Core/PauseManager.cs
+```text
+Classes:
+- PauseManager
+Methods:
+- RequestPause()
+- ReleasePause()
+- ClearAllPauseRequests()
+- OnDestroy()
+- UpdateTimeScale()
 ```
 
 
@@ -2715,6 +4082,7 @@ Methods:
 - NotifyEnemyKilled()
 - DropExpGem()
 - DropSmallHeal()
+- GetExpGemDropPosition()
 - GetSmallHealDropPosition()
 - OpenRelicSelectUI()
 ```
@@ -2783,6 +4151,7 @@ Classes:
 Methods:
 - AddExp()
 - LevelUp()
+- NotifyExpChanged()
 ```
 
 
@@ -2798,6 +4167,7 @@ Methods:
 - AddDefense()
 - InvincibleRoutine()
 - Die()
+- NotifyHealthChanged()
 ```
 
 
@@ -2811,6 +4181,20 @@ Methods:
 - ScanForExpGems()
 - ImprovePickupRange()
 - OnDrawGizmosSelected()
+```
+
+
+### Assets/_Project/Scripts/Projectiles/MagicBoltProjectile.cs
+```text
+Classes:
+- MagicBoltProjectile
+Methods:
+- SetOwner()
+- Initialize()
+- Update()
+- OnTriggerEnter2D()
+- OnDisable()
+- Release()
 ```
 
 
@@ -2848,11 +4232,14 @@ Methods:
 - HasValidEnemyPrefab()
 - TrySpawnEnemy()
 - SpawnEnemy()
+- DespawnEnemy()
 - GetRandomEnemyPrefab()
 - GetTotalSpawnWeight()
 - IsValidEntry()
 - GetSpawnPositionAroundPlayer()
 - RemoveDeadEnemies()
+- BuildEnemyPool()
+- GetOrCreateEnemy()
 ```
 
 
@@ -2879,7 +4266,12 @@ Classes:
 - HUDCanvasUI
 Methods:
 - Awake()
+- OnEnable()
+- OnDisable()
 - Update()
+- BindEvents()
+- UnbindEvents()
+- RefreshAllImmediate()
 - UpdateHpUI()
 - UpdateExpUI()
 - UpdateWaveUI()
@@ -2893,16 +4285,22 @@ Classes:
 - LevelUpUI
 Methods:
 - Awake()
+- ValidateRequiredReferences()
 - AutoBindIfNeeded()
 - FindTMP()
 - FindButton()
 - RegisterButtonEvents()
 - Open()
 - PickChoices()
+- CanAppearInChoices()
 - ChooseUpgrade()
 - CanChoose()
 - ApplyUpgrade()
+- UnlockWeapon()
 - CompleteOneChoice()
+- OnDisable()
+- RequestPause()
+- ReleasePause()
 - ClosePanelOnly()
 - UpdateTexts()
 - SetButtonText()
@@ -2915,6 +4313,7 @@ Classes:
 - RelicSelectUI
 Methods:
 - Awake()
+- ValidateRequiredReferences()
 - AutoBindIfNeeded()
 - FindTMP()
 - FindButton()
@@ -2922,10 +4321,35 @@ Methods:
 - Open()
 - PickChoices()
 - SelectRelic()
+- OnDisable()
+- RequestPause()
+- ReleasePause()
 - ApplyRelicEffect()
 - UpdateTexts()
 - SetButtonText()
 - ClosePanelOnly()
+```
+
+
+### Assets/_Project/Scripts/Weapons/PlayerMagicBoltAutoAttack.cs
+```text
+Classes:
+- PlayerMagicBoltAutoAttack
+Methods:
+- Awake()
+- ValidateRequiredReferences()
+- Update()
+- Unlock()
+- AddDamage()
+- ImproveAttackSpeed()
+- ImproveAttackRange()
+- FindNearestEnemy()
+- Fire()
+- ReturnProjectileToPool()
+- PrewarmProjectilePool()
+- GetOrCreateProjectile()
+- CreateProjectileInstance()
+- OnDrawGizmosSelected()
 ```
 
 
@@ -2993,6 +4417,7 @@ public class GameFlowManager : MonoBehaviour
     [Header("References")]
     [SerializeField] private PlayerHealth playerHealth;
     [SerializeField] private GameTimer gameTimer;
+    [SerializeField] private PauseManager pauseManager;
 
     [Header("UI")]
     [SerializeField] private GameObject startMenuCanvas;
@@ -3007,6 +4432,8 @@ public class GameFlowManager : MonoBehaviour
 
     private void Start()
     {
+        ValidateRequiredReferences();
+
         if (gameTimer != null)
         {
             gameTimer.ResetTimer();
@@ -3042,7 +4469,7 @@ public class GameFlowManager : MonoBehaviour
         isGameStarted = false;
         isGameOver = false;
 
-        Time.timeScale = 0f;
+        RequestPause();
 
         if (gameTimer != null)
         {
@@ -3065,7 +4492,7 @@ public class GameFlowManager : MonoBehaviour
         isGameStarted = true;
         isGameOver = false;
 
-        Time.timeScale = 1f;
+        ReleasePause();
 
         if (gameTimer != null)
         {
@@ -3095,7 +4522,7 @@ public class GameFlowManager : MonoBehaviour
             gameTimer.StopTimer();
         }
 
-        Time.timeScale = 0f;
+        RequestPause();
 
         if (gameOverCanvas != null)
             gameOverCanvas.SetActive(true);
@@ -3103,7 +4530,14 @@ public class GameFlowManager : MonoBehaviour
 
     public void RestartGame()
     {
-        Time.timeScale = 1f;
+        if (pauseManager != null)
+        {
+            pauseManager.ClearAllPauseRequests();
+        }
+        else
+        {
+            Time.timeScale = 1f;
+        }
 
         Scene currentScene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(currentScene.buildIndex);
@@ -3116,6 +4550,56 @@ public class GameFlowManager : MonoBehaviour
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #endif
+    }
+
+    private void ValidateRequiredReferences()
+    {
+        if (pauseManager == null)
+        {
+            pauseManager = FindFirstObjectByType<PauseManager>();
+        }
+
+        if (playerHealth == null)
+        {
+            Debug.LogWarning("[GameFlowManager] playerHealth가 비어 있습니다. PlayerHealth 연결이 없으면 게임오버 감지가 동작하지 않을 수 있습니다.", this);
+        }
+
+        if (gameTimer == null)
+        {
+            Debug.LogWarning("[GameFlowManager] gameTimer가 비어 있습니다. 타이머 UI와 시간 측정이 동작하지 않을 수 있습니다.", this);
+        }
+
+        if (startMenuCanvas == null || gameOverCanvas == null || hudCanvas == null)
+        {
+            Debug.LogWarning("[GameFlowManager] UI Canvas 참조가 일부 비어 있습니다. startMenuCanvas / gameOverCanvas / hudCanvas 연결을 확인하세요.", this);
+        }
+
+        if (pauseManager == null)
+        {
+            Debug.LogWarning("[GameFlowManager] pauseManager가 비어 있습니다. PauseManager 연결을 권장합니다. (없으면 Time.timeScale 폴백 사용)", this);
+        }
+    }
+
+    private void RequestPause()
+    {
+        if (pauseManager != null)
+        {
+            pauseManager.RequestPause(this);
+            return;
+        }
+
+        Time.timeScale = 0f;
+    }
+
+    private void ReleasePause()
+    {
+        if (pauseManager != null)
+        {
+            pauseManager.ReleasePause(this);
+            return;
+        }
+
+        Time.timeScale = 1f;
     }
 }
 ```
@@ -3212,6 +4696,62 @@ public class GameTimer : MonoBehaviour
         Debug.Log($"[GameTimer] Gameplay: {GetFormattedGameplayTime()} / Real: {realTime:F1}s");
     }
 }
+```
+
+### FILE: Assets/_Project/Scripts/Core/PauseManager.cs
+
+```csharp
+using System.Collections.Generic;
+using UnityEngine;
+
+public class PauseManager : MonoBehaviour
+{
+    private readonly HashSet<Object> pauseRequesters = new HashSet<Object>();
+
+    public bool IsPaused => pauseRequesters.Count > 0;
+    public int PauseRequestCount => pauseRequesters.Count;
+
+    public void RequestPause(Object requester)
+    {
+        if (requester == null)
+        {
+            Debug.LogWarning("[PauseManager] requester가 null이라 일시정지 요청이 무시되었습니다.", this);
+            return;
+        }
+
+        pauseRequesters.Add(requester);
+        UpdateTimeScale();
+    }
+
+    public void ReleasePause(Object requester)
+    {
+        if (requester == null)
+        {
+            return;
+        }
+
+        pauseRequesters.Remove(requester);
+        UpdateTimeScale();
+    }
+
+    public void ClearAllPauseRequests()
+    {
+        pauseRequesters.Clear();
+        UpdateTimeScale();
+    }
+
+    private void OnDestroy()
+    {
+        // 씬 전환/종료 시 게임이 멈춘 상태로 남지 않도록 안전하게 복구합니다.
+        Time.timeScale = 1f;
+    }
+
+    private void UpdateTimeScale()
+    {
+        Time.timeScale = IsPaused ? 0f : 1f;
+    }
+}
+
 ```
 
 ### FILE: Assets/_Project/Scripts/Core/StageTileGenerator.cs
@@ -3410,7 +4950,8 @@ public enum UpgradeType
     MoveSpeed,
     PickupRange,
     Defense,
-    CriticalChance
+    CriticalChance,
+    WeaponUnlock
 }
 
 [CreateAssetMenu(fileName = "Upgrade_", menuName = "_Project/Upgrades/Upgrade Data")]
@@ -3426,6 +4967,9 @@ public class UpgradeData : ScriptableObject
     [SerializeField] private int intValue;
     [SerializeField] private float floatValue;
 
+    [Header("Weapon Unlock")]
+    [SerializeField] private string weaponId;
+
     public string UpgradeName => upgradeName;
     public string Description => description;
     public Sprite Icon => icon;
@@ -3433,6 +4977,8 @@ public class UpgradeData : ScriptableObject
     public UpgradeType UpgradeType => upgradeType;
     public int IntValue => intValue;
     public float FloatValue => floatValue;
+
+    public string WeaponId => weaponId;
 }
 ```
 
@@ -5657,6 +7203,7 @@ public class EnemyContactDamage : MonoBehaviour
     public void Initialize(int newDamage)
     {
         damage = Mathf.Max(1, newDamage);
+        damageTimer = 0f;
     }
 
     private void Update()
@@ -5707,6 +7254,8 @@ public class EnemyHealth : MonoBehaviour
     [SerializeField] private bool midBossAlwaysDropSmallHeal = true;
     [SerializeField] private float smallHealDropOffsetMin = 0.35f;
     [SerializeField] private float smallHealDropOffsetMax = 0.75f;
+    [SerializeField] private float expGemDropOffsetRadius = 0.15f;
+    [SerializeField] private float minDistanceBetweenDrops = 0.3f;
 
     [Header("Boss Visual")]
     [SerializeField] private float normalScale = 0.8f;
@@ -5733,6 +7282,7 @@ public class EnemyHealth : MonoBehaviour
     private Color originalColor;
     private Vector3 baseScale;
     private Coroutine hitFlashCoroutine;
+    private EnemySpawner ownerSpawner;
 
     public bool IsMidBoss => isMidBoss;
 
@@ -5751,13 +7301,21 @@ public class EnemyHealth : MonoBehaviour
         }
     }
 
-    public void Initialize(int newMaxHealth, int newExpReward, bool isBoss)
+    public void Initialize(int newMaxHealth, int newExpReward, bool isBoss, EnemySpawner spawner = null)
     {
+        ownerSpawner = spawner;
         isMidBoss = isBoss;
+        isDead = false;
 
         maxHealth = Mathf.Max(1, newMaxHealth);
         currentHealth = maxHealth;
         expReward = Mathf.Max(1, newExpReward);
+
+        if (hitFlashCoroutine != null)
+        {
+            StopCoroutine(hitFlashCoroutine);
+            hitFlashCoroutine = null;
+        }
 
         ApplyVisual();
     }
@@ -5874,12 +7432,19 @@ public class EnemyHealth : MonoBehaviour
 
         NotifyEnemyKilled();
 
-        DropExpGem();
-        DropSmallHeal();
+        Vector3 expGemDropPosition = GetExpGemDropPosition();
+        DropExpGem(expGemDropPosition);
+        DropSmallHeal(expGemDropPosition);
 
         if (isMidBoss)
         {
             OpenRelicSelectUI();
+        }
+
+        if (ownerSpawner != null)
+        {
+            ownerSpawner.DespawnEnemy(gameObject);
+            return;
         }
 
         Destroy(gameObject);
@@ -5895,12 +7460,12 @@ public class EnemyHealth : MonoBehaviour
         relicEffects.OnEnemyKilled();
     }
 
-    private void DropExpGem()
+    private void DropExpGem(Vector3 dropPosition)
     {
         if (expGemPrefab == null)
             return;
 
-        GameObject expGem = Instantiate(expGemPrefab, transform.position, Quaternion.identity);
+        GameObject expGem = Instantiate(expGemPrefab, dropPosition, Quaternion.identity);
 
         ExpGem gem = expGem.GetComponent<ExpGem>();
 
@@ -5910,35 +7475,53 @@ public class EnemyHealth : MonoBehaviour
         }
     }
 
-    private void DropSmallHeal()
+    private void DropSmallHeal(Vector3 expGemDropPosition)
     {
         if (smallHealPrefab == null)
             return;
 
         if (isMidBoss && midBossAlwaysDropSmallHeal)
         {
-            Instantiate(smallHealPrefab, GetSmallHealDropPosition(), Quaternion.identity);
+            Instantiate(smallHealPrefab, GetSmallHealDropPosition(expGemDropPosition), Quaternion.identity);
             return;
         }
 
         if (Random.value > smallHealDropChance)
             return;
 
-        Instantiate(smallHealPrefab, GetSmallHealDropPosition(), Quaternion.identity);
+        Instantiate(smallHealPrefab, GetSmallHealDropPosition(expGemDropPosition), Quaternion.identity);
     }
 
-    private Vector3 GetSmallHealDropPosition()
+    private Vector3 GetExpGemDropPosition()
     {
-        Vector2 randomDirection = Random.insideUnitCircle.normalized;
+        Vector2 randomOffset = Random.insideUnitCircle * expGemDropOffsetRadius;
+        return transform.position + (Vector3)randomOffset;
+    }
 
-        if (randomDirection.sqrMagnitude <= 0.01f)
+    private Vector3 GetSmallHealDropPosition(Vector3 expGemDropPosition)
+    {
+        Vector3 smallHealPosition = transform.position;
+        int maxRetryCount = 5;
+
+        for (int i = 0; i < maxRetryCount; i++)
         {
-            randomDirection = Vector2.right;
+            Vector2 randomDirection = Random.insideUnitCircle.normalized;
+
+            if (randomDirection.sqrMagnitude <= 0.01f)
+            {
+                randomDirection = Vector2.right;
+            }
+
+            float distance = Random.Range(smallHealDropOffsetMin, smallHealDropOffsetMax);
+            smallHealPosition = transform.position + (Vector3)(randomDirection * distance);
+
+            if ((smallHealPosition - expGemDropPosition).sqrMagnitude >= minDistanceBetweenDrops * minDistanceBetweenDrops)
+            {
+                break;
+            }
         }
 
-        float distance = Random.Range(smallHealDropOffsetMin, smallHealDropOffsetMax);
-
-        return transform.position + (Vector3)(randomDirection * distance);
+        return smallHealPosition;
     }
 
     private void OpenRelicSelectUI()
@@ -6003,6 +7586,11 @@ public class EnemyMovement : MonoBehaviour
         {
             ActiveEnemies.Add(this);
         }
+
+        knockbackVelocity = Vector2.zero;
+        knockbackTimer = 0f;
+        PickNewTargetOffset();
+        offsetTimer = Random.Range(0f, offsetChangeInterval);
     }
 
     private void OnDisable()
@@ -6364,9 +7952,12 @@ public class PlayerController : MonoBehaviour
 
 ```csharp
 using UnityEngine;
+using System;
 
 public class PlayerExp : MonoBehaviour
 {
+    public event Action OnExpChanged;
+
     [Header("Level")]
     [SerializeField] private int level = 1;
     [SerializeField] private int currentExp = 0;
@@ -6401,6 +7992,8 @@ public class PlayerExp : MonoBehaviour
         {
             levelUpUI.Open(levelUpCount);
         }
+
+        NotifyExpChanged();
     }
 
     private void LevelUp()
@@ -6410,6 +8003,11 @@ public class PlayerExp : MonoBehaviour
 
         Debug.Log($"Level Up! Current Level: {level}");
     }
+
+    private void NotifyExpChanged()
+    {
+        OnExpChanged?.Invoke();
+    }
 }
 ```
 
@@ -6417,11 +8015,15 @@ public class PlayerExp : MonoBehaviour
 
 ```csharp
 using System.Collections;
+using System;
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerController))]
 public class PlayerHealth : MonoBehaviour
 {
+    public event Action OnHealthChanged;
+    public event Action OnDied;
+
     [Header("Health")]
     [SerializeField] private int maxHealth = 100;
 
@@ -6465,6 +8067,8 @@ public class PlayerHealth : MonoBehaviour
         {
             originalColor = spriteRenderer.color;
         }
+
+        NotifyHealthChanged();
     }
 
     public void TakeDamage(int damage)
@@ -6484,6 +8088,7 @@ public class PlayerHealth : MonoBehaviour
 
         currentHealth -= finalDamage;
         currentHealth = Mathf.Max(currentHealth, 0);
+        NotifyHealthChanged();
 
         Debug.Log($"Player took {finalDamage} damage. Raw: {damage}, Defense: {defense}, HP: {currentHealth}/{maxHealth}");
 
@@ -6515,6 +8120,7 @@ public class PlayerHealth : MonoBehaviour
         }
 
         Debug.Log($"Max HP increased. HP: {currentHealth}/{maxHealth}");
+        NotifyHealthChanged();
     }
 
     public void Heal(int amount)
@@ -6529,6 +8135,7 @@ public class PlayerHealth : MonoBehaviour
         currentHealth = Mathf.Min(currentHealth, maxHealth);
 
         Debug.Log($"Player healed {amount}. HP: {currentHealth}/{maxHealth}");
+        NotifyHealthChanged();
     }
 
     public void AddDefense(int amount)
@@ -6589,8 +8196,15 @@ public class PlayerHealth : MonoBehaviour
             spriteRenderer.color = Color.gray;
 
         Time.timeScale = 0f;
+        NotifyHealthChanged();
+        OnDied?.Invoke();
 
         Debug.Log("Game Over. Player died.");
+    }
+
+    private void NotifyHealthChanged()
+    {
+        OnHealthChanged?.Invoke();
     }
 }
 ```
@@ -6658,6 +8272,98 @@ public class PlayerPickupRange : MonoBehaviour
     {
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(transform.position, pickupRadius);
+    }
+}
+```
+
+### FILE: Assets/_Project/Scripts/Projectiles/MagicBoltProjectile.cs
+
+```csharp
+using UnityEngine;
+
+public class MagicBoltProjectile : MonoBehaviour
+{
+    [Header("Movement")]
+    [SerializeField] private float moveSpeed = 9f;
+    [SerializeField] private float lifeTime = 3f;
+
+    [Header("Hit")]
+    [SerializeField] private LayerMask enemyLayer;
+
+    private int damage;
+    private Vector2 moveDirection;
+    private bool hasHit;
+    private float lifeTimer;
+    private PlayerMagicBoltAutoAttack owner;
+
+    public void SetOwner(PlayerMagicBoltAutoAttack projectileOwner)
+    {
+        owner = projectileOwner;
+    }
+
+    public void Initialize(Vector2 direction, int newDamage, LayerMask newEnemyLayer)
+    {
+        moveDirection = direction.normalized;
+        damage = Mathf.Max(1, newDamage);
+        enemyLayer = newEnemyLayer;
+        hasHit = false;
+        lifeTimer = lifeTime;
+    }
+
+    private void Update()
+    {
+        if (hasHit)
+            return;
+
+        lifeTimer -= Time.deltaTime;
+
+        if (lifeTimer <= 0f)
+        {
+            Release();
+            return;
+        }
+
+        transform.position += (Vector3)(moveDirection * moveSpeed * Time.deltaTime);
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (hasHit)
+            return;
+
+        bool isEnemyLayer = ((1 << other.gameObject.layer) & enemyLayer.value) != 0;
+
+        if (!isEnemyLayer)
+            return;
+
+        EnemyHealth enemyHealth = other.GetComponent<EnemyHealth>();
+
+        if (enemyHealth == null)
+            return;
+
+        hasHit = true;
+
+        enemyHealth.TakeDamage(damage, transform.position);
+
+        Release();
+    }
+
+    private void OnDisable()
+    {
+        hasHit = true;
+    }
+
+    private void Release()
+    {
+        hasHit = true;
+
+        if (owner != null)
+        {
+            owner.ReturnProjectileToPool(this);
+            return;
+        }
+
+        Destroy(gameObject);
     }
 }
 ```
@@ -6837,8 +8543,12 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private float spawnInterval = 1.5f;
     [SerializeField] private float spawnRadius = 8f;
     [SerializeField] private int maxEnemies = 15;
+    [SerializeField] private bool useEnemyPooling = true;
+    [SerializeField] private int prewarmPerEnemyType = 6;
 
     private readonly List<GameObject> spawnedEnemies = new List<GameObject>();
+    private readonly Dictionary<GameObject, Queue<GameObject>> enemyPoolByPrefab = new Dictionary<GameObject, Queue<GameObject>>();
+    private readonly Dictionary<GameObject, GameObject> activeEnemyPrefabMap = new Dictionary<GameObject, GameObject>();
 
     private float spawnTimer;
     private PlayerHealth playerHealth;
@@ -6848,6 +8558,11 @@ public class EnemySpawner : MonoBehaviour
         if (playerTarget != null)
         {
             playerHealth = playerTarget.GetComponent<PlayerHealth>();
+        }
+
+        if (useEnemyPooling)
+        {
+            BuildEnemyPool();
         }
     }
 
@@ -6921,7 +8636,7 @@ public class EnemySpawner : MonoBehaviour
 
         Vector2 spawnPosition = GetSpawnPositionAroundPlayer();
 
-        GameObject enemy = Instantiate(selectedPrefab, spawnPosition, Quaternion.identity);
+        GameObject enemy = GetOrCreateEnemy(selectedPrefab, spawnPosition);
 
         EnemyMovement enemyMovement = enemy.GetComponent<EnemyMovement>();
 
@@ -6937,7 +8652,8 @@ public class EnemySpawner : MonoBehaviour
             enemyHealth.Initialize(
                 waveManager.GetEnemyHealth(isMidBoss),
                 waveManager.GetExpReward(isMidBoss),
-                isMidBoss
+                isMidBoss,
+                this
             );
         }
 
@@ -6954,6 +8670,32 @@ public class EnemySpawner : MonoBehaviour
         {
             Debug.Log($"Mid Boss spawned at {waveManager.FirstMidBossSpawnTime} seconds.");
         }
+    }
+
+    public void DespawnEnemy(GameObject enemy)
+    {
+        if (enemy == null)
+            return;
+
+        spawnedEnemies.Remove(enemy);
+
+        if (!useEnemyPooling)
+        {
+            Destroy(enemy);
+            return;
+        }
+
+        if (activeEnemyPrefabMap.TryGetValue(enemy, out GameObject prefabKey) &&
+            prefabKey != null &&
+            enemyPoolByPrefab.TryGetValue(prefabKey, out Queue<GameObject> pool))
+        {
+            enemy.SetActive(false);
+            pool.Enqueue(enemy);
+            activeEnemyPrefabMap.Remove(enemy);
+            return;
+        }
+
+        Destroy(enemy);
     }
 
     private GameObject GetRandomEnemyPrefab()
@@ -7034,11 +8776,59 @@ public class EnemySpawner : MonoBehaviour
     {
         for (int i = spawnedEnemies.Count - 1; i >= 0; i--)
         {
-            if (spawnedEnemies[i] == null)
+            if (spawnedEnemies[i] == null || !spawnedEnemies[i].activeInHierarchy)
             {
                 spawnedEnemies.RemoveAt(i);
             }
         }
+    }
+
+    private void BuildEnemyPool()
+    {
+        enemyPoolByPrefab.Clear();
+        activeEnemyPrefabMap.Clear();
+
+        for (int i = 0; i < enemySpawnEntries.Count; i++)
+        {
+            EnemySpawnEntry entry = enemySpawnEntries[i];
+
+            if (!IsValidEntry(entry))
+                continue;
+
+            if (enemyPoolByPrefab.ContainsKey(entry.enemyPrefab))
+                continue;
+
+            Queue<GameObject> queue = new Queue<GameObject>();
+            enemyPoolByPrefab.Add(entry.enemyPrefab, queue);
+
+            for (int j = 0; j < prewarmPerEnemyType; j++)
+            {
+                GameObject pooledEnemy = Instantiate(entry.enemyPrefab, Vector3.zero, Quaternion.identity);
+                pooledEnemy.SetActive(false);
+                queue.Enqueue(pooledEnemy);
+            }
+        }
+    }
+
+    private GameObject GetOrCreateEnemy(GameObject prefab, Vector2 spawnPosition)
+    {
+        if (!useEnemyPooling)
+        {
+            return Instantiate(prefab, spawnPosition, Quaternion.identity);
+        }
+
+        if (!enemyPoolByPrefab.TryGetValue(prefab, out Queue<GameObject> pool))
+        {
+            pool = new Queue<GameObject>();
+            enemyPoolByPrefab.Add(prefab, pool);
+        }
+
+        GameObject enemy = pool.Count > 0 ? pool.Dequeue() : Instantiate(prefab, spawnPosition, Quaternion.identity);
+        enemy.transform.position = spawnPosition;
+        enemy.transform.rotation = Quaternion.identity;
+        enemy.SetActive(true);
+        activeEnemyPrefabMap[enemy] = prefab;
+        return enemy;
     }
 }
 ```
@@ -7047,9 +8837,12 @@ public class EnemySpawner : MonoBehaviour
 
 ```csharp
 using UnityEngine;
+using System;
 
 public class WaveManager : MonoBehaviour
 {
+    public event Action OnWaveChanged;
+
     [Header("References")]
     [SerializeField] private GameTimer gameTimer;
 
@@ -7087,6 +8880,7 @@ public class WaveManager : MonoBehaviour
         }
 
         waveTimer = waveDuration;
+        OnWaveChanged?.Invoke();
     }
 
     private void Update()
@@ -7103,6 +8897,7 @@ public class WaveManager : MonoBehaviour
     {
         currentWave++;
         waveTimer = waveDuration;
+        OnWaveChanged?.Invoke();
 
         Debug.Log($"Wave {currentWave} started.");
     }
@@ -7121,6 +8916,7 @@ public class WaveManager : MonoBehaviour
     public void MarkFirstMidBossSpawned()
     {
         firstMidBossSpawned = true;
+        OnWaveChanged?.Invoke();
     }
 
     // 기존 HUDCanvasUI / HUDDebugUI 호환용
@@ -7193,8 +8989,10 @@ public class HUDCanvasUI : MonoBehaviour
     [SerializeField] private TMP_Text relicText;
     [SerializeField] private string relicTitle = "RELICS";
     [SerializeField] private string emptyRelicText = "RELICS\n- None";
+    [SerializeField] private float waveUiRefreshInterval = 0.2f;
 
     private readonly StringBuilder relicTextBuilder = new StringBuilder();
+    private float waveUiRefreshTimer;
 
     private void Awake()
     {
@@ -7202,14 +9000,89 @@ public class HUDCanvasUI : MonoBehaviour
         {
             relicSelectUI = FindFirstObjectByType<RelicSelectUI>();
         }
+
+        if (waveUiRefreshInterval <= 0f)
+        {
+            waveUiRefreshInterval = 0.2f;
+        }
+    }
+
+    private void OnEnable()
+    {
+        BindEvents();
+        RefreshAllImmediate();
+    }
+
+    private void OnDisable()
+    {
+        UnbindEvents();
     }
 
     private void Update()
+    {
+        // Wave 카운트다운은 초 단위 변화가 있어 저주기로만 갱신합니다.
+        waveUiRefreshTimer -= Time.unscaledDeltaTime;
+
+        if (waveUiRefreshTimer <= 0f)
+        {
+            waveUiRefreshTimer = waveUiRefreshInterval;
+            UpdateWaveUI();
+        }
+    }
+
+    private void BindEvents()
+    {
+        if (playerHealth != null)
+        {
+            playerHealth.OnHealthChanged += UpdateHpUI;
+        }
+
+        if (playerExp != null)
+        {
+            playerExp.OnExpChanged += UpdateExpUI;
+        }
+
+        if (relicSelectUI != null)
+        {
+            relicSelectUI.OnOwnedRelicsChanged += UpdateRelicUI;
+        }
+
+        if (waveManager != null)
+        {
+            waveManager.OnWaveChanged += UpdateWaveUI;
+        }
+    }
+
+    private void UnbindEvents()
+    {
+        if (playerHealth != null)
+        {
+            playerHealth.OnHealthChanged -= UpdateHpUI;
+        }
+
+        if (playerExp != null)
+        {
+            playerExp.OnExpChanged -= UpdateExpUI;
+        }
+
+        if (relicSelectUI != null)
+        {
+            relicSelectUI.OnOwnedRelicsChanged -= UpdateRelicUI;
+        }
+
+        if (waveManager != null)
+        {
+            waveManager.OnWaveChanged -= UpdateWaveUI;
+        }
+    }
+
+    private void RefreshAllImmediate()
     {
         UpdateHpUI();
         UpdateExpUI();
         UpdateWaveUI();
         UpdateRelicUI();
+        waveUiRefreshTimer = waveUiRefreshInterval;
     }
 
     private void UpdateHpUI()
@@ -7314,9 +9187,11 @@ public class LevelUpUI : MonoBehaviour
 {
     [Header("Target")]
     [SerializeField] private PlayerHealth playerHealth;
+    [SerializeField] private PauseManager pauseManager;
     [SerializeField] private PlayerMeleeAutoAttack playerWeapon;
     [SerializeField] private PlayerController playerController;
     [SerializeField] private PlayerPickupRange playerPickupRange;
+    [SerializeField] private PlayerMagicBoltAutoAttack playerMagicBolt;
 
     [Header("Upgrade Data")]
     [SerializeField] private List<UpgradeData> availableUpgrades = new List<UpgradeData>();
@@ -7346,8 +9221,42 @@ public class LevelUpUI : MonoBehaviour
     private void Awake()
     {
         AutoBindIfNeeded();
+        ValidateRequiredReferences();
         RegisterButtonEvents();
         ClosePanelOnly();
+    }
+
+    private void ValidateRequiredReferences()
+    {
+        if (levelUpPanel == null)
+        {
+            Debug.LogWarning("[LevelUpUI] levelUpPanel이 비어 있습니다. Hierarchy의 LevelUpPanel 연결을 확인하세요.", this);
+        }
+
+        if (damageButton == null || attackSpeedButton == null || attackRangeButton == null)
+        {
+            Debug.LogWarning("[LevelUpUI] 강화 선택 버튼 참조가 일부 비어 있습니다. Damage/AttackSpeed/AttackRange 버튼 연결을 확인하세요.", this);
+        }
+
+        if (damageButtonText == null || attackSpeedButtonText == null || attackRangeButtonText == null)
+        {
+            Debug.LogWarning("[LevelUpUI] 버튼 TMP_Text 참조가 일부 비어 있습니다. damage/attackSpeed/attackRangeButtonText 필드 연결을 확인하세요.", this);
+        }
+
+        if (playerHealth == null)
+        {
+            Debug.LogWarning("[LevelUpUI] playerHealth가 비어 있습니다. Player 오브젝트의 PlayerHealth를 연결하세요.", this);
+        }
+
+        if (pauseManager == null)
+        {
+            pauseManager = FindFirstObjectByType<PauseManager>();
+        }
+
+        if (pauseManager == null)
+        {
+            Debug.LogWarning("[LevelUpUI] pauseManager가 비어 있습니다. PauseManager 연결을 권장합니다. (없으면 Time.timeScale 폴백 사용)", this);
+        }
     }
 
     private void AutoBindIfNeeded()
@@ -7416,6 +9325,16 @@ public class LevelUpUI : MonoBehaviour
         {
             playerPickupRange = playerController.GetComponent<PlayerPickupRange>();
         }
+
+        if (playerMagicBolt == null && playerHealth != null)
+        {
+            playerMagicBolt = playerHealth.GetComponent<PlayerMagicBoltAutoAttack>();
+        }
+
+        if (playerMagicBolt == null && playerController != null)
+        {
+            playerMagicBolt = playerController.GetComponent<PlayerMagicBoltAutoAttack>();
+        }
     }
 
     private TMP_Text FindTMP(string objectName)
@@ -7465,6 +9384,12 @@ public class LevelUpUI : MonoBehaviour
 
     public void Open(int levelUpCount)
     {
+        if (levelUpPanel == null)
+        {
+            Debug.LogWarning("[LevelUpUI] levelUpPanel이 없어 레벨업 UI를 열 수 없습니다.", this);
+            return;
+        }
+
         pendingLevelUps += levelUpCount;
 
         if (pendingLevelUps <= 0)
@@ -7473,7 +9398,7 @@ public class LevelUpUI : MonoBehaviour
         }
 
         isOpen = true;
-        Time.timeScale = 0f;
+        RequestPause();
 
         if (levelUpPanel != null)
         {
@@ -7492,10 +9417,15 @@ public class LevelUpUI : MonoBehaviour
 
         for (int i = 0; i < availableUpgrades.Count; i++)
         {
-            if (availableUpgrades[i] != null)
-            {
-                pool.Add(availableUpgrades[i]);
-            }
+            UpgradeData upgrade = availableUpgrades[i];
+
+            if (upgrade == null)
+                continue;
+
+            if (!CanAppearInChoices(upgrade))
+                continue;
+
+            pool.Add(upgrade);
         }
 
         int choiceCount = Mathf.Min(3, pool.Count);
@@ -7506,6 +9436,25 @@ public class LevelUpUI : MonoBehaviour
             currentChoices.Add(pool[randomIndex]);
             pool.RemoveAt(randomIndex);
         }
+    }
+
+    private bool CanAppearInChoices(UpgradeData upgrade)
+    {
+        if (upgrade == null)
+            return false;
+
+        if (upgrade.UpgradeType != UpgradeType.WeaponUnlock)
+            return true;
+
+        if (upgrade.WeaponId == "magic_bolt")
+        {
+            if (playerMagicBolt == null)
+                return true;
+
+            return !playerMagicBolt.IsUnlocked;
+        }
+
+        return true;
     }
 
     private void ChooseUpgrade(int choiceIndex)
@@ -7543,6 +9492,11 @@ public class LevelUpUI : MonoBehaviour
                 {
                     playerWeapon.AddDamage(upgrade.IntValue);
                 }
+
+                if (playerMagicBolt != null)
+                {
+                    playerMagicBolt.AddDamage(upgrade.IntValue);
+                }
                 break;
 
             case UpgradeType.AttackSpeed:
@@ -7550,12 +9504,22 @@ public class LevelUpUI : MonoBehaviour
                 {
                     playerWeapon.ImproveAttackSpeed(upgrade.FloatValue);
                 }
+
+                if (playerMagicBolt != null)
+                {
+                    playerMagicBolt.ImproveAttackSpeed(upgrade.FloatValue);
+                }
                 break;
 
             case UpgradeType.AttackRange:
                 if (playerWeapon != null)
                 {
                     playerWeapon.ImproveAttackRange(upgrade.FloatValue);
+                }
+
+                if (playerMagicBolt != null)
+                {
+                    playerMagicBolt.ImproveAttackRange(upgrade.FloatValue);
                 }
                 break;
 
@@ -7593,6 +9557,37 @@ public class LevelUpUI : MonoBehaviour
                     playerWeapon.AddCriticalChance(upgrade.FloatValue);
                 }
                 break;
+
+            case UpgradeType.WeaponUnlock:
+                UnlockWeapon(upgrade.WeaponId);
+                break;
+        }
+    }
+
+    private void UnlockWeapon(string weaponId)
+    {
+        if (string.IsNullOrEmpty(weaponId))
+        {
+            Debug.LogWarning("Weapon unlock failed. WeaponId is empty.");
+            return;
+        }
+
+        switch (weaponId)
+        {
+            case "magic_bolt":
+                if (playerMagicBolt != null)
+                {
+                    playerMagicBolt.Unlock();
+                }
+                else
+                {
+                    Debug.LogWarning("Magic Bolt unlock failed. PlayerMagicBoltAutoAttack is not found on Player.");
+                }
+                break;
+
+            default:
+                Debug.LogWarning($"Unknown weapon id: {weaponId}");
+                break;
         }
     }
 
@@ -7608,8 +9603,39 @@ public class LevelUpUI : MonoBehaviour
         }
 
         isOpen = false;
-        Time.timeScale = 1f;
+        ReleasePause();
         ClosePanelOnly();
+    }
+
+    private void OnDisable()
+    {
+        if (isOpen)
+        {
+            ReleasePause();
+            isOpen = false;
+        }
+    }
+
+    private void RequestPause()
+    {
+        if (pauseManager != null)
+        {
+            pauseManager.RequestPause(this);
+            return;
+        }
+
+        Time.timeScale = 0f;
+    }
+
+    private void ReleasePause()
+    {
+        if (pauseManager != null)
+        {
+            pauseManager.ReleasePause(this);
+            return;
+        }
+
+        Time.timeScale = 1f;
     }
 
     private void ClosePanelOnly()
@@ -7661,14 +9687,18 @@ public class LevelUpUI : MonoBehaviour
 
 ```csharp
 using System.Collections.Generic;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class RelicSelectUI : MonoBehaviour
 {
+    public event Action OnOwnedRelicsChanged;
+
     [Header("Target")]
     [SerializeField] private PlayerHealth playerHealth;
+    [SerializeField] private PauseManager pauseManager;
     [SerializeField] private PlayerMeleeAutoAttack playerWeapon;
     [SerializeField] private PlayerPickupRange playerPickupRange;
     [SerializeField] private PlayerRelicEffects playerRelicEffects;
@@ -7705,8 +9735,42 @@ public class RelicSelectUI : MonoBehaviour
     private void Awake()
     {
         AutoBindIfNeeded();
+        ValidateRequiredReferences();
         RegisterButtonEvents();
         ClosePanelOnly();
+    }
+
+    private void ValidateRequiredReferences()
+    {
+        if (relicSelectPanel == null)
+        {
+            Debug.LogWarning("[RelicSelectUI] relicSelectPanel이 비어 있습니다. Hierarchy의 RelicSelectPanel 연결을 확인하세요.", this);
+        }
+
+        if (relicButton01 == null || relicButton02 == null || relicButton03 == null)
+        {
+            Debug.LogWarning("[RelicSelectUI] 유물 선택 버튼 참조가 일부 비어 있습니다. RelicButton_01~03 연결을 확인하세요.", this);
+        }
+
+        if (relicButtonText01 == null || relicButtonText02 == null || relicButtonText03 == null)
+        {
+            Debug.LogWarning("[RelicSelectUI] 버튼 TMP_Text 참조가 일부 비어 있습니다. RelicButtonText01~03 필드 연결을 확인하세요.", this);
+        }
+
+        if (playerHealth == null)
+        {
+            Debug.LogWarning("[RelicSelectUI] playerHealth가 비어 있습니다. Player 오브젝트의 PlayerHealth를 연결하세요.", this);
+        }
+
+        if (pauseManager == null)
+        {
+            pauseManager = FindFirstObjectByType<PauseManager>();
+        }
+
+        if (pauseManager == null)
+        {
+            Debug.LogWarning("[RelicSelectUI] pauseManager가 비어 있습니다. PauseManager 연결을 권장합니다. (없으면 Time.timeScale 폴백 사용)", this);
+        }
     }
 
     private void AutoBindIfNeeded()
@@ -7818,6 +9882,12 @@ public class RelicSelectUI : MonoBehaviour
 
     public void Open()
     {
+        if (relicSelectPanel == null)
+        {
+            Debug.LogWarning("[RelicSelectUI] relicSelectPanel이 없어 UI를 열 수 없습니다.", this);
+            return;
+        }
+
         PickChoices();
 
         if (currentChoices.Count <= 0)
@@ -7827,7 +9897,7 @@ public class RelicSelectUI : MonoBehaviour
         }
 
         isOpen = true;
-        Time.timeScale = 0f;
+        RequestPause();
 
         if (relicSelectPanel != null)
         {
@@ -7860,7 +9930,7 @@ public class RelicSelectUI : MonoBehaviour
 
         for (int i = 0; i < choiceCount; i++)
         {
-            int randomIndex = Random.Range(0, pool.Count);
+            int randomIndex = UnityEngine.Random.Range(0, pool.Count);
             currentChoices.Add(pool[randomIndex]);
             pool.RemoveAt(randomIndex);
         }
@@ -7881,14 +9951,46 @@ public class RelicSelectUI : MonoBehaviour
         if (!ownedRelics.Contains(relic))
         {
             ownedRelics.Add(relic);
+            OnOwnedRelicsChanged?.Invoke();
         }
 
         Debug.Log($"Relic acquired: {relic.RelicName}");
 
         isOpen = false;
-        Time.timeScale = 1f;
+        ReleasePause();
 
         ClosePanelOnly();
+    }
+
+    private void OnDisable()
+    {
+        if (isOpen)
+        {
+            ReleasePause();
+            isOpen = false;
+        }
+    }
+
+    private void RequestPause()
+    {
+        if (pauseManager != null)
+        {
+            pauseManager.RequestPause(this);
+            return;
+        }
+
+        Time.timeScale = 0f;
+    }
+
+    private void ReleasePause()
+    {
+        if (pauseManager != null)
+        {
+            pauseManager.ReleasePause(this);
+            return;
+        }
+
+        Time.timeScale = 1f;
     }
 
     private void ApplyRelicEffect(RelicData relic)
@@ -7981,6 +10083,270 @@ public class RelicSelectUI : MonoBehaviour
         {
             relicSelectPanel.SetActive(false);
         }
+    }
+}
+```
+
+### FILE: Assets/_Project/Scripts/Weapons/PlayerMagicBoltAutoAttack.cs
+
+```csharp
+using UnityEngine;
+
+public class PlayerMagicBoltAutoAttack : MonoBehaviour
+{
+    [Header("Weapon State")]
+    [SerializeField] private bool isUnlocked;
+
+    [Header("Projectile")]
+    [SerializeField] private GameObject projectilePrefab;
+    [SerializeField] private Transform projectileSpawnPoint;
+    [SerializeField] private bool useProjectilePooling = true;
+    [SerializeField] private int projectilePoolPrewarmCount = 12;
+
+    [Header("Attack")]
+    [SerializeField] private int damage = 8;
+    [SerializeField] private float attackInterval = 1.2f;
+    [SerializeField] private float attackRange = 6f;
+    [SerializeField] private LayerMask enemyLayer;
+
+    [Header("Limits")]
+    [SerializeField] private float minimumAttackInterval = 0.25f;
+    [SerializeField] private float maximumAttackRange = 10f;
+
+    private float attackTimer;
+    private readonly System.Collections.Generic.Queue<MagicBoltProjectile> projectilePool = new System.Collections.Generic.Queue<MagicBoltProjectile>();
+
+    public bool IsUnlocked => isUnlocked;
+    public int Damage => damage;
+    public float AttackInterval => attackInterval;
+    public float AttackRange => attackRange;
+
+    private void Awake()
+    {
+        ValidateRequiredReferences();
+        if (useProjectilePooling)
+        {
+            PrewarmProjectilePool();
+        }
+        enabled = isUnlocked;
+    }
+
+    private void ValidateRequiredReferences()
+    {
+        if (projectilePrefab == null)
+        {
+            Debug.LogWarning("[PlayerMagicBoltAutoAttack] projectilePrefab이 비어 있습니다. Inspector에서 매직 볼트 프리팹을 연결하세요.", this);
+        }
+
+        if (projectileSpawnPoint == null)
+        {
+            Debug.LogWarning("[PlayerMagicBoltAutoAttack] projectileSpawnPoint가 비어 있습니다. 기본적으로 Player 위치에서 발사됩니다.", this);
+        }
+    }
+
+    private void Update()
+    {
+        if (!isUnlocked)
+            return;
+
+        attackTimer -= Time.deltaTime;
+
+        if (attackTimer > 0f)
+            return;
+
+        Transform target = FindNearestEnemy();
+
+        if (target == null)
+            return;
+
+        Fire(target);
+
+        attackTimer = attackInterval;
+    }
+
+    public void Unlock()
+    {
+        if (isUnlocked)
+            return;
+
+        isUnlocked = true;
+        enabled = true;
+        attackTimer = 0f;
+
+        Debug.Log("Magic Bolt unlocked.");
+    }
+
+    public void AddDamage(int amount)
+    {
+        if (!isUnlocked)
+            return;
+
+        if (amount <= 0)
+            return;
+
+        damage += amount;
+
+        Debug.Log($"Magic Bolt damage increased. Damage: {damage}");
+    }
+
+    public void ImproveAttackSpeed(float bonusRate)
+    {
+        if (!isUnlocked)
+            return;
+
+        if (bonusRate <= 0f)
+            return;
+
+        attackInterval *= 1f - bonusRate;
+        attackInterval = Mathf.Max(attackInterval, minimumAttackInterval);
+
+        Debug.Log($"Magic Bolt attack speed improved. Interval: {attackInterval}");
+    }
+
+    public void ImproveAttackRange(float bonusRate)
+    {
+        if (!isUnlocked)
+            return;
+
+        if (bonusRate <= 0f)
+            return;
+
+        attackRange *= 1f + bonusRate;
+        attackRange = Mathf.Min(attackRange, maximumAttackRange);
+
+        Debug.Log($"Magic Bolt range improved. Range: {attackRange}");
+    }
+
+    private Transform FindNearestEnemy()
+    {
+        Collider2D[] hits = Physics2D.OverlapCircleAll(
+            transform.position,
+            attackRange,
+            enemyLayer
+        );
+
+        Transform nearestEnemy = null;
+        float nearestDistanceSqr = float.MaxValue;
+
+        for (int i = 0; i < hits.Length; i++)
+        {
+            EnemyHealth enemyHealth = hits[i].GetComponent<EnemyHealth>();
+
+            if (enemyHealth == null)
+                continue;
+
+            float distanceSqr = ((Vector2)hits[i].transform.position - (Vector2)transform.position).sqrMagnitude;
+
+            if (distanceSqr < nearestDistanceSqr)
+            {
+                nearestDistanceSqr = distanceSqr;
+                nearestEnemy = hits[i].transform;
+            }
+        }
+
+        return nearestEnemy;
+    }
+
+    private void Fire(Transform target)
+    {
+        if (projectilePrefab == null)
+        {
+            Debug.LogWarning("Magic Bolt projectile prefab is not assigned.");
+            return;
+        }
+
+        Vector3 spawnPosition = projectileSpawnPoint != null
+            ? projectileSpawnPoint.position
+            : transform.position;
+
+        Vector2 direction = target.position - spawnPosition;
+
+        if (direction.sqrMagnitude <= 0.01f)
+            return;
+
+        MagicBoltProjectile projectile = GetOrCreateProjectile();
+
+        if (projectile == null)
+        {
+            Debug.LogWarning("MagicBoltProjectile component is missing on projectile prefab.");
+            return;
+        }
+
+        projectile.transform.position = spawnPosition;
+        projectile.transform.rotation = Quaternion.identity;
+        projectile.gameObject.SetActive(true);
+        projectile.Initialize(direction, damage, enemyLayer);
+    }
+
+    public void ReturnProjectileToPool(MagicBoltProjectile projectile)
+    {
+        if (projectile == null)
+            return;
+
+        if (!useProjectilePooling)
+        {
+            Destroy(projectile.gameObject);
+            return;
+        }
+
+        projectile.gameObject.SetActive(false);
+        projectilePool.Enqueue(projectile);
+    }
+
+    private void PrewarmProjectilePool()
+    {
+        if (projectilePrefab == null)
+            return;
+
+        for (int i = 0; i < projectilePoolPrewarmCount; i++)
+        {
+            MagicBoltProjectile projectile = CreateProjectileInstance();
+
+            if (projectile == null)
+                continue;
+
+            projectile.gameObject.SetActive(false);
+            projectilePool.Enqueue(projectile);
+        }
+    }
+
+    private MagicBoltProjectile GetOrCreateProjectile()
+    {
+        if (!useProjectilePooling)
+        {
+            return CreateProjectileInstance();
+        }
+
+        if (projectilePool.Count > 0)
+        {
+            return projectilePool.Dequeue();
+        }
+
+        return CreateProjectileInstance();
+    }
+
+    private MagicBoltProjectile CreateProjectileInstance()
+    {
+        if (projectilePrefab == null)
+            return null;
+
+        GameObject projectileObject = Instantiate(projectilePrefab, Vector3.zero, Quaternion.identity);
+        MagicBoltProjectile projectile = projectileObject.GetComponent<MagicBoltProjectile>();
+
+        if (projectile == null)
+        {
+            Destroy(projectileObject);
+            return null;
+        }
+
+        projectile.SetOwner(this);
+        return projectile;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 }
 ```

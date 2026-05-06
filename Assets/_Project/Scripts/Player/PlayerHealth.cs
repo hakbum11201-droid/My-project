@@ -1,9 +1,13 @@
 using System.Collections;
+using System;
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerController))]
 public class PlayerHealth : MonoBehaviour
 {
+    public event Action OnHealthChanged;
+    public event Action OnDied;
+
     [Header("Health")]
     [SerializeField] private int maxHealth = 100;
 
@@ -47,6 +51,8 @@ public class PlayerHealth : MonoBehaviour
         {
             originalColor = spriteRenderer.color;
         }
+
+        NotifyHealthChanged();
     }
 
     public void TakeDamage(int damage)
@@ -66,6 +72,7 @@ public class PlayerHealth : MonoBehaviour
 
         currentHealth -= finalDamage;
         currentHealth = Mathf.Max(currentHealth, 0);
+        NotifyHealthChanged();
 
         Debug.Log($"Player took {finalDamage} damage. Raw: {damage}, Defense: {defense}, HP: {currentHealth}/{maxHealth}");
 
@@ -97,6 +104,7 @@ public class PlayerHealth : MonoBehaviour
         }
 
         Debug.Log($"Max HP increased. HP: {currentHealth}/{maxHealth}");
+        NotifyHealthChanged();
     }
 
     public void Heal(int amount)
@@ -111,6 +119,7 @@ public class PlayerHealth : MonoBehaviour
         currentHealth = Mathf.Min(currentHealth, maxHealth);
 
         Debug.Log($"Player healed {amount}. HP: {currentHealth}/{maxHealth}");
+        NotifyHealthChanged();
     }
 
     public void AddDefense(int amount)
@@ -171,7 +180,14 @@ public class PlayerHealth : MonoBehaviour
             spriteRenderer.color = Color.gray;
 
         Time.timeScale = 0f;
+        NotifyHealthChanged();
+        OnDied?.Invoke();
 
         Debug.Log("Game Over. Player died.");
+    }
+
+    private void NotifyHealthChanged()
+    {
+        OnHealthChanged?.Invoke();
     }
 }

@@ -27,8 +27,10 @@ public class HUDCanvasUI : MonoBehaviour
     [SerializeField] private TMP_Text relicText;
     [SerializeField] private string relicTitle = "RELICS";
     [SerializeField] private string emptyRelicText = "RELICS\n- None";
+    [SerializeField] private float waveUiRefreshInterval = 0.2f;
 
     private readonly StringBuilder relicTextBuilder = new StringBuilder();
+    private float waveUiRefreshTimer;
 
     private void Awake()
     {
@@ -36,14 +38,89 @@ public class HUDCanvasUI : MonoBehaviour
         {
             relicSelectUI = FindFirstObjectByType<RelicSelectUI>();
         }
+
+        if (waveUiRefreshInterval <= 0f)
+        {
+            waveUiRefreshInterval = 0.2f;
+        }
+    }
+
+    private void OnEnable()
+    {
+        BindEvents();
+        RefreshAllImmediate();
+    }
+
+    private void OnDisable()
+    {
+        UnbindEvents();
     }
 
     private void Update()
+    {
+        // Wave 카운트다운은 초 단위 변화가 있어 저주기로만 갱신합니다.
+        waveUiRefreshTimer -= Time.unscaledDeltaTime;
+
+        if (waveUiRefreshTimer <= 0f)
+        {
+            waveUiRefreshTimer = waveUiRefreshInterval;
+            UpdateWaveUI();
+        }
+    }
+
+    private void BindEvents()
+    {
+        if (playerHealth != null)
+        {
+            playerHealth.OnHealthChanged += UpdateHpUI;
+        }
+
+        if (playerExp != null)
+        {
+            playerExp.OnExpChanged += UpdateExpUI;
+        }
+
+        if (relicSelectUI != null)
+        {
+            relicSelectUI.OnOwnedRelicsChanged += UpdateRelicUI;
+        }
+
+        if (waveManager != null)
+        {
+            waveManager.OnWaveChanged += UpdateWaveUI;
+        }
+    }
+
+    private void UnbindEvents()
+    {
+        if (playerHealth != null)
+        {
+            playerHealth.OnHealthChanged -= UpdateHpUI;
+        }
+
+        if (playerExp != null)
+        {
+            playerExp.OnExpChanged -= UpdateExpUI;
+        }
+
+        if (relicSelectUI != null)
+        {
+            relicSelectUI.OnOwnedRelicsChanged -= UpdateRelicUI;
+        }
+
+        if (waveManager != null)
+        {
+            waveManager.OnWaveChanged -= UpdateWaveUI;
+        }
+    }
+
+    private void RefreshAllImmediate()
     {
         UpdateHpUI();
         UpdateExpUI();
         UpdateWaveUI();
         UpdateRelicUI();
+        waveUiRefreshTimer = waveUiRefreshInterval;
     }
 
     private void UpdateHpUI()

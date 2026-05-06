@@ -42,6 +42,11 @@ public class EnemyMovement : MonoBehaviour
         {
             ActiveEnemies.Add(this);
         }
+
+        knockbackVelocity = Vector2.zero;
+        knockbackTimer = 0f;
+        PickNewTargetOffset();
+        offsetTimer = Random.Range(0f, offsetChangeInterval);
     }
 
     private void OnDisable()

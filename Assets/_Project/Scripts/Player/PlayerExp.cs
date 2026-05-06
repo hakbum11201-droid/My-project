@@ -1,7 +1,10 @@
 using UnityEngine;
+using System;
 
 public class PlayerExp : MonoBehaviour
 {
+    public event Action OnExpChanged;
+
     [Header("Level")]
     [SerializeField] private int level = 1;
     [SerializeField] private int currentExp = 0;
@@ -36,6 +39,8 @@ public class PlayerExp : MonoBehaviour
         {
             levelUpUI.Open(levelUpCount);
         }
+
+        NotifyExpChanged();
     }
 
     private void LevelUp()
@@ -44,5 +49,10 @@ public class PlayerExp : MonoBehaviour
         expToNextLevel = Mathf.RoundToInt(expToNextLevel * 1.35f + 5f);
 
         Debug.Log($"Level Up! Current Level: {level}");
+    }
+
+    private void NotifyExpChanged()
+    {
+        OnExpChanged?.Invoke();
     }
 }

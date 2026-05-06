@@ -1,7 +1,10 @@
 using UnityEngine;
+using System;
 
 public class WaveManager : MonoBehaviour
 {
+    public event Action OnWaveChanged;
+
     [Header("References")]
     [SerializeField] private GameTimer gameTimer;
 
@@ -39,6 +42,7 @@ public class WaveManager : MonoBehaviour
         }
 
         waveTimer = waveDuration;
+        OnWaveChanged?.Invoke();
     }
 
     private void Update()
@@ -55,6 +59,7 @@ public class WaveManager : MonoBehaviour
     {
         currentWave++;
         waveTimer = waveDuration;
+        OnWaveChanged?.Invoke();
 
         Debug.Log($"Wave {currentWave} started.");
     }
@@ -73,6 +78,7 @@ public class WaveManager : MonoBehaviour
     public void MarkFirstMidBossSpawned()
     {
         firstMidBossSpawned = true;
+        OnWaveChanged?.Invoke();
     }
 
     // 기존 HUDCanvasUI / HUDDebugUI 호환용

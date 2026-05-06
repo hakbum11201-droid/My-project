@@ -11,6 +11,7 @@ public class EnemyContactDamage : MonoBehaviour
     public void Initialize(int newDamage)
     {
         damage = Mathf.Max(1, newDamage);
+        damageTimer = 0f;
     }
 
     private void Update()

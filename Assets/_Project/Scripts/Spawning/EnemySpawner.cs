@@ -26,8 +26,12 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private float spawnInterval = 1.5f;
     [SerializeField] private float spawnRadius = 8f;
     [SerializeField] private int maxEnemies = 15;
+    [SerializeField] private bool useEnemyPooling = true;
+    [SerializeField] private int prewarmPerEnemyType = 6;
 
     private readonly List<GameObject> spawnedEnemies = new List<GameObject>();
+    private readonly Dictionary<GameObject, Queue<GameObject>> enemyPoolByPrefab = new Dictionary<GameObject, Queue<GameObject>>();
+    private readonly Dictionary<GameObject, GameObject> activeEnemyPrefabMap = new Dictionary<GameObject, GameObject>();
 
     private float spawnTimer;
     private PlayerHealth playerHealth;
@@ -37,6 +41,11 @@ public class EnemySpawner : MonoBehaviour
         if (playerTarget != null)
         {
             playerHealth = playerTarget.GetComponent<PlayerHealth>();
+        }
+
+        if (useEnemyPooling)
+        {
+            BuildEnemyPool();
         }
     }
 
@@ -110,7 +119,7 @@ public class EnemySpawner : MonoBehaviour
 
         Vector2 spawnPosition = GetSpawnPositionAroundPlayer();
 
-        GameObject enemy = Instantiate(selectedPrefab, spawnPosition, Quaternion.identity);
+        GameObject enemy = GetOrCreateEnemy(selectedPrefab, spawnPosition);
 
         EnemyMovement enemyMovement = enemy.GetComponent<EnemyMovement>();
 
@@ -126,7 +135,8 @@ public class EnemySpawner : MonoBehaviour
             enemyHealth.Initialize(
                 waveManager.GetEnemyHealth(isMidBoss),
                 waveManager.GetExpReward(isMidBoss),
-                isMidBoss
+                isMidBoss,
+                this
             );
         }
 
@@ -143,6 +153,32 @@ public class EnemySpawner : MonoBehaviour
         {
             Debug.Log($"Mid Boss spawned at {waveManager.FirstMidBossSpawnTime} seconds.");
         }
+    }
+
+    public void DespawnEnemy(GameObject enemy)
+    {
+        if (enemy == null)
+            return;
+
+        spawnedEnemies.Remove(enemy);
+
+        if (!useEnemyPooling)
+        {
+            Destroy(enemy);
+            return;
+        }
+
+        if (activeEnemyPrefabMap.TryGetValue(enemy, out GameObject prefabKey) &&
+            prefabKey != null &&
+            enemyPoolByPrefab.TryGetValue(prefabKey, out Queue<GameObject> pool))
+        {
+            enemy.SetActive(false);
+            pool.Enqueue(enemy);
+            activeEnemyPrefabMap.Remove(enemy);
+            return;
+        }
+
+        Destroy(enemy);
     }
 
     private GameObject GetRandomEnemyPrefab()
@@ -223,10 +259,58 @@ public class EnemySpawner : MonoBehaviour
     {
         for (int i = spawnedEnemies.Count - 1; i >= 0; i--)
         {
-            if (spawnedEnemies[i] == null)
+            if (spawnedEnemies[i] == null || !spawnedEnemies[i].activeInHierarchy)
             {
                 spawnedEnemies.RemoveAt(i);
             }
         }
+    }
+
+    private void BuildEnemyPool()
+    {
+        enemyPoolByPrefab.Clear();
+        activeEnemyPrefabMap.Clear();
+
+        for (int i = 0; i < enemySpawnEntries.Count; i++)
+        {
+            EnemySpawnEntry entry = enemySpawnEntries[i];
+
+            if (!IsValidEntry(entry))
+                continue;
+
+            if (enemyPoolByPrefab.ContainsKey(entry.enemyPrefab))
+                continue;
+
+            Queue<GameObject> queue = new Queue<GameObject>();
+            enemyPoolByPrefab.Add(entry.enemyPrefab, queue);
+
+            for (int j = 0; j < prewarmPerEnemyType; j++)
+            {
+                GameObject pooledEnemy = Instantiate(entry.enemyPrefab, Vector3.zero, Quaternion.identity);
+                pooledEnemy.SetActive(false);
+                queue.Enqueue(pooledEnemy);
+            }
+        }
+    }
+
+    private GameObject GetOrCreateEnemy(GameObject prefab, Vector2 spawnPosition)
+    {
+        if (!useEnemyPooling)
+        {
+            return Instantiate(prefab, spawnPosition, Quaternion.identity);
+        }
+
+        if (!enemyPoolByPrefab.TryGetValue(prefab, out Queue<GameObject> pool))
+        {
+            pool = new Queue<GameObject>();
+            enemyPoolByPrefab.Add(prefab, pool);
+        }
+
+        GameObject enemy = pool.Count > 0 ? pool.Dequeue() : Instantiate(prefab, spawnPosition, Quaternion.identity);
+        enemy.transform.position = spawnPosition;
+        enemy.transform.rotation = Quaternion.identity;
+        enemy.SetActive(true);
+        activeEnemyPrefabMap[enemy] = prefab;
+        return enemy;
     }
 }

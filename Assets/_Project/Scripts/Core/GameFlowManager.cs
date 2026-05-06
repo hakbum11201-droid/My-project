@@ -6,6 +6,7 @@ public class GameFlowManager : MonoBehaviour
     [Header("References")]
     [SerializeField] private PlayerHealth playerHealth;
     [SerializeField] private GameTimer gameTimer;
+    [SerializeField] private PauseManager pauseManager;
 
     [Header("UI")]
     [SerializeField] private GameObject startMenuCanvas;
@@ -20,6 +21,8 @@ public class GameFlowManager : MonoBehaviour
 
     private void Start()
     {
+        ValidateRequiredReferences();
+
         if (gameTimer != null)
         {
             gameTimer.ResetTimer();
@@ -55,7 +58,7 @@ public class GameFlowManager : MonoBehaviour
         isGameStarted = false;
         isGameOver = false;
 
-        Time.timeScale = 0f;
+        RequestPause();
 
         if (gameTimer != null)
         {
@@ -78,7 +81,7 @@ public class GameFlowManager : MonoBehaviour
         isGameStarted = true;
         isGameOver = false;
 
-        Time.timeScale = 1f;
+        ReleasePause();
 
         if (gameTimer != null)
         {
@@ -108,7 +111,7 @@ public class GameFlowManager : MonoBehaviour
             gameTimer.StopTimer();
         }
 
-        Time.timeScale = 0f;
+        RequestPause();
 
         if (gameOverCanvas != null)
             gameOverCanvas.SetActive(true);
@@ -116,7 +119,14 @@ public class GameFlowManager : MonoBehaviour
 
     public void RestartGame()
     {
-        Time.timeScale = 1f;
+        if (pauseManager != null)
+        {
+            pauseManager.ClearAllPauseRequests();
+        }
+        else
+        {
+            Time.timeScale = 1f;
+        }
 
         Scene currentScene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(currentScene.buildIndex);
@@ -129,5 +139,55 @@ public class GameFlowManager : MonoBehaviour
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #endif
+    }
+
+    private void ValidateRequiredReferences()
+    {
+        if (pauseManager == null)
+        {
+            pauseManager = FindFirstObjectByType<PauseManager>();
+        }
+
+        if (playerHealth == null)
+        {
+            Debug.LogWarning("[GameFlowManager] playerHealth가 비어 있습니다. PlayerHealth 연결이 없으면 게임오버 감지가 동작하지 않을 수 있습니다.", this);
+        }
+
+        if (gameTimer == null)
+        {
+            Debug.LogWarning("[GameFlowManager] gameTimer가 비어 있습니다. 타이머 UI와 시간 측정이 동작하지 않을 수 있습니다.", this);
+        }
+
+        if (startMenuCanvas == null || gameOverCanvas == null || hudCanvas == null)
+        {
+            Debug.LogWarning("[GameFlowManager] UI Canvas 참조가 일부 비어 있습니다. startMenuCanvas / gameOverCanvas / hudCanvas 연결을 확인하세요.", this);
+        }
+
+        if (pauseManager == null)
+        {
+            Debug.LogWarning("[GameFlowManager] pauseManager가 비어 있습니다. PauseManager 연결을 권장합니다. (없으면 Time.timeScale 폴백 사용)", this);
+        }
+    }
+
+    private void RequestPause()
+    {
+        if (pauseManager != null)
+        {
+            pauseManager.RequestPause(this);
+            return;
+        }
+
+        Time.timeScale = 0f;
+    }
+
+    private void ReleasePause()
+    {
+        if (pauseManager != null)
+        {
+            pauseManager.ReleasePause(this);
+            return;
+        }
+
+        Time.timeScale = 1f;
     }
 }
