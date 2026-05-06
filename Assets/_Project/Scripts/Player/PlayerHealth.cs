@@ -22,6 +22,9 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private Color hitColor = Color.red;
     [SerializeField] private float blinkInterval = 0.08f;
 
+    [Header("References")]
+    [SerializeField] private PauseManager pauseManager;
+
     private int currentHealth;
     private bool isDead;
     private bool isInvincible;
@@ -31,6 +34,7 @@ public class PlayerHealth : MonoBehaviour
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
     private Color originalColor;
+    private bool hasLoggedMissingPauseManager;
 
     public int CurrentHealth => currentHealth;
     public int MaxHealth => maxHealth;
@@ -44,6 +48,11 @@ public class PlayerHealth : MonoBehaviour
 
         playerController = GetComponent<PlayerController>();
         playerWeapon = GetComponent<PlayerMeleeAutoAttack>();
+        if (pauseManager == null)
+        {
+            // 인스펙터 연결을 우선 사용하고, 누락된 경우에만 1회 자동 탐색합니다.
+            pauseManager = FindFirstObjectByType<PauseManager>();
+        }
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
 
@@ -53,6 +62,11 @@ public class PlayerHealth : MonoBehaviour
         }
 
         NotifyHealthChanged();
+
+        if (pauseManager == null)
+        {
+            Debug.LogWarning("[PlayerHealth] pauseManager가 비어 있습니다. 가능하면 Inspector에 PauseManager를 연결하세요.", this);
+        }
     }
 
     public void TakeDamage(int damage)
@@ -179,7 +193,7 @@ public class PlayerHealth : MonoBehaviour
         if (spriteRenderer != null)
             spriteRenderer.color = Color.gray;
 
-        Time.timeScale = 0f;
+        RequestPauseOnDeath();
         NotifyHealthChanged();
         OnDied?.Invoke();
 
@@ -189,5 +203,25 @@ public class PlayerHealth : MonoBehaviour
     private void NotifyHealthChanged()
     {
         OnHealthChanged?.Invoke();
+    }
+
+    private void RequestPauseOnDeath()
+    {
+        if (pauseManager != null)
+        {
+            pauseManager.RequestPause(this);
+            return;
+        }
+
+        LogMissingPauseManagerWarning();
+    }
+
+    private void LogMissingPauseManagerWarning()
+    {
+        if (hasLoggedMissingPauseManager)
+            return;
+
+        hasLoggedMissingPauseManager = true;
+        Debug.LogWarning("[PlayerHealth] PauseManager가 없어 사망 시 일시정지 제어를 수행할 수 없습니다. PlayerHealth.pauseManager 연결을 확인하세요.", this);
     }
 }

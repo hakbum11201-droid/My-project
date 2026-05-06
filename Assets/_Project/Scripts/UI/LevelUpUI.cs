@@ -37,6 +37,7 @@ public class LevelUpUI : MonoBehaviour
 
     private int pendingLevelUps;
     private bool isOpen;
+    private bool hasLoggedMissingPauseManager;
 
     private void Awake()
     {
@@ -75,7 +76,7 @@ public class LevelUpUI : MonoBehaviour
 
         if (pauseManager == null)
         {
-            Debug.LogWarning("[LevelUpUI] pauseManager가 비어 있습니다. PauseManager 연결을 권장합니다. (없으면 Time.timeScale 폴백 사용)", this);
+            Debug.LogWarning("[LevelUpUI] pauseManager가 비어 있습니다. PauseManager 연결이 필요합니다.", this);
         }
     }
 
@@ -444,7 +445,7 @@ public class LevelUpUI : MonoBehaviour
             return;
         }
 
-        Time.timeScale = 0f;
+        LogMissingPauseManagerWarning();
     }
 
     private void ReleasePause()
@@ -455,7 +456,16 @@ public class LevelUpUI : MonoBehaviour
             return;
         }
 
-        Time.timeScale = 1f;
+        LogMissingPauseManagerWarning();
+    }
+
+    private void LogMissingPauseManagerWarning()
+    {
+        if (hasLoggedMissingPauseManager)
+            return;
+
+        hasLoggedMissingPauseManager = true;
+        Debug.LogWarning("[LevelUpUI] PauseManager가 없어 일시정지 제어를 수행할 수 없습니다. LevelUpUI.pauseManager 연결을 확인하세요.", this);
     }
 
     private void ClosePanelOnly()

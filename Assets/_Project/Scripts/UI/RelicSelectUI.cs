@@ -40,6 +40,7 @@ public class RelicSelectUI : MonoBehaviour
     private readonly List<RelicData> ownedRelics = new List<RelicData>();
 
     private bool isOpen;
+    private bool hasLoggedMissingPauseManager;
 
     public bool IsOpen => isOpen;
     public IReadOnlyList<RelicData> OwnedRelics => ownedRelics;
@@ -81,7 +82,7 @@ public class RelicSelectUI : MonoBehaviour
 
         if (pauseManager == null)
         {
-            Debug.LogWarning("[RelicSelectUI] pauseManager가 비어 있습니다. PauseManager 연결을 권장합니다. (없으면 Time.timeScale 폴백 사용)", this);
+            Debug.LogWarning("[RelicSelectUI] pauseManager가 비어 있습니다. PauseManager 연결이 필요합니다.", this);
         }
     }
 
@@ -291,7 +292,7 @@ public class RelicSelectUI : MonoBehaviour
             return;
         }
 
-        Time.timeScale = 0f;
+        LogMissingPauseManagerWarning();
     }
 
     private void ReleasePause()
@@ -302,7 +303,16 @@ public class RelicSelectUI : MonoBehaviour
             return;
         }
 
-        Time.timeScale = 1f;
+        LogMissingPauseManagerWarning();
+    }
+
+    private void LogMissingPauseManagerWarning()
+    {
+        if (hasLoggedMissingPauseManager)
+            return;
+
+        hasLoggedMissingPauseManager = true;
+        Debug.LogWarning("[RelicSelectUI] PauseManager가 없어 일시정지 제어를 수행할 수 없습니다. RelicSelectUI.pauseManager 연결을 확인하세요.", this);
     }
 
     private void ApplyRelicEffect(RelicData relic)

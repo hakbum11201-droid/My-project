@@ -1611,6 +1611,7 @@ MonoBehaviour:
   relicText: {fileID: 149661988}
   relicTitle: RELICS
   emptyRelicText: 
+  waveUiRefreshInterval: 0.2
 --- !u!114 &550727119
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3273,6 +3274,7 @@ MonoBehaviour:
   knockbackDuration: 0.15
   hitColor: {r: 1, g: 0, b: 0, a: 1}
   blinkInterval: 0.08
+  pauseManager: {fileID: 1171696381}
 --- !u!114 &856406752
 MonoBehaviour:
   m_ObjectHideFlags: 0

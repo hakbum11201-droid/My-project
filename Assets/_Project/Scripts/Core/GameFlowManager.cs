@@ -18,6 +18,7 @@ public class GameFlowManager : MonoBehaviour
 
     private bool isGameStarted;
     private bool isGameOver;
+    private bool hasLoggedMissingPauseManager;
 
     private void Start()
     {
@@ -125,7 +126,7 @@ public class GameFlowManager : MonoBehaviour
         }
         else
         {
-            Time.timeScale = 1f;
+            LogMissingPauseManagerWarning();
         }
 
         Scene currentScene = SceneManager.GetActiveScene();
@@ -165,7 +166,7 @@ public class GameFlowManager : MonoBehaviour
 
         if (pauseManager == null)
         {
-            Debug.LogWarning("[GameFlowManager] pauseManager가 비어 있습니다. PauseManager 연결을 권장합니다. (없으면 Time.timeScale 폴백 사용)", this);
+            Debug.LogWarning("[GameFlowManager] pauseManager가 비어 있습니다. PauseManager 연결이 필요합니다.", this);
         }
     }
 
@@ -177,7 +178,7 @@ public class GameFlowManager : MonoBehaviour
             return;
         }
 
-        Time.timeScale = 0f;
+        LogMissingPauseManagerWarning();
     }
 
     private void ReleasePause()
@@ -188,6 +189,15 @@ public class GameFlowManager : MonoBehaviour
             return;
         }
 
-        Time.timeScale = 1f;
+        LogMissingPauseManagerWarning();
+    }
+
+    private void LogMissingPauseManagerWarning()
+    {
+        if (hasLoggedMissingPauseManager)
+            return;
+
+        hasLoggedMissingPauseManager = true;
+        Debug.LogWarning("[GameFlowManager] PauseManager가 없어 일시정지 제어를 수행할 수 없습니다. GameFlowManager.pauseManager 연결을 확인하세요.", this);
     }
 }
