@@ -1,6 +1,6 @@
 ﻿# EXPERT GPT / DEV SNAPSHOT
 
-Generated: 2026-05-09 12:41:40
+Generated: 2026-05-16 15:20:16
 Unity Version: 6000.3.10f1
 Active Scene: Main
 Scene Path: Assets/_Project/Scenes/Main.unity
@@ -31,7 +31,7 @@ Project Root: Assets/_Project
 - C# Scripts: 29
 - Prefabs: 8
 - Asset Files: 22
-- Changed Files: Added 0, Modified 0, Deleted 0
+- Changed Files: Added 0, Modified 4, Deleted 0
 - Diagnostics: HIGH 18, MEDIUM 4, LOW 13
 
 ### Key Existing Systems Detected
@@ -1490,6 +1490,10 @@ firstMidBossSpawnTime: 300
 midBossHealthMultiplier: 10
 midBossDamageMultiplier: 1.7
 midBossExpMultiplier: 4
+strongBossSpawnTime: 600
+strongBossHealthMultiplier: 18
+strongBossDamageMultiplier: 2.2
+strongBossExpMultiplier: 8
 ```
 
 ### RelicSelectUI
@@ -3139,15 +3143,397 @@ weaponId: ""
 ## File Change Summary
 
 - Added: 0
-- Modified: 0
+- Modified: 4
 - Deleted: 0
 - Total tracked files: 69
 
-- 변경된 파일 없음
+### Modified
+
+- Assets/_Project/Scenes/Main.unity
+- Assets/_Project/Scripts/Enemy/EnemyHealth.cs
+- Assets/_Project/Scripts/Spawning/EnemySpawner.cs
+- Assets/_Project/Scripts/Spawning/WaveManager.cs
 
 ## Code Change Preview
 
-- 변경된 C# 코드 없음
+### Assets/_Project/Scripts/Enemy/EnemyHealth.cs
+
+```text
+Classes:
+- EnemyHealth
+Methods:
+- Awake()
+- Initialize()
+- ApplyVisual()
+- TakeDamage()
+- PlayHitFlash()
+- HitFlashRoutine()
+- Die()
+- NotifyEnemyKilled()
+- DropExpGem()
+- DropSmallHeal()
+- GetExpGemDropPosition()
+- GetSmallHealDropPosition()
+- OpenRelicSelectUI()
+```
+
+Changed code preview:
+```diff
+- 
++     [SerializeField] private float strongBossScale = 1.8f;
+-     [Tooltip("체크하면 중간보스에만 색상 강조를 적용합니다.")]
++ 
+-     [SerializeField] private bool useMidBossTint = true;
++     [Tooltip("체크하면 중간보스에만 색상 강조를 적용합니다.")]
+- 
++     [SerializeField] private bool useMidBossTint = true;
+-     [SerializeField] private Color midBossTintColor = new Color(1f, 0.65f, 0.12f, 1f);
++ 
+- 
++     [SerializeField] private Color midBossTintColor = new Color(1f, 0.65f, 0.12f, 1f);
+-     [Header("Hit Reaction")]
++     [SerializeField] private Color strongBossTintColor = new Color(0.5f, 0f, 0.5f, 1f);
+-     [SerializeField] private Color hitFlashColor = new Color(1f, 0.35f, 0.25f, 1f);
++ 
+-     [SerializeField] private float hitFlashDuration = 0.12f;
++     [Header("Hit Reaction")]
+-     [SerializeField] private float hitScaleMultiplier = 1.12f;
++     [SerializeField] private Color hitFlashColor = new Color(1f, 0.35f, 0.25f, 1f);
+-     [SerializeField] private float knockbackForce = 3.5f;
++     [SerializeField] private float hitFlashDuration = 0.12f;
+-     [SerializeField] private float knockbackDuration = 0.08f;
++     [SerializeField] private float hitScaleMultiplier = 1.12f;
+- 
++     [SerializeField] private float knockbackForce = 3.5f;
+-     private int currentHealth;
++     [SerializeField] private float knockbackDuration = 0.08f;
+-     private bool isDead;
++ 
+-     private bool isMidBoss;
++     private int currentHealth;
+- 
++     private bool isDead;
+-     private SpriteRenderer spriteRenderer;
++     private bool isMidBoss;
+-     private EnemyMovement enemyMovement;
++     private bool isStrongBoss;
+-     private Color originalColor;
++ 
+-     private Vector3 baseScale;
++     private SpriteRenderer spriteRenderer;
+-     private Coroutine hitFlashCoroutine;
++     private EnemyMovement enemyMovement;
+-     private EnemySpawner ownerSpawner;
++     private Color originalColor;
+- 
++     private Vector3 baseScale;
+-     public bool IsMidBoss => isMidBoss;
++     private Coroutine hitFlashCoroutine;
+- 
++     private EnemySpawner ownerSpawner;
+-     private void Awake()
++ 
+-     {
++     public bool IsMidBoss => isMidBoss;
+-         currentHealth = maxHealth;
++     public bool IsStrongBoss => isStrongBoss;
+-         spriteRenderer = GetComponent<SpriteRenderer>();
++     private void Awake()
+-         enemyMovement = GetComponent<EnemyMovement>();
++     {
+- 
++         currentHealth = maxHealth;
+-         baseScale = transform.localScale;
++ 
+- 
++         spriteRenderer = GetComponent<SpriteRenderer>();
+-         if (spriteRenderer != null)
++         enemyMovement = GetComponent<EnemyMovement>();
+-         {
++ 
+-             originalColor = spriteRenderer.color;
++         baseScale = transform.localScale;
+-         }
++ 
+-     }
++         if (spriteRenderer != null)
+- 
++         {
+-     public void Initialize(int newMaxHealth, int newExpReward, bool isBoss, EnemySpawner spawner = null)
++             originalColor = spriteRenderer.color;
+-     {
++         }
+-         ownerSpawner = spawner;
++     }
+-         isMidBoss = isBoss;
++ 
+-         isDead = false;
++     public void Initialize(int newMaxHealth, int newExpReward, bool isBoss, EnemySpawner spawner = null)
+- 
++     {
+-         maxHealth = Mathf.Max(1, newMaxHealth);
++         Initialize(newMaxHealth, newExpReward, isBoss, false, spawner);
+-         currentHealth = maxHealth;
++     }
+-         expReward = Mathf.Max(1, newExpReward);
++ 
+- 
++     public void Initialize(int newMaxHealth, int newExpReward, bool isBoss, bool isStrong, EnemySpawner spawner = null)
+# ... 변경 내용 일부만 표시됨
+```
+
+### Assets/_Project/Scripts/Spawning/EnemySpawner.cs
+
+```text
+Classes:
+- EnemySpawner
+- EnemySpawnEntry
+Methods:
+- Awake()
+- Update()
+- HasValidEnemyPrefab()
+- TrySpawnEnemy()
+- SpawnEnemy()
+- DespawnEnemy()
+- GetRandomEnemyPrefab()
+- GetTotalSpawnWeight()
+- IsValidEntry()
+- GetSpawnPositionAroundPlayer()
+- RemoveDeadEnemies()
+- BuildEnemyPool()
+- GetOrCreateEnemy()
+```
+
+Changed code preview:
+```diff
+-         if (waveManager != null && waveManager.ShouldSpawnFirstMidBoss())
++         if (waveManager != null)
+-             SpawnEnemy(true);
++             if (waveManager.ShouldSpawnStrongBoss())
+-             waveManager.MarkFirstMidBossSpawned();
++             {
+-             return;
++                 SpawnEnemy(false, true);
+-         }
++                 waveManager.MarkStrongBossSpawned();
+- 
++                 return;
+-         int currentMaxEnemies = waveManager != null ? waveManager.GetMaxEnemies(maxEnemies) : maxEnemies;
++             }
+-         if (spawnedEnemies.Count >= currentMaxEnemies)
++             if (waveManager.ShouldSpawnFirstMidBoss())
+-             return;
++             {
+- 
++                 SpawnEnemy(true, false);
+-         SpawnEnemy(false);
++                 waveManager.MarkFirstMidBossSpawned();
+-     }
++                 return;
+- 
++             }
+-     private void SpawnEnemy(bool isMidBoss)
++         }
+-     {
++ 
+-         GameObject selectedPrefab = GetRandomEnemyPrefab();
++         int currentMaxEnemies = waveManager != null ? waveManager.GetMaxEnemies(maxEnemies) : maxEnemies;
+-         if (selectedPrefab == null)
++         if (spawnedEnemies.Count >= currentMaxEnemies)
+-         Vector2 spawnPosition = GetSpawnPositionAroundPlayer();
++         SpawnEnemy(false, false);
+- 
++     }
+-         GameObject enemy = GetOrCreateEnemy(selectedPrefab, spawnPosition);
++ 
+- 
++     private void SpawnEnemy(bool isMidBoss, bool isStrongBoss = false)
+-         EnemyMovement enemyMovement = enemy.GetComponent<EnemyMovement>();
++     {
+- 
++         GameObject selectedPrefab = GetRandomEnemyPrefab();
+-         if (enemyMovement != null)
++ 
+-         {
++         if (selectedPrefab == null)
+-             enemyMovement.SetTarget(playerTarget);
++             return;
+-         }
++ 
+- 
++         Vector2 spawnPosition = GetSpawnPositionAroundPlayer();
+-         EnemyHealth enemyHealth = enemy.GetComponent<EnemyHealth>();
++ 
+- 
++         GameObject enemy = GetOrCreateEnemy(selectedPrefab, spawnPosition);
+-         if (enemyHealth != null)
++ 
+-         {
++         EnemyMovement enemyMovement = enemy.GetComponent<EnemyMovement>();
+-             int health = waveManager != null ? waveManager.GetEnemyHealth(isMidBoss) : (isMidBoss ? 90 : 30);
++ 
+-             int exp = waveManager != null ? waveManager.GetExpReward(isMidBoss) : (isMidBoss ? 20 : 5);
++         if (enemyMovement != null)
+-             enemyHealth.Initialize(health, exp, isMidBoss, this);
++         {
+-         }
++             enemyMovement.SetTarget(playerTarget);
+- 
++         }
+-         EnemyContactDamage contactDamage = enemy.GetComponent<EnemyContactDamage>();
++ 
+- 
++         EnemyHealth enemyHealth = enemy.GetComponent<EnemyHealth>();
+-         if (contactDamage != null)
++ 
+-         {
++         if (enemyHealth != null)
+-             int damage = waveManager != null ? waveManager.GetEnemyDamage(isMidBoss) : (isMidBoss ? 12 : 8);
++         {
+-             contactDamage.Initialize(damage);
++             int health = waveManager != null ? waveManager.GetEnemyHealth(isMidBoss, isStrongBoss) : (isStrongBoss ? 540 : (isMidBoss ? 90 : 30));
+-         }
++             int exp = waveManager != null ? waveManager.GetExpReward(isMidBoss, isStrongBoss) : (isStrongBoss ? 40 : (isMidBoss ? 20 : 5));
+- 
++             enemyHealth.Initialize(health, exp, isMidBoss, isStrongBoss, this);
+-         spawnedEnemies.Add(enemy);
++         }
+-         if (isMidBoss && waveManager != null)
++         EnemyContactDamage contactDamage = enemy.GetComponent<EnemyContactDamage>();
+-         {
++ 
+-             Debug.Log($"Mid Boss spawned at {waveManager.FirstMidBossSpawnTime} seconds.");
++         if (contactDamage != null)
+-         }
++         {
+# ... 변경 내용 일부만 표시됨
+```
+
+### Assets/_Project/Scripts/Spawning/WaveManager.cs
+
+```text
+Classes:
+- WaveManager
+Methods:
+- Awake()
+- Update()
+- AdvanceWave()
+- ShouldSpawnFirstMidBoss()
+- MarkFirstMidBossSpawned()
+- ShouldSpawnStrongBoss()
+- MarkStrongBossSpawned()
+- IsMidBossWave()
+- GetEnemyHealth()
+- GetEnemyDamage()
+- GetExpReward()
+- GetSpawnInterval()
+- GetMaxEnemies()
+```
+
+Changed code preview:
+```diff
+-     private float waveTimer;
++     [Header("Timed Strong Boss")]
+-     private bool firstMidBossSpawned;
++     [SerializeField] private float strongBossSpawnTime = 600f;
+- 
++     [SerializeField] private float strongBossHealthMultiplier = 18f;
+-     public int CurrentWave => currentWave;
++     [SerializeField] private float strongBossDamageMultiplier = 2.2f;
+-     public float WaveTimer => waveTimer;
++     [SerializeField] private float strongBossExpMultiplier = 8f;
+-     public float WaveDuration => waveDuration;
++ 
+-     public float FirstMidBossSpawnTime => firstMidBossSpawnTime;
++     private float waveTimer;
+-     public bool FirstMidBossSpawned => firstMidBossSpawned;
++     private bool firstMidBossSpawned;
+- 
++     private bool strongBossSpawned;
+-     private void Awake()
++ 
+-     {
++     public int CurrentWave => currentWave;
+-         if (gameTimer == null)
++     public float WaveTimer => waveTimer;
+-         {
++     public float WaveDuration => waveDuration;
+-             gameTimer = FindFirstObjectByType<GameTimer>();
++     public float FirstMidBossSpawnTime => firstMidBossSpawnTime;
+-         }
++     public bool FirstMidBossSpawned => firstMidBossSpawned;
+- 
++     public float StrongBossSpawnTime => strongBossSpawnTime;
+-         waveTimer = waveDuration;
++     public bool StrongBossSpawned => strongBossSpawned;
+-         OnWaveChanged?.Invoke();
++ 
+-     }
++     private void Awake()
+- 
++     {
+-     private void Update()
++         if (gameTimer == null)
+-     {
++         {
+-         waveTimer -= Time.deltaTime;
++             gameTimer = FindFirstObjectByType<GameTimer>();
+- 
++         }
+-         if (waveTimer <= 0f)
++ 
+-         {
++         waveTimer = waveDuration;
+-             AdvanceWave();
++         OnWaveChanged?.Invoke();
+-         }
++     }
+-     }
++ 
+- 
++     private void Update()
+-     private void AdvanceWave()
++     {
+-     {
++         waveTimer -= Time.deltaTime;
+-         currentWave++;
++ 
+-         waveTimer = waveDuration;
++         if (waveTimer <= 0f)
+-         OnWaveChanged?.Invoke();
++         {
+- 
++             AdvanceWave();
+-         Debug.Log($"Wave {currentWave} started.");
++         }
+-     public bool ShouldSpawnFirstMidBoss()
++     private void AdvanceWave()
+-         if (firstMidBossSpawned)
++         currentWave++;
+-             return false;
++         waveTimer = waveDuration;
+- 
++         OnWaveChanged?.Invoke();
+-         if (gameTimer == null)
++ 
+-             return false;
++         Debug.Log($"Wave {currentWave} started.");
+- 
++     }
+-         return gameTimer.GameplayTime >= firstMidBossSpawnTime;
++ 
+-     }
++     public bool ShouldSpawnFirstMidBoss()
+- 
++     {
+-     public void MarkFirstMidBossSpawned()
++         if (firstMidBossSpawned)
+-     {
++             return false;
+-         firstMidBossSpawned = true;
++ 
+# ... 변경 내용 일부만 표시됨
+```
 
 ## Scripts Tree
 
@@ -3570,6 +3956,8 @@ Methods:
 - AdvanceWave()
 - ShouldSpawnFirstMidBoss()
 - MarkFirstMidBossSpawned()
+- ShouldSpawnStrongBoss()
+- MarkStrongBossSpawned()
 - IsMidBossWave()
 - GetEnemyHealth()
 - GetEnemyDamage()
@@ -6602,11 +6990,13 @@ public class EnemyHealth : MonoBehaviour
     [Header("Boss Visual")]
     [SerializeField] private float normalScale = 0.8f;
     [SerializeField] private float midBossScale = 1.35f;
+    [SerializeField] private float strongBossScale = 1.8f;
 
     [Tooltip("체크하면 중간보스에만 색상 강조를 적용합니다.")]
     [SerializeField] private bool useMidBossTint = true;
 
     [SerializeField] private Color midBossTintColor = new Color(1f, 0.65f, 0.12f, 1f);
+    [SerializeField] private Color strongBossTintColor = new Color(0.5f, 0f, 0.5f, 1f);
 
     [Header("Hit Reaction")]
     [SerializeField] private Color hitFlashColor = new Color(1f, 0.35f, 0.25f, 1f);
@@ -6618,6 +7008,7 @@ public class EnemyHealth : MonoBehaviour
     private int currentHealth;
     private bool isDead;
     private bool isMidBoss;
+    private bool isStrongBoss;
 
     private SpriteRenderer spriteRenderer;
     private EnemyMovement enemyMovement;
@@ -6627,6 +7018,7 @@ public class EnemyHealth : MonoBehaviour
     private EnemySpawner ownerSpawner;
 
     public bool IsMidBoss => isMidBoss;
+    public bool IsStrongBoss => isStrongBoss;
 
     private void Awake()
     {
@@ -6645,8 +7037,14 @@ public class EnemyHealth : MonoBehaviour
 
     public void Initialize(int newMaxHealth, int newExpReward, bool isBoss, EnemySpawner spawner = null)
     {
+        Initialize(newMaxHealth, newExpReward, isBoss, false, spawner);
+    }
+
+    public void Initialize(int newMaxHealth, int newExpReward, bool isBoss, bool isStrong, EnemySpawner spawner = null)
+    {
         ownerSpawner = spawner;
         isMidBoss = isBoss;
+        isStrongBoss = isStrong;
         isDead = false;
 
         maxHealth = Mathf.Max(1, newMaxHealth);
@@ -6664,6 +7062,29 @@ public class EnemyHealth : MonoBehaviour
 
     private void ApplyVisual()
     {
+        if (isStrongBoss)
+        {
+            gameObject.name = "StrongBoss_Enemy";
+            transform.localScale = Vector3.one * strongBossScale;
+            baseScale = transform.localScale;
+
+            if (spriteRenderer != null)
+            {
+                if (useMidBossTint)
+                {
+                    spriteRenderer.color = strongBossTintColor;
+                    originalColor = strongBossTintColor;
+                }
+                else
+                {
+                    spriteRenderer.color = Color.white;
+                    originalColor = Color.white;
+                }
+            }
+
+            return;
+        }
+
         if (isMidBoss)
         {
             gameObject.name = "MidBoss_Enemy";
@@ -6717,7 +7138,7 @@ public class EnemyHealth : MonoBehaviour
 
         if (enemyMovement != null)
         {
-            float finalKnockbackForce = isMidBoss ? knockbackForce * 0.45f : knockbackForce;
+            float finalKnockbackForce = isStrongBoss ? knockbackForce * 0.25f : (isMidBoss ? knockbackForce * 0.45f : knockbackForce);
             enemyMovement.ApplyKnockback(knockbackDirection, finalKnockbackForce, knockbackDuration);
         }
 
@@ -6778,7 +7199,7 @@ public class EnemyHealth : MonoBehaviour
         DropExpGem(expGemDropPosition);
         DropSmallHeal(expGemDropPosition);
 
-        if (isMidBoss)
+        if (isMidBoss || isStrongBoss)
         {
             OpenRelicSelectUI();
         }
@@ -6822,7 +7243,7 @@ public class EnemyHealth : MonoBehaviour
         if (smallHealPrefab == null)
             return;
 
-        if (isMidBoss && midBossAlwaysDropSmallHeal)
+        if ((isMidBoss || isStrongBoss) && midBossAlwaysDropSmallHeal)
         {
             Instantiate(smallHealPrefab, GetSmallHealDropPosition(expGemDropPosition), Quaternion.identity);
             return;
@@ -7990,11 +8411,21 @@ public class EnemySpawner : MonoBehaviour
 
     private void TrySpawnEnemy()
     {
-        if (waveManager != null && waveManager.ShouldSpawnFirstMidBoss())
+        if (waveManager != null)
         {
-            SpawnEnemy(true);
-            waveManager.MarkFirstMidBossSpawned();
-            return;
+            if (waveManager.ShouldSpawnStrongBoss())
+            {
+                SpawnEnemy(false, true);
+                waveManager.MarkStrongBossSpawned();
+                return;
+            }
+
+            if (waveManager.ShouldSpawnFirstMidBoss())
+            {
+                SpawnEnemy(true, false);
+                waveManager.MarkFirstMidBossSpawned();
+                return;
+            }
         }
 
         int currentMaxEnemies = waveManager != null ? waveManager.GetMaxEnemies(maxEnemies) : maxEnemies;
@@ -8002,10 +8433,10 @@ public class EnemySpawner : MonoBehaviour
         if (spawnedEnemies.Count >= currentMaxEnemies)
             return;
 
-        SpawnEnemy(false);
+        SpawnEnemy(false, false);
     }
 
-    private void SpawnEnemy(bool isMidBoss)
+    private void SpawnEnemy(bool isMidBoss, bool isStrongBoss = false)
     {
         GameObject selectedPrefab = GetRandomEnemyPrefab();
 
@@ -8027,22 +8458,26 @@ public class EnemySpawner : MonoBehaviour
 
         if (enemyHealth != null)
         {
-            int health = waveManager != null ? waveManager.GetEnemyHealth(isMidBoss) : (isMidBoss ? 90 : 30);
-            int exp = waveManager != null ? waveManager.GetExpReward(isMidBoss) : (isMidBoss ? 20 : 5);
-            enemyHealth.Initialize(health, exp, isMidBoss, this);
+            int health = waveManager != null ? waveManager.GetEnemyHealth(isMidBoss, isStrongBoss) : (isStrongBoss ? 540 : (isMidBoss ? 90 : 30));
+            int exp = waveManager != null ? waveManager.GetExpReward(isMidBoss, isStrongBoss) : (isStrongBoss ? 40 : (isMidBoss ? 20 : 5));
+            enemyHealth.Initialize(health, exp, isMidBoss, isStrongBoss, this);
         }
 
         EnemyContactDamage contactDamage = enemy.GetComponent<EnemyContactDamage>();
 
         if (contactDamage != null)
         {
-            int damage = waveManager != null ? waveManager.GetEnemyDamage(isMidBoss) : (isMidBoss ? 12 : 8);
+            int damage = waveManager != null ? waveManager.GetEnemyDamage(isMidBoss, isStrongBoss) : (isStrongBoss ? 18 : (isMidBoss ? 12 : 8));
             contactDamage.Initialize(damage);
         }
 
         spawnedEnemies.Add(enemy);
 
-        if (isMidBoss && waveManager != null)
+        if (isStrongBoss && waveManager != null)
+        {
+            Debug.Log($"Strong Boss spawned at {waveManager.StrongBossSpawnTime} seconds.");
+        }
+        else if (isMidBoss && waveManager != null)
         {
             Debug.Log($"Mid Boss spawned at {waveManager.FirstMidBossSpawnTime} seconds.");
         }
@@ -8245,14 +8680,23 @@ public class WaveManager : MonoBehaviour
     [SerializeField] private float midBossDamageMultiplier = 2f;
     [SerializeField] private float midBossExpMultiplier = 4f;
 
+    [Header("Timed Strong Boss")]
+    [SerializeField] private float strongBossSpawnTime = 600f;
+    [SerializeField] private float strongBossHealthMultiplier = 18f;
+    [SerializeField] private float strongBossDamageMultiplier = 2.2f;
+    [SerializeField] private float strongBossExpMultiplier = 8f;
+
     private float waveTimer;
     private bool firstMidBossSpawned;
+    private bool strongBossSpawned;
 
     public int CurrentWave => currentWave;
     public float WaveTimer => waveTimer;
     public float WaveDuration => waveDuration;
     public float FirstMidBossSpawnTime => firstMidBossSpawnTime;
     public bool FirstMidBossSpawned => firstMidBossSpawned;
+    public float StrongBossSpawnTime => strongBossSpawnTime;
+    public bool StrongBossSpawned => strongBossSpawned;
 
     private void Awake()
     {
@@ -8301,37 +8745,60 @@ public class WaveManager : MonoBehaviour
         OnWaveChanged?.Invoke();
     }
 
+    public bool ShouldSpawnStrongBoss()
+    {
+        if (strongBossSpawned)
+            return false;
+
+        if (gameTimer == null)
+            return false;
+
+        return gameTimer.GameplayTime >= strongBossSpawnTime;
+    }
+
+    public void MarkStrongBossSpawned()
+    {
+        strongBossSpawned = true;
+        OnWaveChanged?.Invoke();
+    }
+
     // 기존 HUDCanvasUI / HUDDebugUI 호환용
     public bool IsMidBossWave()
     {
         return ShouldSpawnFirstMidBoss();
     }
 
-    public int GetEnemyHealth(bool isMidBoss)
+    public int GetEnemyHealth(bool isMidBoss, bool isStrongBoss = false)
     {
         int health = baseEnemyHealth + (currentWave - 1) * healthPerWave;
 
-        if (isMidBoss)
+        if (isStrongBoss)
+            health = Mathf.RoundToInt(health * strongBossHealthMultiplier);
+        else if (isMidBoss)
             health = Mathf.RoundToInt(health * midBossHealthMultiplier);
 
         return health;
     }
 
-    public int GetEnemyDamage(bool isMidBoss)
+    public int GetEnemyDamage(bool isMidBoss, bool isStrongBoss = false)
     {
         int damage = baseEnemyDamage + (currentWave - 1) * damagePerWave;
 
-        if (isMidBoss)
+        if (isStrongBoss)
+            damage = Mathf.RoundToInt(damage * strongBossDamageMultiplier);
+        else if (isMidBoss)
             damage = Mathf.RoundToInt(damage * midBossDamageMultiplier);
 
         return damage;
     }
 
-    public int GetExpReward(bool isMidBoss)
+    public int GetExpReward(bool isMidBoss, bool isStrongBoss = false)
     {
         int exp = baseExpReward + currentWave;
 
-        if (isMidBoss)
+        if (isStrongBoss)
+            exp = Mathf.RoundToInt(exp * strongBossExpMultiplier);
+        else if (isMidBoss)
             exp = Mathf.RoundToInt(exp * midBossExpMultiplier);
 
         return exp;

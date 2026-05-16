@@ -97,11 +97,21 @@ public class EnemySpawner : MonoBehaviour
 
     private void TrySpawnEnemy()
     {
-        if (waveManager != null && waveManager.ShouldSpawnFirstMidBoss())
+        if (waveManager != null)
         {
-            SpawnEnemy(true);
-            waveManager.MarkFirstMidBossSpawned();
-            return;
+            if (waveManager.ShouldSpawnStrongBoss())
+            {
+                SpawnEnemy(false, true);
+                waveManager.MarkStrongBossSpawned();
+                return;
+            }
+
+            if (waveManager.ShouldSpawnFirstMidBoss())
+            {
+                SpawnEnemy(true, false);
+                waveManager.MarkFirstMidBossSpawned();
+                return;
+            }
         }
 
         int currentMaxEnemies = waveManager != null ? waveManager.GetMaxEnemies(maxEnemies) : maxEnemies;
@@ -109,10 +119,10 @@ public class EnemySpawner : MonoBehaviour
         if (spawnedEnemies.Count >= currentMaxEnemies)
             return;
 
-        SpawnEnemy(false);
+        SpawnEnemy(false, false);
     }
 
-    private void SpawnEnemy(bool isMidBoss)
+    private void SpawnEnemy(bool isMidBoss, bool isStrongBoss = false)
     {
         GameObject selectedPrefab = GetRandomEnemyPrefab();
 
@@ -134,22 +144,26 @@ public class EnemySpawner : MonoBehaviour
 
         if (enemyHealth != null)
         {
-            int health = waveManager != null ? waveManager.GetEnemyHealth(isMidBoss) : (isMidBoss ? 90 : 30);
-            int exp = waveManager != null ? waveManager.GetExpReward(isMidBoss) : (isMidBoss ? 20 : 5);
-            enemyHealth.Initialize(health, exp, isMidBoss, this);
+            int health = waveManager != null ? waveManager.GetEnemyHealth(isMidBoss, isStrongBoss) : (isStrongBoss ? 540 : (isMidBoss ? 90 : 30));
+            int exp = waveManager != null ? waveManager.GetExpReward(isMidBoss, isStrongBoss) : (isStrongBoss ? 40 : (isMidBoss ? 20 : 5));
+            enemyHealth.Initialize(health, exp, isMidBoss, isStrongBoss, this);
         }
 
         EnemyContactDamage contactDamage = enemy.GetComponent<EnemyContactDamage>();
 
         if (contactDamage != null)
         {
-            int damage = waveManager != null ? waveManager.GetEnemyDamage(isMidBoss) : (isMidBoss ? 12 : 8);
+            int damage = waveManager != null ? waveManager.GetEnemyDamage(isMidBoss, isStrongBoss) : (isStrongBoss ? 18 : (isMidBoss ? 12 : 8));
             contactDamage.Initialize(damage);
         }
 
         spawnedEnemies.Add(enemy);
 
-        if (isMidBoss && waveManager != null)
+        if (isStrongBoss && waveManager != null)
+        {
+            Debug.Log($"Strong Boss spawned at {waveManager.StrongBossSpawnTime} seconds.");
+        }
+        else if (isMidBoss && waveManager != null)
         {
             Debug.Log($"Mid Boss spawned at {waveManager.FirstMidBossSpawnTime} seconds.");
         }

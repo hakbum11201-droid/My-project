@@ -22,11 +22,13 @@ public class EnemyHealth : MonoBehaviour
     [Header("Boss Visual")]
     [SerializeField] private float normalScale = 0.8f;
     [SerializeField] private float midBossScale = 1.35f;
+    [SerializeField] private float strongBossScale = 1.8f;
 
     [Tooltip("체크하면 중간보스에만 색상 강조를 적용합니다.")]
     [SerializeField] private bool useMidBossTint = true;
 
     [SerializeField] private Color midBossTintColor = new Color(1f, 0.65f, 0.12f, 1f);
+    [SerializeField] private Color strongBossTintColor = new Color(0.5f, 0f, 0.5f, 1f);
 
     [Header("Hit Reaction")]
     [SerializeField] private Color hitFlashColor = new Color(1f, 0.35f, 0.25f, 1f);
@@ -38,6 +40,7 @@ public class EnemyHealth : MonoBehaviour
     private int currentHealth;
     private bool isDead;
     private bool isMidBoss;
+    private bool isStrongBoss;
 
     private SpriteRenderer spriteRenderer;
     private EnemyMovement enemyMovement;
@@ -47,6 +50,7 @@ public class EnemyHealth : MonoBehaviour
     private EnemySpawner ownerSpawner;
 
     public bool IsMidBoss => isMidBoss;
+    public bool IsStrongBoss => isStrongBoss;
 
     private void Awake()
     {
@@ -65,8 +69,14 @@ public class EnemyHealth : MonoBehaviour
 
     public void Initialize(int newMaxHealth, int newExpReward, bool isBoss, EnemySpawner spawner = null)
     {
+        Initialize(newMaxHealth, newExpReward, isBoss, false, spawner);
+    }
+
+    public void Initialize(int newMaxHealth, int newExpReward, bool isBoss, bool isStrong, EnemySpawner spawner = null)
+    {
         ownerSpawner = spawner;
         isMidBoss = isBoss;
+        isStrongBoss = isStrong;
         isDead = false;
 
         maxHealth = Mathf.Max(1, newMaxHealth);
@@ -84,6 +94,29 @@ public class EnemyHealth : MonoBehaviour
 
     private void ApplyVisual()
     {
+        if (isStrongBoss)
+        {
+            gameObject.name = "StrongBoss_Enemy";
+            transform.localScale = Vector3.one * strongBossScale;
+            baseScale = transform.localScale;
+
+            if (spriteRenderer != null)
+            {
+                if (useMidBossTint)
+                {
+                    spriteRenderer.color = strongBossTintColor;
+                    originalColor = strongBossTintColor;
+                }
+                else
+                {
+                    spriteRenderer.color = Color.white;
+                    originalColor = Color.white;
+                }
+            }
+
+            return;
+        }
+
         if (isMidBoss)
         {
             gameObject.name = "MidBoss_Enemy";
@@ -137,7 +170,7 @@ public class EnemyHealth : MonoBehaviour
 
         if (enemyMovement != null)
         {
-            float finalKnockbackForce = isMidBoss ? knockbackForce * 0.45f : knockbackForce;
+            float finalKnockbackForce = isStrongBoss ? knockbackForce * 0.25f : (isMidBoss ? knockbackForce * 0.45f : knockbackForce);
             enemyMovement.ApplyKnockback(knockbackDirection, finalKnockbackForce, knockbackDuration);
         }
 
@@ -198,7 +231,7 @@ public class EnemyHealth : MonoBehaviour
         DropExpGem(expGemDropPosition);
         DropSmallHeal(expGemDropPosition);
 
-        if (isMidBoss)
+        if (isMidBoss || isStrongBoss)
         {
             OpenRelicSelectUI();
         }
@@ -242,7 +275,7 @@ public class EnemyHealth : MonoBehaviour
         if (smallHealPrefab == null)
             return;
 
-        if (isMidBoss && midBossAlwaysDropSmallHeal)
+        if ((isMidBoss || isStrongBoss) && midBossAlwaysDropSmallHeal)
         {
             Instantiate(smallHealPrefab, GetSmallHealDropPosition(expGemDropPosition), Quaternion.identity);
             return;

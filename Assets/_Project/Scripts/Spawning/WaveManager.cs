@@ -31,14 +31,23 @@ public class WaveManager : MonoBehaviour
     [SerializeField] private float midBossDamageMultiplier = 2f;
     [SerializeField] private float midBossExpMultiplier = 4f;
 
+    [Header("Timed Strong Boss")]
+    [SerializeField] private float strongBossSpawnTime = 600f;
+    [SerializeField] private float strongBossHealthMultiplier = 18f;
+    [SerializeField] private float strongBossDamageMultiplier = 2.2f;
+    [SerializeField] private float strongBossExpMultiplier = 8f;
+
     private float waveTimer;
     private bool firstMidBossSpawned;
+    private bool strongBossSpawned;
 
     public int CurrentWave => currentWave;
     public float WaveTimer => waveTimer;
     public float WaveDuration => waveDuration;
     public float FirstMidBossSpawnTime => firstMidBossSpawnTime;
     public bool FirstMidBossSpawned => firstMidBossSpawned;
+    public float StrongBossSpawnTime => strongBossSpawnTime;
+    public bool StrongBossSpawned => strongBossSpawned;
 
     private void Awake()
     {
@@ -87,37 +96,60 @@ public class WaveManager : MonoBehaviour
         OnWaveChanged?.Invoke();
     }
 
+    public bool ShouldSpawnStrongBoss()
+    {
+        if (strongBossSpawned)
+            return false;
+
+        if (gameTimer == null)
+            return false;
+
+        return gameTimer.GameplayTime >= strongBossSpawnTime;
+    }
+
+    public void MarkStrongBossSpawned()
+    {
+        strongBossSpawned = true;
+        OnWaveChanged?.Invoke();
+    }
+
     // 기존 HUDCanvasUI / HUDDebugUI 호환용
     public bool IsMidBossWave()
     {
         return ShouldSpawnFirstMidBoss();
     }
 
-    public int GetEnemyHealth(bool isMidBoss)
+    public int GetEnemyHealth(bool isMidBoss, bool isStrongBoss = false)
     {
         int health = baseEnemyHealth + (currentWave - 1) * healthPerWave;
 
-        if (isMidBoss)
+        if (isStrongBoss)
+            health = Mathf.RoundToInt(health * strongBossHealthMultiplier);
+        else if (isMidBoss)
             health = Mathf.RoundToInt(health * midBossHealthMultiplier);
 
         return health;
     }
 
-    public int GetEnemyDamage(bool isMidBoss)
+    public int GetEnemyDamage(bool isMidBoss, bool isStrongBoss = false)
     {
         int damage = baseEnemyDamage + (currentWave - 1) * damagePerWave;
 
-        if (isMidBoss)
+        if (isStrongBoss)
+            damage = Mathf.RoundToInt(damage * strongBossDamageMultiplier);
+        else if (isMidBoss)
             damage = Mathf.RoundToInt(damage * midBossDamageMultiplier);
 
         return damage;
     }
 
-    public int GetExpReward(bool isMidBoss)
+    public int GetExpReward(bool isMidBoss, bool isStrongBoss = false)
     {
         int exp = baseExpReward + currentWave;
 
-        if (isMidBoss)
+        if (isStrongBoss)
+            exp = Mathf.RoundToInt(exp * strongBossExpMultiplier);
+        else if (isMidBoss)
             exp = Mathf.RoundToInt(exp * midBossExpMultiplier);
 
         return exp;
