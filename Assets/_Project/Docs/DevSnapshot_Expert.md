@@ -1,6 +1,6 @@
 ﻿# EXPERT GPT / DEV SNAPSHOT
 
-Generated: 2026-05-07 07:22:36
+Generated: 2026-05-09 12:41:40
 Unity Version: 6000.3.10f1
 Active Scene: Main
 Scene Path: Assets/_Project/Scenes/Main.unity
@@ -28,11 +28,11 @@ Project Root: Assets/_Project
 ## Executive Summary
 
 - Scene Objects: 61
-- C# Scripts: 28
-- Prefabs: 7
-- Asset Files: 21
+- C# Scripts: 29
+- Prefabs: 8
+- Asset Files: 22
 - Changed Files: Added 0, Modified 0, Deleted 0
-- Diagnostics: HIGH 24, MEDIUM 4, LOW 14
+- Diagnostics: HIGH 18, MEDIUM 4, LOW 13
 
 ### Key Existing Systems Detected
 
@@ -49,1387 +49,1042 @@ Project Root: Assets/_Project
 ```markdown
 # DevState.md
 
-## 0. 문서 목적
-
-이 문서는 Unity 2D Dungeon Survivor 프로젝트의 현재 개발 상태를 기록하는 기준 문서다.
-
-목적은 다음과 같다.
-
-```text
-1. 현재 구현된 기능을 정확히 기록한다.
-2. 이미 해결된 문제와 아직 남은 문제를 구분한다.
-3. 다음 작업 우선순위를 명확히 한다.
-4. AI에게 현재 프로젝트 상태를 전달할 때 기준 자료로 사용한다.
-5. 예전 MD 문서와 실제 프로젝트 상태가 어긋나는 문제를 방지한다.
-```
-
-이 문서는 `AGENTS.md`와 함께 사용한다.
-
-```text
-AGENTS.md:
-- AI 개발 규칙
-- 중복 시스템 생성 방지
-- 코드 수정 원칙
-
-DevState.md:
-- 현재 개발 상태
-- 완료된 기능
-- 남은 문제
-- 다음 작업 우선순위
-```
-
----
-
 ## 1. 프로젝트 개요
 
 - 프로젝트명: 2D Dungeon Survivor
 - 장르: 2D 가로형 생존 로그라이크 / 뱀서류
-- 개발 엔진: Unity
-- 현재 Unity 버전: 6000.3.10f1
-- 메인 씬: `Assets/_Project/Scenes/Main.unity`
+- 엔진: Unity 6000.3.10f1
+- 메인 씬: Assets/_Project/Scenes/Main.unity
 - 개발 기준: 정식 출시 가능 구조 지향
+- 그래픽 방향: 도트 기반 다크 판타지, Stoneshard풍 참고
 - 현재 목표: 5분 MVP 안정화 후 10분 수직 슬라이스 확장
-- 그래픽 방향: 도트 기반 다크 판타지, 스톤샤드풍 참고
-- 개발 방식: 한 번에 하나의 기능만 추가하고, 기존 구조를 보존한다.
+- 현재 개발 방식:
+  - 단순 1개 파일 수정은 ChatGPT에서 전체 복붙 코드로 진행
+  - 여러 파일 수정 / 구조 변경 / 리팩터링은 Antigravity를 활용
+  - 문서 정리는 ChatGPT가 작성하고, Antigravity는 코드 수정 보조로 사용
 
 ---
 
-## 2. 현재 진행 단계
+## 2. 현재 진행 상태
 
-현재 프로젝트는 기초 기능을 하나씩 붙이는 초반 단계를 넘어섰다.
+현재 프로젝트는 단순 프로토타입 단계를 넘었고, **5분 MVP 안정화 후 10분 수직 슬라이스 초입 단계**에 있다.
 
-현재 상태는 다음과 같다.
+현재 완성도 판단:
+
+- 단순 프로토타입: 완료
+- 5분 MVP: 약 85%
+- 10분 수직 슬라이스: 약 45%
+- 출시 기준 베이스: 약 30%
+
+현재 핵심 루프는 아래까지 구현되어 있다.
 
 ```text
-5분 MVP 핵심 루프 대부분 구현 완료
-→ 5분 플레이 안정화 필요
-→ 10분 수직 슬라이스 확장 준비 단계
-```
-
-현재 구현된 핵심 플레이 루프는 다음과 같다.
-
-```text
-게임 시작
+시작 화면
+→ 게임 시작
 → 플레이어 이동
 → 몬스터 스폰
-→ 자동 공격
+→ 자동 근접 공격
 → 몬스터 처치
 → 경험치 획득
 → 레벨업 선택
-→ 강화 적용
-→ 웨이브 진행
+→ 능력치 강화 또는 무기 해금
+→ Magic Bolt / Holy Aura 해금 가능
 → 중간보스 등장
+→ 중간보스 처치
 → 유물 선택
 → 보유 유물 HUD 표시
-→ 사망 시 게임오버
-→ 재시작
+→ 플레이어 사망
+→ 게임오버 결과 화면
+→ Retry
 ```
 
-현재 결론:
+현재 단계의 핵심은 새 시스템을 무리하게 늘리는 것이 아니라, **5분 MVP 통합 테스트와 10분 수직 슬라이스 확장 기반 정리**다.
+
+---
+
+## 3. 최근 변경 사항
+
+### 3.1 GameOver 결과 화면 개선 완료
+
+- GameFlowManager.cs에 PlayerExp, WaveManager, GameTimer, GameOverText 참조 추가 완료
+- 플레이어 사망 시 GameOverCanvas가 활성화됨
+- GameOverText에 아래 정보 표시 가능:
+  - Survival Time
+  - Level
+  - Wave
+- GameOverCanvas/GameOverPanel/Text (TMP)를 GameFlowManager의 Game Over Text 필드에 연결 완료
+- Retry 버튼 구조 유지
+
+---
+
+### 3.2 UI 연결 정리 완료
+
+LevelUpUI 연결 정리 완료:
 
 ```text
-이제 단순히 기능을 계속 추가하는 단계가 아니다.
-우선 구조 충돌을 줄이고, 웨이브 체감과 성장 체감을 강화해야 한다.
+Damage Button Text
+Attack Speed Button Text
+Attack Range Button Text
+```
+
+RelicSelectUI 연결 정리 완료:
+
+```text
+Relic Button Text 01
+Relic Button Text 02
+Relic Button Text 03
+```
+
+HUDCanvasUI 연결 및 표시 정리 완료:
+
+```text
+Relic Text → HUDPanel/RelicText
+Relic Title → RELICS
+Empty Relic Text → RELICS
+```
+
+현재 Play 화면에서 `RELICS` 텍스트가 정상 표시되는 것을 확인했다.
+
+---
+
+### 3.3 WaveManager + EnemySpawner 난이도 연동 완료
+
+Antigravity를 사용하여 WaveManager.cs와 EnemySpawner.cs를 수정했다.
+
+완료 내용:
+
+- 웨이브가 오를수록 일반 몬스터 스폰 간격이 감소하도록 구조 추가
+- 웨이브가 오를수록 최대 몬스터 수가 증가하도록 구조 추가
+- EnemySpawner의 기존 Spawn Interval / Max Enemies 값은 1웨이브 기준값으로 유지
+- WaveManager가 없을 경우 기존 EnemySpawner 기본값으로 fallback 되도록 구성
+- 기존 EnemySpawnEntry / Spawn Table 구조 유지
+- 중간보스 스폰 구조 유지
+- 새 Manager / 새 Canvas / 새 UI Script 생성 없음
+
+WaveManager에 추가된 Spawn Difficulty 항목:
+
+```text
+Spawn Interval Decrease Per Wave: 0.05
+Min Spawn Interval: 0.5
+Max Enemies Increase Per Wave: 2
+Max Enemies Cap: 50
 ```
 
 ---
 
-## 3. 최근 주요 변경 사항
+### 3.4 중간보스 체감 보강 완료
 
-최근 반영된 주요 변경 사항은 다음과 같다.
+Antigravity를 사용하여 기존 중간보스 구조를 유지한 상태에서 1차 보강을 진행했다.
+
+최종 Inspector 설정:
+
+WaveManager:
 
 ```text
-- WaveManager에 OnWaveChanged 이벤트 추가
-- HUDCanvasUI에서 WaveManager.OnWaveChanged 구독/해제 추가
-- 웨이브 상태 변경 즉시 HUD 반영
-- RelicSelectUI에서 Random.Range 충돌 수정
-- RelicSelectUI에서 UnityEngine.Random.Range 명시
-- HUDCanvasUI에 보유 유물 표시 구조 추가
-- RelicSelectUI에 OwnedRelics / OnOwnedRelicsChanged 구조 추가
-- PauseManager 기반 일시정지 구조 일부 적용
-- Magic Bolt 무기 구조 추가
-- UpgradeData에 WeaponUnlock 흐름 추가
-- SmallHeal과 ExpGem 드랍 위치 분리 개선
+Mid Boss Health Multiplier: 10
+Mid Boss Damage Multiplier: 1.7
+Mid Boss Exp Multiplier: 4
+```
+
+Enemy_Bat_01 / Enemy_Ghoul_01 프리팹의 EnemyHealth:
+
+```text
+Mid Boss Scale: 1.5
+Use Mid Boss Tint: 체크
+Mid Boss Tint Color: 주황 계열
+```
+
+의도:
+
+```text
+중간보스가 일반 몬스터보다 더 단단함
+중간보스가 일반 몬스터보다 더 위협적임
+중간보스가 크기와 색상으로 구분됨
+중간보스 처치 후 기존 유물 선택 UI 흐름 유지
 ```
 
 ---
 
-## 4. 현재 주요 폴더 구조
+### 3.5 Holy Aura 무기 추가 완료
 
-현재 프로젝트 기준 폴더 구조는 다음과 같다.
+Antigravity를 사용하여 세 번째 무기인 Holy Aura를 추가했다.
 
-```text
-Assets/_Project
-├── Animations
-├── Art
-│   ├── Backgrounds
-│   ├── Characters
-│   ├── Effects
-│   ├── Enemies
-│   ├── Tiles
-│   ├── UI
-│   └── Weapons
-├── Audio
-│   ├── BGM
-│   └── SFX
-├── Docs
-├── Materials
-├── Prefabs
-│   ├── Enemies
-│   ├── Items
-│   ├── Player
-│   ├── Projectiles
-│   └── UI
-├── Scenes
-├── ScriptableObjects
-│   ├── Characters
-│   ├── Enemies
-│   ├── Relics
-│   ├── Upgrades
-│   └── Weapons
-└── Scripts
-    ├── Combat
-    ├── Core
-    ├── Data
-    ├── Debug
-    ├── Editor
-    ├── Enemy
-    ├── Items
-    ├── Player
-    ├── Projectiles
-    ├── Relics
-    ├── Spawning
-    ├── UI
-    └── Weapons
-```
+완료 내용:
 
-새 스크립트나 에셋을 만들 때는 이 구조를 기준으로 배치한다.
+- PlayerHolyAuraAutoAttack.cs 신규 생성
+- LevelUpUI.cs에 Holy Aura 해금 처리 추가
+- UpgradeData의 기존 WeaponUnlock 구조 재사용
+- weaponId는 `holy_aura` 사용
+- Holy Aura는 발사체 없이 플레이어 주변 범위 내 적에게 주기적으로 피해를 주는 지속 범위 공격
+- Damage / Attack Speed / Attack Range 강화가 Holy Aura에도 적용되도록 확장
+- 기존 Magic Bolt 해금 구조 유지
+- 새 Manager / 새 Canvas / 새 UI Script 생성 없음
 
----
-
-## 5. 현재 완료된 기능
-
----
-
-### 5.1 플레이어
-
-완료된 기능:
+현재 무기 구조:
 
 ```text
-- 플레이어 이동 가능
-- 기사 도트 스프라이트 적용
-- Rigidbody2D 기반 2D 이동 구조 사용
-- 체력 시스템 존재
-- 피격 가능
-- 무적 시간 존재
-- 넉백 가능
-- 방어력 적용 가능
-- 최대 체력 강화 가능
-- 이동속도 강화 가능
-- 아이템 획득 범위 강화 가능
-```
+기본 시작 무기:
+- Sword Slash
 
-관련 주요 스크립트:
-
-```text
-Assets/_Project/Scripts/Player/PlayerHealth.cs
-Assets/_Project/Scripts/Player/PlayerExp.cs
-Assets/_Project/Scripts/Player/PlayerPickupRange.cs
-Assets/_Project/Scripts/Player/PlayerRelicEffects.cs
-```
-
-주의 사항:
-
-```text
-- PlayerHealth가 체력, 피격, 방어력의 기준이다.
-- PlayerExp가 레벨과 경험치의 기준이다.
-- PlayerPickupRange가 아이템 획득 범위의 기준이다.
-- 새 체력 시스템이나 새 경험치 시스템을 만들지 않는다.
-```
-
-현재 평가:
-
-```text
-플레이어 기본 조작과 생존 구조는 구현 완료 상태다.
-이제 이동 자체보다 피격감, 사망 처리, 성장 체감 보강이 중요하다.
+획득형 무기:
+- Magic Bolt
+- Holy Aura
 ```
 
 ---
 
-### 5.2 전투 - 근접 자동 공격
+### 3.6 Brute 적 추가 완료
 
-완료된 기능:
+코드 수정 없이 Unity Prefab 작업으로 신규 적 `Enemy_Brute_01`을 추가했다.
+
+완료 내용:
+
+- `Enemy_Ghoul_01`을 복제하여 `Enemy_Brute_01` 생성
+- Brute는 느리지만 체력이 높은 탱커형 적
+- 기존 EnemyHealth / EnemyMovement / EnemyContactDamage 구조 재사용
+- 기존 EnemySpawner Spawn Table 구조 재사용
+- 새 스크립트 생성 없음
+
+Enemy_Brute_01 기준 설정:
 
 ```text
-- 자동 근접 공격 구현
-- 사거리 내 몬스터 탐색 가능
-- 몬스터 피격 가능
-- 몬스터 넉백 가능
-- 공격력 강화 가능
-- 공격속도 강화 가능
-- 공격범위 강화 가능
-- 치명타 확률 강화 가능
+Prefab: Assets/_Project/Prefabs/Enemies/Enemy_Brute_01.prefab
+Scale: 1.15 / 1.15 / 1
+Layer: Enemy
+Max Health: 80
+Exp Reward: 10
+Move Speed: 약 1.3 권장
+Contact Damage: 14
 ```
 
-관련 주요 스크립트:
+현재 적 역할 구분:
 
 ```text
-Assets/_Project/Scripts/Weapons/PlayerMeleeAutoAttack.cs
-```
+Enemy_Ghoul_01:
+- 일반 추적형
 
-현재 평가:
+Enemy_Bat_01:
+- 빠른 압박형
 
-```text
-근접 자동 공격은 현재 기본 전투의 중심이다.
-기능은 작동하지만 타격감은 아직 최소 수준이다.
-```
-
-남은 개선 방향:
-
-```text
-- 공격 이펙트 강화
-- 타격 사운드 추가
-- 피격 순간 시각 효과 추가
-- 카메라 흔들림 추가 검토
-- 데미지 숫자 표시 검토
-```
-
----
-
-### 5.3 전투 - Magic Bolt 무기
-
-완료된 기능:
-
-```text
-- Magic Bolt 자동 공격 스크립트 존재
-- Magic Bolt Projectile 스크립트 존재
-- Magic Bolt 프리팹 존재
-- WeaponUnlock 강화로 해금 가능
-- 공격력 / 공격속도 / 공격범위 강화 일부 연동
-```
-
-관련 주요 스크립트:
-
-```text
-Assets/_Project/Scripts/Weapons/PlayerMagicBoltAutoAttack.cs
-Assets/_Project/Scripts/Projectiles/MagicBoltProjectile.cs
-Assets/_Project/Scripts/UI/LevelUpUI.cs
-```
-
-현재 평가:
-
-```text
-무기 2개 구조로 확장되기 시작했다.
-근접 무기만 있던 단조로움은 일부 해소되었다.
-다만 무기별 개별 성장 구조는 아직 명확히 분리되지 않았다.
-```
-
-남은 확인 사항:
-
-```text
-- PlayerMagicBoltAutoAttack의 projectileSpawnPoint 연결 여부
-- MagicBolt 프리팹 연결 여부
-- Magic Bolt 해금 전에는 발사되지 않는지
-- Magic Bolt 해금 후 정상 발사되는지
-- 공격력 강화가 Magic Bolt에도 의도대로 적용되는지
-- 공격속도 강화가 Magic Bolt에도 의도대로 적용되는지
-- 공격범위 강화가 Magic Bolt에도 의도대로 적용되는지
-```
-
-주의 사항:
-
-```text
-- 다음 무기 추가 전 공통 강화와 개별 강화 기준을 정해야 한다.
-- 새 WeaponManager 같은 큰 구조는 아직 만들지 않는다.
-- 기존 구조를 유지하면서 필요한 만큼만 확장한다.
+Enemy_Brute_01:
+- 느리지만 단단한 탱커형
 ```
 
 ---
 
-### 5.4 몬스터
+## 4. 현재 완료된 핵심 기능
 
-완료된 기능:
+### 4.1 플레이어
 
-```text
-- 몬스터 체력 존재
-- 몬스터 이동 존재
-- 몬스터 접촉 데미지 존재
-- 몬스터 피격 가능
-- 몬스터 넉백 가능
-- 몬스터 처치 가능
-- ExpGem 드랍 가능
-- SmallHeal 드랍 가능
-```
+- PlayerController 기반 이동 구현
+- Rigidbody2D 기반 이동
+- PlayerHealth 기반 체력 / 방어 / 피격 / 무적 / 넉백 구현
+- PlayerExp 기반 경험치 / 레벨 시스템 구현
+- PlayerPickupRange 기반 경험치 자동 흡수 구현
+- PlayerRelicEffects 기반 유물 효과 적용 구조 구현
+- PlayerMagicBoltAutoAttack 컴포넌트 추가 완료
+- PlayerHolyAuraAutoAttack 컴포넌트 추가 완료
 
-관련 주요 스크립트:
+Player에는 현재 다음 주요 컴포넌트가 붙어 있음:
 
 ```text
-Assets/_Project/Scripts/Enemy/EnemyHealth.cs
-Assets/_Project/Scripts/Enemy/EnemyMovement.cs
-Assets/_Project/Scripts/Enemy/EnemyContactDamage.cs
-```
-
-현재 평가:
-
-```text
-기본 몬스터 루프는 작동한다.
-다만 적 종류와 웨이브별 조합 변화는 아직 약하다.
-```
-
-남은 개선 방향:
-
-```text
-- 빠르고 약한 적
-- 느리고 단단한 적
-- 돌진형 적
-- 원거리 적
-- 중간보스 이후 강한 적 비중 증가
-```
-
-주의 사항:
-
-```text
-- EnemyHealth 수정 시 ExpGem / SmallHeal 드랍 구조를 같이 확인한다.
-- EnemyMovement의 Separation 계산은 적 수가 많아질 경우 성능 테스트가 필요하다.
-- 적 종류 추가 시 EnemySpawner의 Spawn Table 구조를 우선 사용한다.
+SpriteRenderer
+Rigidbody2D
+BoxCollider2D
+PlayerController
+PlayerMeleeAutoAttack
+PlayerHealth
+PlayerExp
+PlayerPickupRange
+PlayerRelicEffects
+PlayerMagicBoltAutoAttack
+PlayerHolyAuraAutoAttack
 ```
 
 ---
 
-### 5.5 아이템 / 드랍
+### 4.2 전투
 
-완료된 기능:
+- PlayerMeleeAutoAttack 기반 기본 근접 자동공격 구현
+- MeleeSlashVisual 기반 임시 근접 공격 시각 효과 구현
+- 적 피격 처리 구현
+- 적 넉백 구현
+- 적 피격 시 색 변화 및 스케일 변화 구현
+- 치명타 확률 강화 구조 구현
+- Magic Bolt 해금형 보조 무기 구조 추가 완료
+- MagicBoltProjectile 발사체 스크립트 추가 완료
+- MagicBolt 프리팹 추가 완료
+- Holy Aura 해금형 지속 범위 공격 구조 추가 완료
+- Damage / Attack Speed / Attack Range 강화가 근접 무기, Magic Bolt, Holy Aura에 적용되도록 확장 완료
 
-```text
-- ExpGem 드랍
-- ExpGem 획득
-- 경험치 증가
-- SmallHeal 드랍
-- SmallHeal 회복
-- ExpGem과 SmallHeal 드랍 위치 분리 개선
-```
-
-관련 주요 스크립트:
-
-```text
-Assets/_Project/Scripts/Items/ExpGem.cs
-Assets/_Project/Scripts/Items/SmallHealPickup.cs
-Assets/_Project/Scripts/Enemy/EnemyHealth.cs
-```
-
-현재 평가:
+현재 무기 구조:
 
 ```text
-SmallHeal과 ExpGem 겹침 문제는 1차 개선 완료 상태다.
-다만 시각적으로 SmallHeal과 ExpGem의 구분은 아직 더 강화할 필요가 있다.
+기본 시작 무기:
+- Sword Slash / PlayerMeleeAutoAttack
+
+획득형 무기:
+- Magic Bolt / PlayerMagicBoltAutoAttack
+- Holy Aura / PlayerHolyAuraAutoAttack
 ```
 
-남은 개선 방향:
+무기 역할:
 
 ```text
-- SmallHeal 색상/스프라이트 차별화
-- 획득 시 회복 이펙트 추가
-- 회복량 표시 또는 짧은 피드백 추가
+Sword Slash:
+- 기본 근접 단발 공격
+
+Magic Bolt:
+- 원거리 자동 발사 공격
+
+Holy Aura:
+- 플레이어 주변 지속 범위 공격
 ```
+
+Magic Bolt와 Holy Aura는 시작부터 활성화되지 않고, 레벨업 선택지에서 각각 선택해야 해금된다.
 
 ---
 
-### 5.6 경험치 / 레벨업
+### 4.3 몬스터
 
-완료된 기능:
-
-```text
-- 경험치 획득 가능
-- 레벨업 가능
-- 레벨업 UI 표시 가능
-- 레벨업 시 3개 선택지 제공
-- UpgradeData 기반 강화 구조 존재
-- 강화 선택 후 게임 재개 가능
-```
-
-관련 주요 스크립트:
-
-```text
-Assets/_Project/Scripts/Player/PlayerExp.cs
-Assets/_Project/Scripts/UI/LevelUpUI.cs
-Assets/_Project/Scripts/Data/UpgradeData.cs
-```
-
-현재 강화 종류:
-
-```text
-- Damage Up
-- Attack Speed Up
-- Attack Range Up
-- Max Health Up
-- Move Speed Up
-- Pickup Range Up
-- Defense Up
-- Critical Chance Up
-- Weapon Unlock: Magic Bolt
-```
-
-현재 평가:
-
-```text
-5분 MVP 기준 성장 구조는 구현 완료로 본다.
-다음 단계는 강화 선택의 체감과 밸런스 조정이다.
-```
-
-남은 개선 방향:
-
-```text
-- 강화 수치 밸런스 조정
-- 선택지 설명 가독성 개선
-- 선택 후 강화 체감 피드백 추가
-- 무기별 개별 강화 구조 검토
-```
-
-주의 사항:
-
-```text
-- 새 강화 시스템을 만들지 않는다.
-- UpgradeData 기반 구조를 유지한다.
-- LevelUpUI에 모든 로직이 과도하게 쌓이지 않도록 주의한다.
-```
-
----
-
-### 5.7 유물
-
-완료된 기능:
-
-```text
-- RelicData 기반 유물 구조 존재
-- RelicSelectUI 존재
-- 중간보스 보상으로 유물 선택 가능
-- 3개 유물 선택지 제공
-- 이미 보유한 유물 제외 가능
-- 보유 유물 목록 유지
-- 보유 유물 HUD 표시 가능
-- 일부 유물 효과 구현 완료
-```
-
-관련 주요 스크립트:
-
-```text
-Assets/_Project/Scripts/UI/RelicSelectUI.cs
-Assets/_Project/Scripts/Relics/RelicData.cs
-Assets/_Project/Scripts/Player/PlayerRelicEffects.cs
-Assets/_Project/Scripts/UI/HUDCanvasUI.cs
-```
-
-현재 유물 후보:
-
-```text
-- Berserker Fang
-- Iron Charm
-- Blood Sigil
-- Hunter Eye
-- Grave Magnet
-```
-
-현재 평가:
-
-```text
-유물 시스템은 1차 구현 완료 상태다.
-보유 유물 표시도 HUD에 반영된 상태다.
-남은 문제는 획득 연출, 효과 체감, 아이콘 표시다.
-```
-
-남은 개선 방향:
-
-```text
-- 유물 선택 시 효과음 추가
-- 유물 획득 직후 짧은 안내 표시
-- HUD에 텍스트뿐 아니라 아이콘 표시
-- 유물 효과가 실제 플레이에서 체감되도록 수치 조정
-```
-
-주의 사항:
-
-```text
-- RelicSelectUI에 효과 로직을 계속 쌓지 않는다.
-- 유물 효과는 PlayerRelicEffects에서 관리하는 방향을 우선한다.
-- 보유 유물 표시는 HUDCanvasUI의 relicText 구조를 사용한다.
-```
-
----
-
-### 5.8 웨이브 / 스폰
-
-완료된 기능:
-
-```text
 - EnemySpawner 존재
-- Spawn Table 존재
-- Enemy Pooling 존재
-- WaveManager 존재
-- 웨이브 증가 가능
-- 웨이브 HUD 표시 가능
-- Wave 변경 이벤트 존재
-- 5분 중간보스 스폰 가능
-```
+- WaveManager와 연동됨
+- EnemySpawnEntry 기반 몬스터 Spawn Table 사용
+- 몬스터별 Spawn Weight 설정 가능
+- EnemyMovement 기반 플레이어 추적 구현
+- EnemyHealth 기반 체력 / 피격 / 사망 / 드랍 / 중간보스 처리 구현
+- EnemyContactDamage 기반 접촉 피해 구현
+- 구울 / 박쥐 / 브루트 프리팹 사용 가능
+- 기존 빨간 박스 Enemy는 Spawn Table에서 제외하면 더 이상 스폰되지 않음
+- WaveManager + EnemySpawner 난이도 연동 완료
+- 웨이브별 스폰 간격 감소 / 최대 적 수 증가 구조 완료
+- 중간보스 체력 / 피해량 / 시각 구분 1차 보강 완료
 
-관련 주요 스크립트:
-
-```text
-Assets/_Project/Scripts/Spawning/EnemySpawner.cs
-Assets/_Project/Scripts/Spawning/WaveManager.cs
-```
-
-현재 평가:
+현재 주요 적 프리팹:
 
 ```text
-웨이브 시스템은 존재하지만 체감 변화가 아직 약하다.
-단순 체력/데미지 증가만으로는 반복감이 생길 수 있다.
-10분 수직 슬라이스로 가려면 웨이브별 적 조합 변화가 필요하다.
+Assets/_Project/Prefabs/Enemies/Enemy.prefab
+Assets/_Project/Prefabs/Enemies/Enemy_Bat_01.prefab
+Assets/_Project/Prefabs/Enemies/Enemy_Ghoul_01.prefab
+Assets/_Project/Prefabs/Enemies/Enemy_Brute_01.prefab
 ```
 
-다음 개선 후보:
+현재 권장 Spawn Table 비율:
 
 ```text
-- 웨이브별 maxEnemies 증가
-- 웨이브별 spawnInterval 감소
-- 웨이브별 적 Spawn Weight 변화
-- 5분 중간보스 이후 난이도 상승
-- 7~10분 구간에 강한 적 추가
-```
-
-주의 사항:
-
-```text
-- 새 Wave 시스템을 만들지 않는다.
-- 새 EnemySpawner를 만들지 않는다.
-- 기존 WaveManager와 EnemySpawner의 연결 구조를 먼저 확인한다.
+Enemy_Ghoul_01: 5
+Enemy_Bat_01: 2
+Enemy_Brute_01: 1
 ```
 
 ---
 
-### 5.9 UI
+### 4.4 경험치 / 성장
 
-완료된 기능:
+- ExpGem 드랍 및 획득 구현
+- PlayerExp 시스템 구현
+- 레벨 개념 구현
+- 레벨업 시 LevelUpUI 오픈
+- UpgradeData ScriptableObject 기반 강화 데이터 구조 구현
+- 강화 선택지 3개 중 1개 선택 구조 구현
+- 기본 강화 8개 + 무기 해금 2개 구성 완료
+
+현재 강화 목록:
 
 ```text
-- StartMenuCanvas 존재
+Upgrade_Damage
+Upgrade_AttackSpeed
+Upgrade_AttackRange
+Upgrade_MaxHealth
+Upgrade_MoveSpeed
+Upgrade_PickupRange
+Upgrade_Defense
+Upgrade_CriticalChance
+Upgrade_MagicBolt
+Upgrade_HolyAura
+```
+
+현재 UpgradeData 타입:
+
+```text
+Damage
+AttackSpeed
+AttackRange
+MaxHealth
+MoveSpeed
+PickupRange
+Defense
+CriticalChance
+WeaponUnlock
+```
+
+무기 해금 ID:
+
+```text
+Magic Bolt: magic_bolt
+Holy Aura: holy_aura
+```
+
+---
+
+### 4.5 유물
+
+- RelicData ScriptableObject 기반 유물 데이터 구조 구현
+- RelicSelectUI 기반 유물 3택 선택 구현
+- 중간보스 처치 후 유물 선택 UI 오픈
+- PlayerRelicEffects 기반 유물 효과 적용
+- 보유 유물 HUD 표시 구조 구현
+- HUDCanvasUI의 RelicText 표시 정상 확인 완료
+
+현재 유물 목록:
+
+```text
+Relic_BerserkerFang
+Relic_IronCharm
+Relic_BloodSigil
+Relic_HunterEye
+Relic_GraveMagnet
+```
+
+현재 유물 효과:
+
+```text
+Berserker Fang:
+- 체력이 일정 비율 이하일 때 공격 속도 증가
+
+Iron Charm:
+- 방어력 증가
+
+Blood Sigil:
+- 적 처치 시 일정 확률로 체력 회복
+
+Hunter Eye:
+- 치명타 관련 강화
+
+Grave Magnet:
+- 아이템 획득 범위 증가
+```
+
+---
+
+### 4.6 아이템
+
+- ExpGem 구현
+- SmallHeal 구현
+- SmallHeal은 ExpGem과 겹치지 않도록 드랍 위치 오프셋 적용 완료
+- 중간보스는 SmallHeal을 항상 드랍하도록 설정 가능
+
+현재 아이템 프리팹:
+
+```text
+Assets/_Project/Prefabs/Items/ExpGem.prefab
+Assets/_Project/Prefabs/Items/SmallHeal.prefab
+```
+
+---
+
+### 4.7 UI
+
+현재 UI 구조:
+
+```text
+StartMenuCanvas
+GameOverCanvas
+LevelUpCanvas
+RelicSelectUI
+HUDCanvas
+GameTimer
+```
+
+현재 UI 기능:
+
+- 시작 화면 존재
+- GAME START 버튼으로 게임 시작 가능
 - HUDCanvas 존재
-- LevelUpCanvas 존재
-- RelicSelectUI 존재
-- GameOverCanvas 존재
-- Retry 버튼 존재
 - HP 표시
 - EXP 표시
 - Wave 표시
-- 보유 유물 표시
-```
-
-관련 주요 스크립트:
-
-```text
-Assets/_Project/Scripts/Core/GameFlowManager.cs
-Assets/_Project/Scripts/UI/HUDCanvasUI.cs
-Assets/_Project/Scripts/UI/LevelUpUI.cs
-Assets/_Project/Scripts/UI/RelicSelectUI.cs
-```
-
-현재 평가:
-
-```text
-기능적 UI는 구현되어 있다.
-디자인은 아직 임시 상태다.
-출시형 UI로 가려면 배치, 폰트, 색상, 아이콘, 피드백을 정리해야 한다.
-```
-
-남은 개선 방향:
-
-```text
-- HUD 배치 정리
-- HP / EXP / Wave / Relic 시각 구분 강화
-- 레벨업 선택지 가독성 개선
-- 유물 선택 UI 연출 강화
-- 시작 화면과 게임오버 화면 디자인 정리
-```
-
-주의 사항:
-
-```text
-- 새 HUDCanvas를 만들지 않는다.
-- 새 LevelUpCanvas를 만들지 않는다.
-- 새 RelicSelectCanvas를 만들지 않는다.
-- Debug UI와 정식 HUD를 혼동하지 않는다.
-```
-
----
-
-### 5.10 맵 / 배경
-
-완료된 기능:
-
-```text
-- Tilemap 기반 바닥 사용
-- StageTileGenerator 존재
-- 청크 기반 바닥 생성 구조 존재
-- 여러 바닥 타일 랜덤 배치 가능
-```
-
-관련 주요 스크립트:
-
-```text
-Assets/_Project/Scripts/Core/StageTileGenerator.cs
-```
-
-현재 평가:
-
-```text
-맵은 기능적으로 무한/반복 배경에 가까운 구조를 갖추고 있다.
-아트 품질은 아직 임시 상태다.
-향후 직접 제작한 타일셋이나 구매 에셋으로 교체할 수 있다.
-```
-
-남은 개선 방향:
-
-```text
-- 바닥 타일 다양화
-- 장식 오브젝트 배치
-- 다크 판타지 분위기 강화
-- 장애물 또는 지형 요소 추가 검토
-```
-
----
-
-### 5.11 게임 흐름
-
-완료된 기능:
-
-```text
-- 시작 메뉴 존재
-- 게임 시작 가능
-- HUD 표시 가능
-- 게임오버 가능
-- 재시작 가능
-- 일시정지 구조 일부 존재
-```
-
-관련 주요 스크립트:
-
-```text
-Assets/_Project/Scripts/Core/GameFlowManager.cs
-Assets/_Project/Scripts/Core/GameTimer.cs
-Assets/_Project/Scripts/Core/PauseManager.cs
-Assets/_Project/Scripts/Player/PlayerHealth.cs
-```
-
-현재 평가:
-
-```text
-게임 흐름은 기능적으로 이어져 있다.
-다만 Time.timeScale 제어가 여러 곳에 남아 있을 경우 충돌 가능성이 있다.
-PauseManager 중심으로 정리하는 작업이 필요하다.
-```
-
----
-
-## 6. 현재 남은 핵심 문제
-
----
-
-### 6.1 Pause 구조 정리 필요
-
-현재 `PauseManager`가 존재하고 LevelUpUI, RelicSelectUI 등에서 사용 중이다.
-
-다만 일부 스크립트에 `Time.timeScale` 직접 제어가 남아 있을 가능성이 있다.
-
-개선 방향:
-
-```text
-- 모든 일시정지 요청을 PauseManager로 통합
-- GameOver, LevelUp, RelicSelect가 동시에 pause를 요청해도 충돌하지 않게 유지
-- PlayerHealth.Die()의 Time.timeScale 직접 제어 여부 확인
-- GameFlowManager와 PauseManager의 역할 분리
-```
-
-우선순위:
-
-```text
-높음
-```
-
-이유:
-
-```text
-UI가 늘어날수록 Time.timeScale 직접 제어는 충돌 원인이 된다.
-출시형 구조로 가려면 pause 제어는 한 곳에서 관리하는 것이 좋다.
-```
-
----
-
-### 6.2 웨이브 체감 강화 필요
-
-현재 웨이브는 존재하지만 플레이 체감상 변화가 약할 수 있다.
-
-개선 방향:
-
-```text
-- 웨이브별 적 수 증가
-- 웨이브별 스폰 간격 감소
-- 웨이브별 적 조합 변화
-- 특정 시간 이후 강한 적 등장
-- 중간보스 이후 난이도 상승
-```
-
-우선순위:
-
-```text
-높음
-```
-
-이유:
-
-```text
-뱀서류 게임의 핵심은 시간이 지날수록 압박이 강해지는 체감이다.
-현재는 기능은 있지만 반복감이 남을 수 있다.
-```
-
----
-
-### 6.3 무기 성장 구조 정리 필요
-
-현재 근접 무기와 Magic Bolt가 존재한다.
-
-문제:
-
-```text
-- Damage / AttackSpeed / AttackRange 강화가 두 무기에 동시에 적용됨
-- 장기적으로 무기별 개별 강화와 공통 강화가 섞일 수 있음
-- 무기 3개 이상이 되면 유지보수가 어려워질 수 있음
-```
-
-개선 방향:
-
-```text
-- 공통 강화와 개별 강화 기준 분리
-- 새 무기 추가 전 WeaponUnlock 구조 점검
-- Magic Bolt 전용 강화는 추후 별도 설계
-```
-
-우선순위:
-
-```text
-중간
-```
-
-이유:
-
-```text
-지금 당장 게임이 멈추는 문제는 아니다.
-하지만 무기를 더 추가하기 전에 기준을 잡아야 한다.
-```
-
----
-
-### 6.4 UI 시각 피드백 부족
-
-현재 UI는 기능 중심이다.
-
-개선 방향:
-
-```text
-- 유물 획득 시 짧은 피드백 추가
-- 레벨업 선택지 가독성 개선
-- HUD 배치 정리
-- HP / EXP / Wave / Relic 시각 구분 강화
-- 버튼 폰트와 크기 정리
-```
-
-우선순위:
-
-```text
-중간
-```
-
-이유:
-
-```text
-기능은 작동하지만 플레이어가 성장과 보상을 체감하기에는 아직 약하다.
-```
-
----
-
-### 6.5 전투 타격감 부족
-
-현재 전투는 작동하지만 체감이 약할 수 있다.
-
-개선 방향:
-
-```text
-- 피격 이펙트 개선
-- 사운드 추가
-- 카메라 흔들림 추가
-- 데미지 숫자 표시 검토
-- Magic Bolt 명중 이펙트 추가
-```
-
-우선순위:
-
-```text
-중간
-```
-
-이유:
-
-```text
-뱀서류 게임은 반복 전투가 중심이기 때문에 타격감이 약하면 금방 단조로워진다.
-```
-
----
-
-### 6.6 10분 기준 밸런스 테스트 필요
-
-현재 5분 MVP 기준 기능은 갖춰졌지만, 10분 플레이 기준 검증이 필요하다.
-
-테스트 항목:
-
-```text
-- 5분까지 지루하지 않은지
-- 5분 중간보스 난이도가 적절한지
-- 5분 이후 난이도가 상승하는지
-- 레벨업 속도가 적절한지
-- 유물 효과가 체감되는지
-- Magic Bolt 해금 후 전투가 달라지는지
-- 10분까지 플레이가 가능한지
-```
-
-우선순위:
-
-```text
-높음
-```
-
-이유:
-
-```text
-기능이 있어도 실제 10분 플레이가 재미없으면 수직 슬라이스로 보기 어렵다.
-```
-
----
-
-## 7. 현재 우선순위 로드맵
-
----
-
-### 1순위: 문서 최신화
-
-목표:
-
-```text
-AGENTS.md
-DevState.md
-README.md
-```
-
-상태:
-
-```text
-진행 중
-```
-
-작업 이유:
-
-```text
-현재 기존 MD 문서가 실제 프로젝트 상태보다 뒤처졌다.
-AI가 예전 문서를 기준으로 답하면 중복 시스템을 만들거나 이미 끝난 작업을 다시 제안할 수 있다.
-```
-
----
-
-### 2순위: PauseManager 정리
-
-목표:
-
-```text
-Time.timeScale 직접 제어를 줄이고 PauseManager 중심으로 통합한다.
-```
-
-대상 파일 후보:
-
-```text
-Assets/_Project/Scripts/Core/PauseManager.cs
-Assets/_Project/Scripts/Core/GameFlowManager.cs
-Assets/_Project/Scripts/Player/PlayerHealth.cs
-Assets/_Project/Scripts/UI/LevelUpUI.cs
-Assets/_Project/Scripts/UI/RelicSelectUI.cs
-```
-
-완료 조건:
-
-```text
-- LevelUpUI에서 pause 정상
-- RelicSelectUI에서 pause 정상
-- GameOver에서 pause 정상
-- Retry 후 Time.timeScale 정상 복구
-- Console 에러 없음
-```
-
----
-
-### 3순위: 웨이브 체감 강화
-
-목표:
-
-```text
-웨이브가 바뀔 때 실제 난이도 변화가 느껴지게 한다.
-```
-
-대상 파일 후보:
-
-```text
-Assets/_Project/Scripts/Spawning/WaveManager.cs
-Assets/_Project/Scripts/Spawning/EnemySpawner.cs
-```
-
-개선 후보:
-
-```text
-- 웨이브별 maxEnemies 증가
-- 웨이브별 spawnInterval 감소
-- 웨이브별 적 조합 변화
-- 5분 중간보스 이후 난이도 증가
-```
-
-완료 조건:
-
-```text
-- Wave Text 정상 갱신
-- 웨이브가 오를수록 적 압박 증가
-- 5분 중간보스 정상 등장
-- 중간보스 이후 난이도 상승 체감
-- Console 에러 없음
-```
-
----
-
-### 4순위: Magic Bolt 연결 점검
-
-목표:
-
-```text
-Magic Bolt 해금, 발사, 투사체, 강화 적용 흐름을 검증한다.
-```
-
-대상 파일 후보:
-
-```text
-Assets/_Project/Scripts/Weapons/PlayerMagicBoltAutoAttack.cs
-Assets/_Project/Scripts/Projectiles/MagicBoltProjectile.cs
-Assets/_Project/Scripts/UI/LevelUpUI.cs
-```
-
-완료 조건:
-
-```text
-- Magic Bolt 해금 전에는 발사되지 않음
-- Magic Bolt 해금 후 발사됨
-- 투사체가 적을 향해 이동함
-- 적에게 명중하면 데미지 적용
-- 투사체가 정상 제거됨
-- Console 에러 없음
-```
-
----
-
-### 5순위: 유물 획득 피드백 강화
-
-목표:
-
-```text
-유물을 얻었을 때 플레이어가 확실히 인지할 수 있게 한다.
-```
-
-대상 파일 후보:
-
-```text
-Assets/_Project/Scripts/UI/RelicSelectUI.cs
-Assets/_Project/Scripts/UI/HUDCanvasUI.cs
-Assets/_Project/Scripts/Player/PlayerRelicEffects.cs
-```
-
-개선 후보:
-
-```text
-- 유물 획득 메시지
-- 유물 획득 사운드
-- HUD 유물 아이콘 표시
-- 유물 효과 적용 시 피드백
-```
-
-완료 조건:
-
-```text
-- 유물 선택 후 HUD에 즉시 반영
-- 선택한 유물 이름이 명확히 표시
-- 유물 효과가 실제 적용됨
-- Console 에러 없음
-```
-
----
-
-### 6순위: 10분 수직 슬라이스 확장
-
-목표:
-
-```text
-10분 동안 지루하지 않고, 성장과 위협이 점진적으로 커지는 플레이 구조를 만든다.
-```
-
-추가 후보:
-
-```text
-- 새 적 1종
-- 새 무기 1종
-- 새 유물 2~3개
-- 웨이브별 조합 변화
-- 10분 보스 또는 강한 이벤트
-```
-
-완료 조건:
-
-```text
-- 10분까지 플레이 가능
-- 5분 이후 체감 변화 존재
-- 레벨업/무기/유물 선택이 의미 있음
-- 반복감이 줄어듦
-```
-
----
-
-## 8. 현재 개발 시 주의할 점
-
----
-
-### 8.1 새 UI 생성 금지
-
-현재 UI 구조가 이미 존재한다.
+- Timer 표시
+- RelicText 표시
+- LevelUpCanvas 존재
+- 레벨업 선택 UI 구현
+- RelicSelectUI 존재
+- 유물 선택 UI 구현
+- GameOverCanvas 존재
+- GameOver 결과 텍스트 표시 구조 구현
+- Retry 버튼으로 재시작 가능
+
+정식 HUD 작업 기준:
 
 ```text
 HUDCanvas
-LevelUpCanvas
+HUDPanel
+HUDCanvasUI
+```
+
+사용하지 말아야 할 기준:
+
+```text
+HUDDebugUI
+OnGUI 기반 Debug UI
+```
+
+HUDDebugUI는 디버그/보류용이며 신규 UI 작업의 기준으로 사용하지 않는다.
+
+---
+
+### 4.8 맵 / 배경
+
+- GroundGrid 존재
+- GroundTilemap 존재
+- StageTileGenerator 존재
+- 타일 자동 생성 구조 구현
+- 여러 바닥 타일을 랜덤 배치하는 구조 존재
+- 현재 타일 퀄리티는 임시 상태
+- 추후 아트 단계에서 직접 제작한 타일로 교체 예정
+
+---
+
+## 5. 현재 주요 Scene 구조
+
+현재 Main Scene 핵심 구조:
+
+```text
+Main Camera
+Global Light 2D
+Player
+  - MeleeSlashVisual
+EnemySpawner
+WaveManager
 RelicSelectUI
+  - RelicSelectPanel
+    - TitleText
+    - InfoText
+    - RelicButton_01
+    - RelicButton_02
+    - RelicButton_03
+EventSystem
+StageTileGenerator
+GroundGrid
+  - GroundTilemap
+GameFlowManager
 StartMenuCanvas
+  - StartPanel
+    - StartButton
 GameOverCanvas
-```
-
-따라서 새 Canvas를 만들기보다 기존 UI를 수정한다.
-
-금지 예:
-
-```text
-- HUDCanvas2 생성
-- NewLevelUpUI 생성
-- RelicCanvas 새로 생성
-- GameOverManager 새로 생성
+  - GameOverPanel
+    - Text (TMP)
+    - RetryButton
+LevelUpCanvas
+  - LevelUpPanel
+    - TitleText
+    - PendingText
+    - DamageButton
+    - AttackSpeedButton
+    - AttackRangeButton
+GameTimer
+HUDCanvas
+  - HUDPanel
+    - HpSlider
+    - HpText
+    - ExpSlider
+    - ExpText
+    - WaveText
+    - RelicText
+  - TimerText
+PauseManager
 ```
 
 ---
 
-### 8.2 Debug UI와 정식 UI 구분
+## 6. 현재 주요 스크립트 구조
 
-`HUDDebugUI.cs`는 개발 보조용이다.
+```text
+Assets/_Project/Scripts/Core
+- CameraFollow2D.cs
+- GameFlowManager.cs
+- GameTimer.cs
+- StageTileGenerator.cs
 
-출시형 HUD는 `HUDCanvasUI.cs` 기준으로 작업한다.
+Assets/_Project/Scripts/Data
+- UpgradeData.cs
+
+Assets/_Project/Scripts/Debug
+- HUDDebugUI.cs
+
+Assets/_Project/Scripts/Editor
+- DevSnapshotTool.cs
+- EnemySpawnerEditor.cs
+
+Assets/_Project/Scripts/Enemy
+- EnemyContactDamage.cs
+- EnemyHealth.cs
+- EnemyMovement.cs
+
+Assets/_Project/Scripts/Items
+- ExpGem.cs
+- SmallHealPickup.cs
+
+Assets/_Project/Scripts/Player
+- PlayerController.cs
+- PlayerExp.cs
+- PlayerHealth.cs
+- PlayerPickupRange.cs
+
+Assets/_Project/Scripts/Projectiles
+- MagicBoltProjectile.cs
+
+Assets/_Project/Scripts/Relics
+- PlayerRelicEffects.cs
+- RelicData.cs
+
+Assets/_Project/Scripts/Spawning
+- EnemySpawner.cs
+- WaveManager.cs
+
+Assets/_Project/Scripts/UI
+- HUDCanvasUI.cs
+- LevelUpUI.cs
+- RelicSelectUI.cs
+
+Assets/_Project/Scripts/Weapons
+- PlayerMeleeAutoAttack.cs
+- PlayerMagicBoltAutoAttack.cs
+- PlayerHolyAuraAutoAttack.cs
+```
+
+---
+
+## 7. 현재 남은 리스크
+
+### 7.1 기능 검증 리스크
+
+전체 통합 테스트는 아직 완전히 고정되지 않았다.
+
+확인 필요:
+
+```text
+1. Magic Bolt가 레벨업 선택지에 정상 출현하는지
+2. Magic Bolt 선택 시 PlayerMagicBoltAutoAttack이 정상 활성화되는지
+3. Magic Bolt가 적을 향해 발사되는지
+4. Magic Bolt가 적에게 피해를 주는지
+5. Holy Aura가 레벨업 선택지에 정상 출현하는지
+6. Holy Aura 선택 시 PlayerHolyAuraAutoAttack이 정상 활성화되는지
+7. Holy Aura가 주변 적에게 주기적으로 피해를 주는지
+8. Damage / Attack Speed / Attack Range 강화가 세 무기 모두에 적용되는지
+9. Brute가 Spawn Table에서 정상 스폰되는지
+10. Brute가 느리지만 단단한 적으로 체감되는지
+11. 중간보스가 5분 시점에 정상 등장하는지
+12. 중간보스가 일반 몬스터보다 단단하고 구분되는지
+13. 중간보스 처치 후 유물 선택 UI가 정상 오픈되는지
+14. 유물 선택 후 HUD에 보유 유물이 정상 표시되는지
+15. 게임오버 후 Survival Time / Level / Wave가 표시되는지
+16. Retry가 정상 작동하는지
+```
+
+---
+
+### 7.2 UI 리스크
+
+현재 UI는 기능 연결은 상당 부분 정리되었지만, 출시형 배치와 미적 완성도는 아직 부족하다.
+
+남은 정리 필요:
+
+```text
+1. GameOverPanel 텍스트 위치 / 크기 조정
+2. HUD 전체 배치 미세 조정
+3. RelicText가 HP / EXP / Wave와 겹치지 않도록 최종 배치
+4. Canvas Scaler 기준 확인
+5. 해상도 변경 시 UI 깨짐 여부 확인
+6. LevelUp 선택지 가독성 개선
+7. RelicSelect 선택지 가독성 개선
+```
 
 주의:
 
 ```text
-- Debug UI를 정식 HUD처럼 확장하지 않는다.
-- 정식 표시 기능은 HUDCanvasUI로 옮긴다.
+새 HUD Canvas를 만들지 말 것.
+기존 HUDCanvas / HUDPanel / HUDCanvasUI를 기준으로 수정할 것.
 ```
 
 ---
 
-### 8.3 ScriptableObject 구조 유지
+### 7.3 웨이브 / 난이도 리스크
 
-강화와 유물은 ScriptableObject 기반이다.
+웨이브 난이도 연동은 구현되었으나, 체감 검증은 계속 필요하다.
+
+확인 필요:
 
 ```text
-UpgradeData
-RelicData
+1. 웨이브가 오를수록 몬스터 수가 실제로 많아지는지
+2. 스폰 간격 감소가 체감되는지
+3. Max Enemies Cap 50이 과하지 않은지
+4. 중간보스 체력 배율 10이 적절한지
+5. 중간보스 데미지 배율 1.7이 과하지 않은지
+6. Brute의 체력 80 / 데미지 14 / 이동속도 1.3이 적절한지
+7. 5분 MVP 기준으로 난이도가 너무 쉽거나 너무 어렵지 않은지
 ```
 
-새 강화나 유물은 가능하면 ScriptableObject 에셋을 추가해서 관리한다.
-
-주의:
+현재 설정:
 
 ```text
-- 강화 데이터를 코드에 하드코딩하지 않는다.
-- 유물 데이터를 코드에 계속 추가하지 않는다.
-- 데이터는 ScriptableObject, 적용 로직은 관련 스크립트에서 관리한다.
-```
-
----
-
-### 8.4 .meta 파일 유지
-
-Unity 프로젝트에서는 `.meta` 파일을 삭제하면 에셋 연결이 깨질 수 있다.
-
-Git 커밋 시 `.meta` 파일은 같이 포함한다.
-
-주의:
-
-```text
-- .meta 파일을 임의로 삭제하지 않는다.
-- Prefab, ScriptableObject, Scene 수정 시 관련 .meta 파일도 함께 관리한다.
+Wave Duration: 30
+First Mid Boss Spawn Time: 300
+Spawn Interval Decrease Per Wave: 0.05
+Min Spawn Interval: 0.5
+Max Enemies Increase Per Wave: 2
+Max Enemies Cap: 50
+Mid Boss Health Multiplier: 10
+Mid Boss Damage Multiplier: 1.7
+Mid Boss Exp Multiplier: 4
 ```
 
 ---
 
-### 8.5 기존 시스템 중복 생성 금지
+### 7.4 구조 리스크
 
-현재 이미 존재하는 핵심 시스템:
+현재 5분 MVP에서는 허용 가능하지만, 출시형 기준으로는 추후 정리해야 할 구조가 있다.
 
 ```text
-- GameFlowManager
-- GameTimer
-- PauseManager
-- HUDCanvasUI
-- LevelUpUI
-- RelicSelectUI
-- EnemySpawner
-- WaveManager
-- PlayerHealth
-- PlayerExp
-- PlayerMeleeAutoAttack
-- PlayerMagicBoltAutoAttack
+1. 여러 UI가 Time.timeScale을 직접 제어할 가능성 있음
+2. 적 / 투사체 / 드랍 아이템이 Instantiate / Destroy 기반임
+3. 일부 스크립트에서 FindFirstObjectByType 사용
+4. HUDDebugUI에 OnGUI 사용
+5. 사운드 매니저 없음
+6. 옵션 화면 없음
+7. 저장 / 해금 시스템 없음
+8. Object Pooling 없음
+9. Sprite Atlas 없음
 ```
 
-AI는 위 기능을 대체하는 새 시스템을 임의로 만들지 않는다.
+현재는 기능 안정화가 우선이므로 바로 고치지 않는다.  
+10분 수직 슬라이스 이후 출시형 정리 단계에서 처리한다.
 
 ---
 
-## 9. 다음 작업 전 체크리스트
+## 8. 앞으로의 개발 우선순위
 
-새 작업을 시작하기 전 확인할 항목:
+## Phase 1. 5분 MVP 안정화
+
+목표:
 
 ```text
-- Unity Console 에러 없음
-- GitHub 최신 커밋 완료
-- 현재 씬 Main 열려 있음
-- Play 버튼으로 정상 시작 가능
-- Start 버튼 정상 작동
-- Player 이동 가능
-- 몬스터 스폰 가능
-- 자동 공격 가능
-- 경험치 획득 가능
-- 레벨업 UI 정상
-- 유물 선택 UI 정상
-- GameOver / Retry 정상
+한 판이 시작되고, 성장하고, 중간보스를 잡고, 유물을 얻고, 죽고, 다시 시작되는 흐름을 안정화한다.
 ```
 
----
-
-## 10. 기능 수정 후 기본 테스트 기준
-
-기능 수정 후 최소 확인 항목:
+현재 Phase 1에서 이미 완료한 항목:
 
 ```text
-1. Unity Console 에러 없음
-2. Play 진입 가능
-3. Start 버튼 작동
-4. 플레이어 이동 가능
-5. 몬스터 스폰 정상
-6. 자동 공격 정상
-7. 경험치 획득 정상
-8. 레벨업 UI 정상
-9. 유물 선택 UI 정상
-10. 게임오버 / 재시작 정상
+GameOver 결과 화면 개선
+LevelUpUI 버튼 텍스트 연결 정리
+RelicSelectUI 버튼 텍스트 연결 정리
+HUD RelicText 표시 정리
+WaveManager + EnemySpawner 난이도 연동
+중간보스 체감 보강
+Magic Bolt 추가
+Holy Aura 추가
+Brute 적 추가
 ```
 
-웨이브 관련 수정 후 추가 테스트:
+남은 작업 순서:
+
+### 1. 5분 MVP 통합 테스트
+
+테스트 기준:
 
 ```text
-- Wave Text 갱신 확인
-- Wave 변경 시 난이도 변화 확인
-- 중간보스 스폰 확인
-- 중간보스 처치 후 유물 선택 UI 확인
-```
-
-무기 관련 수정 후 추가 테스트:
-
-```text
-- 근접 공격 유지 확인
-- Magic Bolt 해금 전/후 동작 확인
-- 투사체가 적을 향해 발사되는지 확인
-- 공격력/공속/범위 강화가 의도대로 적용되는지 확인
-```
-
-유물 관련 수정 후 추가 테스트:
-
-```text
-- 중간보스 처치 후 유물 선택 UI 표시
-- 유물 3개 선택지 표시
-- 유물 선택 후 HUD 반영
-- 동일 유물 중복 선택 방지
-- 유물 효과 적용 확인
-```
-
-Pause 관련 수정 후 추가 테스트:
-
-```text
-- LevelUpUI 표시 중 게임 정지
-- RelicSelectUI 표시 중 게임 정지
-- 선택 후 게임 정상 재개
-- GameOver 시 게임 정지
-- Retry 후 게임 정상 재시작
+1. 시작 화면에서 Game Start 가능
+2. 플레이어 이동 가능
+3. 적 스폰 정상
+4. 적 처치 가능
+5. ExpGem 획득 가능
+6. 레벨업 선택 가능
+7. Magic Bolt 해금 가능
+8. Magic Bolt 발사 가능
+9. Holy Aura 해금 가능
+10. Holy Aura 범위 피해 가능
+11. Brute 스폰 가능
+12. 중간보스 등장
+13. 중간보스가 일반 몬스터보다 단단하고 구분됨
+14. 중간보스 처치 가능
+15. 유물 선택 가능
+16. HUD에 유물 표시
+17. 플레이어 사망 시 GameOver 결과 화면 표시
+18. Retry 정상 작동
+19. Console 빨간 에러 없음
 ```
 
 ---
 
-## 11. 다음 작업 추천
+### 2. 밸런스 1차 조정
 
-현재 바로 다음 작업은 다음 중 하나다.
-
-```text
-1. PauseManager 중심으로 timeScale 정리
-2. WaveManager / EnemySpawner 기반 웨이브 체감 강화
-3. Magic Bolt 연결 상태 점검
-```
-
-추천 순서:
+통합 테스트 후 아래를 조정한다.
 
 ```text
-1. PauseManager 정리
-2. 웨이브 체감 강화
-3. Magic Bolt 점검
-```
-
-이유:
-
-```text
-- Pause 충돌은 UI가 늘어날수록 문제를 만든다.
-- 웨이브 체감은 게임 재미에 직접 영향이 크다.
-- Magic Bolt는 이미 들어왔으므로 다음 무기 추가 전 검증이 필요하다.
+1. Magic Bolt 등장 타이밍
+2. Magic Bolt 데미지 / 발사속도 / 사거리
+3. Holy Aura 데미지 / 주기 / 범위
+4. Brute 체력 / 이동속도 / 데미지 / Spawn Weight
+5. 중간보스 체력 배율
+6. 중간보스 데미지 배율
+7. 적 스폰 간격 감소량
+8. 최대 적 수 증가량
+9. Max Enemies Cap
 ```
 
 ---
 
-## 12. 단기 개발 로드맵
-
-### Step 1. 문서 최신화
+### 3. UI 표시 품질 정리
 
 대상:
 
 ```text
-AGENTS.md
-Assets/_Project/Docs/DevState.md
-README.md
+HUD 위치
+GameOver 결과 텍스트 위치
+RelicText 크기 / 정렬
+LevelUp 선택지 가독성
+RelicSelect 선택지 가독성
 ```
+
+---
+
+## Phase 2. 재미 체감 보강
 
 목표:
 
 ```text
-AI가 현재 프로젝트 상태를 잘못 이해하지 않도록 기준 문서를 최신화한다.
+반복 플레이가 덜 단조롭게 느껴지도록 전투와 웨이브 변화를 강화한다.
+```
+
+작업 순서:
+
+### 1. 적 출현 비율 변화
+
+개선 방향:
+
+```text
+초반:
+- Ghoul 중심
+
+중반:
+- Bat 비율 증가
+- Brute 소량 등장
+
+중간보스 이후:
+- Brute 비율 소폭 증가
+- 물량 압박 증가
 ```
 
 ---
 
-### Step 2. PauseManager 정리
+### 2. 강화 밸런스 조정
+
+확인할 것:
+
+```text
+1. Damage Up 가치
+2. Attack Speed 가치
+3. Attack Range 가치
+4. Max Health 가치
+5. Defense 가치
+6. Critical Chance 가치
+7. Magic Bolt 해금 가치
+8. Holy Aura 해금 가치
+```
+
+---
+
+### 3. 중간보스 보상 체감 강화
+
+개선 방향:
+
+```text
+1. 중간보스 등장 피드백
+2. 중간보스 처치 피드백
+3. 유물 선택으로 이어지는 보상감 강화
+```
+
+---
+
+## Phase 3. 10분 수직 슬라이스 확장
 
 목표:
 
 ```text
-Time.timeScale 제어를 PauseManager 중심으로 통합한다.
+출시형 게임의 축소판을 만든다.
+```
+
+필요 기능:
+
+```text
+1. 10분 보스 추가
+2. 유물 3~5개 추가
+3. 강화 선택지 추가 또는 밸런스 정리
+4. 결과 화면 보강
+5. 웨이브 패턴 강화
+6. 전투 피드백 강화
+```
+
+예상 추가 콘텐츠:
+
+```text
+무기:
+- 현재 3종 구조 유지
+- 필요 시 이후 4번째 무기 검토
+
+적:
+- 현재 Ghoul / Bat / Brute 3종 구조
+- 이후 원거리 또는 돌진형 적 검토
+
+유물:
+- 공격 계열
+- 방어 계열
+- 흡수/성장 계열
 ```
 
 ---
 
-### Step 3. 웨이브 체감 강화
+## Phase 4. 출시형 기반 정리
 
 목표:
 
 ```text
-시간이 지날수록 적 압박이 강해지는 구조를 만든다.
+확장해도 무너지지 않는 구조로 정리한다.
 ```
+
+작업 후보:
+
+```text
+1. PauseManager 도입 또는 기존 PauseManager 정리
+2. Object Pooling 도입
+3. SoundManager 도입
+4. 옵션 화면 추가
+5. 저장 / 해금 시스템 추가
+6. Sprite Atlas 적용
+7. 해상도 대응
+8. 빌드 테스트
+9. 로그 정리
+10. 에셋 교체
+```
+
+이 단계는 지금 바로 하지 않는다.  
+5분 MVP와 10분 수직 슬라이스가 안정화된 뒤 진행한다.
 
 ---
 
-### Step 4. Magic Bolt 점검
+## 9. Antigravity 사용 원칙
 
+Antigravity는 문서 작성용보다 코드 수정 / 반복 수정 / 리팩터링 보조로 사용한다.
+
+사용 원칙:
+
+```text
+1. 한 번에 하나의 기능만 시킨다.
+2. 수정 전 관련 파일을 먼저 읽게 한다.
+3. 기존 구조를 재사용하게 한다.
+4. 새 Canvas, 새 Manager, 새 UI Script를 임의로 만들지 못하게 한다.
+5. 수정 범위를 파일 수 기준으로 제한한다.
+6. 수정 후 Console 에러 0개를 확인한다.
+7. 수정 후 DevSnapshot_Expert.md와 GPT_CONTEXT.md를 다시 생성한다.
+8. 변경 사항은 Git commit으로 남긴다.
+```
+
+작업 분담 기준:
+
+```text
+ChatGPT:
+- 개발 방향 판단
+- 우선순위 정리
+- 문서 작성
+- Antigravity 프롬프트 작성
+- 결과 검토
+- Unity 연결 순서 안내
+
+Antigravity:
+- 여러 파일 코드 수정
+- 기존 코드 읽고 수정
+- 반복 리팩터링
+- 구조 변경 작업 보조
+
+사용자:
+- Unity Inspector 연결
+- Play 테스트
+- Console 에러 확인
+- 체감 피드백 제공
+```
+
+Antigravity에 시킬 때 기본 지시 형식:
+
+```text
 목표:
+수정할 기능:
+
+반드시 지킬 것:
+- 기존 구조 유지
+- 새 시스템 임의 생성 금지
+- 관련 파일 먼저 읽기
+- 수정 파일 목록 제한
+- 코드 수정 후 예상 결과 설명
+- Console 에러 0개 기준
+
+수정 대상:
+- 파일 경로
+
+완료 조건:
+- Play 시 정상 동작
+- Console 에러 없음
+- 기존 기능 유지
+```
+
+즉시 검토가 필요한 경우:
 
 ```text
-Magic Bolt 해금과 전투 흐름을 안정화한다.
+1. Console 에러 발생
+2. 플레이가 멈춤
+3. 기존 기능이 사라짐
+4. 스크립트가 3개 이상 바뀜
+5. 새 Manager / 새 Canvas / 새 구조가 생김
+6. Time.timeScale, 저장, Pooling, Scene 전환 관련 수정
 ```
 
 ---
 
-### Step 5. 유물 피드백 강화
+## 10. 다음 작업
 
-목표:
-
-```text
-유물을 획득했을 때 보상감이 확실히 느껴지게 한다.
-```
-
----
-
-### Step 6. 10분 플레이 테스트
-
-목표:
+현재 다음 작업은 아래 순서로 진행한다.
 
 ```text
-10분 동안 플레이 가능한 수직 슬라이스 기준을 검증한다.
+1. 5분 MVP 통합 테스트
+2. Magic Bolt 실제 플레이 확인
+3. Holy Aura 실제 플레이 확인
+4. Brute 스폰 및 체감 확인
+5. 중간보스 체감 확인
+6. GameOver 결과 화면 확인
+7. Retry 확인
+8. Console 에러 확인
+9. 테스트 결과 기반 밸런스 1차 조정
 ```
 
----
-
-## 13. 중기 개발 로드맵
-
-10분 수직 슬라이스로 확장하기 위한 후보 작업:
+지금 바로 진행할 1순위:
 
 ```text
-- 새 적 1종 추가
-- 새 무기 1종 추가
-- 새 유물 2~3개 추가
-- 10분 보스 또는 강한 이벤트 추가
-- HUD 디자인 1차 정리
-- 사운드 / 이펙트 1차 적용
-- 타격감 개선
-- 바닥 타일 / 배경 아트 교체
+5분 MVP 통합 테스트
 ```
 
-주의:
+테스트 후 판단할 것:
 
 ```text
-한 번에 모두 진행하지 않는다.
-항상 한 기능씩 추가하고 테스트한다.
+Magic Bolt가 재미를 주는지
+Holy Aura가 너무 강하거나 약하지 않은지
+Brute가 전투에 변화를 주는지
+중간보스가 너무 쉽거나 너무 질질 끌리지 않는지
+웨이브 증가가 체감되는지
+유물 보상이 체감되는지
+GameOver 결과 화면이 정상인지
+Retry가 정상인지
 ```
 
----
-
-## 14. 현재 결론
-
-현재 프로젝트는 다음 상태다.
-
-```text
-5분 MVP 핵심 루프는 대부분 구현됨.
-레벨업, 유물, HUD, 웨이브, 중간보스, Magic Bolt까지 들어온 상태다.
-이제 무작정 기능을 늘리는 단계가 아니다.
-```
-
-앞으로 중요한 방향:
-
-```text
-1. 구조 충돌 제거
-2. 웨이브 재미 강화
-3. 성장 체감 강화
-4. UI 피드백 강화
-5. 10분 플레이 기준 밸런스 검증
-```
-
-현재 최우선 작업:
-
-```text
-문서 최신화 완료 후 PauseManager 정리로 넘어간다.
-```
+통합 테스트가 정상이라면 다음 개발 단계는 **밸런스 1차 조정** 또는 **10분 보스 준비**다.
 ```
 
 ## Diagnostics
@@ -1437,75 +1092,57 @@ Magic Bolt 해금과 전투 흐름을 안정화한다.
 ### HIGH
 
 1. **Possible Missing Inspector Reference**
-   - Detail: RelicSelectUI / RelicSelectUI.relicButtonText01 = None
-   - Suggestion: 이 필드가 필수 연결인지 확인한다. 필수라면 Inspector에서 연결한다.
-2. **Possible Missing Inspector Reference**
-   - Detail: RelicSelectUI / RelicSelectUI.relicButtonText02 = None
-   - Suggestion: 이 필드가 필수 연결인지 확인한다. 필수라면 Inspector에서 연결한다.
-3. **Possible Missing Inspector Reference**
-   - Detail: RelicSelectUI / RelicSelectUI.relicButtonText03 = None
-   - Suggestion: 이 필드가 필수 연결인지 확인한다. 필수라면 Inspector에서 연결한다.
-4. **Possible Missing Inspector Reference**
    - Detail: RelicSelectUI/RelicSelectPanel/TitleText / TextMeshProUGUI.parentLinkedComponent = None
    - Suggestion: 이 필드가 필수 연결인지 확인한다. 필수라면 Inspector에서 연결한다.
-5. **Possible Missing Inspector Reference**
+2. **Possible Missing Inspector Reference**
    - Detail: RelicSelectUI/RelicSelectPanel/InfoText / TextMeshProUGUI.parentLinkedComponent = None
    - Suggestion: 이 필드가 필수 연결인지 확인한다. 필수라면 Inspector에서 연결한다.
-6. **Possible Missing Inspector Reference**
+3. **Possible Missing Inspector Reference**
    - Detail: RelicSelectUI/RelicSelectPanel/RelicButton_01/Text (TMP) / TextMeshProUGUI.parentLinkedComponent = None
    - Suggestion: 이 필드가 필수 연결인지 확인한다. 필수라면 Inspector에서 연결한다.
-7. **Possible Missing Inspector Reference**
+4. **Possible Missing Inspector Reference**
    - Detail: RelicSelectUI/RelicSelectPanel/RelicButton_02/Text (TMP) / TextMeshProUGUI.parentLinkedComponent = None
    - Suggestion: 이 필드가 필수 연결인지 확인한다. 필수라면 Inspector에서 연결한다.
-8. **Possible Missing Inspector Reference**
+5. **Possible Missing Inspector Reference**
    - Detail: RelicSelectUI/RelicSelectPanel/RelicButton_03/Text (TMP) / TextMeshProUGUI.parentLinkedComponent = None
    - Suggestion: 이 필드가 필수 연결인지 확인한다. 필수라면 Inspector에서 연결한다.
-9. **Possible Missing Inspector Reference**
+6. **Possible Missing Inspector Reference**
    - Detail: StartMenuCanvas/StartPanel/StartButton/Text (TMP) / TextMeshProUGUI.parentLinkedComponent = None
    - Suggestion: 이 필드가 필수 연결인지 확인한다. 필수라면 Inspector에서 연결한다.
-10. **Possible Missing Inspector Reference**
+7. **Possible Missing Inspector Reference**
    - Detail: GameOverCanvas/GameOverPanel/Text (TMP) / TextMeshProUGUI.parentLinkedComponent = None
    - Suggestion: 이 필드가 필수 연결인지 확인한다. 필수라면 Inspector에서 연결한다.
-11. **Possible Missing Inspector Reference**
+8. **Possible Missing Inspector Reference**
    - Detail: GameOverCanvas/GameOverPanel/RetryButton/Text (TMP) / TextMeshProUGUI.parentLinkedComponent = None
    - Suggestion: 이 필드가 필수 연결인지 확인한다. 필수라면 Inspector에서 연결한다.
-12. **Possible Missing Inspector Reference**
-   - Detail: LevelUpCanvas / LevelUpUI.damageButtonText = None
-   - Suggestion: 이 필드가 필수 연결인지 확인한다. 필수라면 Inspector에서 연결한다.
-13. **Possible Missing Inspector Reference**
-   - Detail: LevelUpCanvas / LevelUpUI.attackSpeedButtonText = None
-   - Suggestion: 이 필드가 필수 연결인지 확인한다. 필수라면 Inspector에서 연결한다.
-14. **Possible Missing Inspector Reference**
-   - Detail: LevelUpCanvas / LevelUpUI.attackRangeButtonText = None
-   - Suggestion: 이 필드가 필수 연결인지 확인한다. 필수라면 Inspector에서 연결한다.
-15. **Possible Missing Inspector Reference**
+9. **Possible Missing Inspector Reference**
    - Detail: LevelUpCanvas/LevelUpPanel/TitleText / TextMeshProUGUI.parentLinkedComponent = None
    - Suggestion: 이 필드가 필수 연결인지 확인한다. 필수라면 Inspector에서 연결한다.
-16. **Possible Missing Inspector Reference**
+10. **Possible Missing Inspector Reference**
    - Detail: LevelUpCanvas/LevelUpPanel/PendingText / TextMeshProUGUI.parentLinkedComponent = None
    - Suggestion: 이 필드가 필수 연결인지 확인한다. 필수라면 Inspector에서 연결한다.
-17. **Possible Missing Inspector Reference**
+11. **Possible Missing Inspector Reference**
    - Detail: LevelUpCanvas/LevelUpPanel/DamageButton/Text (TMP) / TextMeshProUGUI.parentLinkedComponent = None
    - Suggestion: 이 필드가 필수 연결인지 확인한다. 필수라면 Inspector에서 연결한다.
-18. **Possible Missing Inspector Reference**
+12. **Possible Missing Inspector Reference**
    - Detail: LevelUpCanvas/LevelUpPanel/AttackSpeedButton/Text (TMP) / TextMeshProUGUI.parentLinkedComponent = None
    - Suggestion: 이 필드가 필수 연결인지 확인한다. 필수라면 Inspector에서 연결한다.
-19. **Possible Missing Inspector Reference**
+13. **Possible Missing Inspector Reference**
    - Detail: LevelUpCanvas/LevelUpPanel/AttackRangeButton/Text (TMP) / TextMeshProUGUI.parentLinkedComponent = None
    - Suggestion: 이 필드가 필수 연결인지 확인한다. 필수라면 Inspector에서 연결한다.
-20. **Possible Missing Inspector Reference**
+14. **Possible Missing Inspector Reference**
    - Detail: HUDCanvas/HUDPanel/HpText / TextMeshProUGUI.parentLinkedComponent = None
    - Suggestion: 이 필드가 필수 연결인지 확인한다. 필수라면 Inspector에서 연결한다.
-21. **Possible Missing Inspector Reference**
+15. **Possible Missing Inspector Reference**
    - Detail: HUDCanvas/HUDPanel/ExpText / TextMeshProUGUI.parentLinkedComponent = None
    - Suggestion: 이 필드가 필수 연결인지 확인한다. 필수라면 Inspector에서 연결한다.
-22. **Possible Missing Inspector Reference**
+16. **Possible Missing Inspector Reference**
    - Detail: HUDCanvas/HUDPanel/WaveText / TextMeshProUGUI.parentLinkedComponent = None
    - Suggestion: 이 필드가 필수 연결인지 확인한다. 필수라면 Inspector에서 연결한다.
-23. **Possible Missing Inspector Reference**
+17. **Possible Missing Inspector Reference**
    - Detail: HUDCanvas/HUDPanel/RelicText / TextMeshProUGUI.parentLinkedComponent = None
    - Suggestion: 이 필드가 필수 연결인지 확인한다. 필수라면 Inspector에서 연결한다.
-24. **Possible Missing Inspector Reference**
+18. **Possible Missing Inspector Reference**
    - Detail: HUDCanvas/TimerText / TextMeshProUGUI.parentLinkedComponent = None
    - Suggestion: 이 필드가 필수 연결인지 확인한다. 필수라면 Inspector에서 연결한다.
 
@@ -1551,23 +1188,20 @@ Magic Bolt 해금과 전투 흐름을 안정화한다.
    - Detail: Assets/_Project/Scripts/Enemy/EnemyHealth.cs에서 Destroy(gameObject) 사용.
    - Suggestion: 5분 MVP에서는 허용. 적 수가 많아지면 Object Pooling 검토.
 9. **FindFirstObjectByType Usage**
-   - Detail: Assets/_Project/Scripts/Spawning/WaveManager.cs에서 FindFirstObjectByType 사용 감지.
+   - Detail: Assets/_Project/Scripts/Player/PlayerHealth.cs에서 FindFirstObjectByType 사용 감지.
    - Suggestion: 초기 단계에서는 허용 가능. 호출 빈도가 높거나 확장되면 Inspector 참조 또는 이벤트 구조로 교체 검토.
 10. **FindFirstObjectByType Usage**
-   - Detail: Assets/_Project/Scripts/UI/HUDCanvasUI.cs에서 FindFirstObjectByType 사용 감지.
+   - Detail: Assets/_Project/Scripts/Spawning/WaveManager.cs에서 FindFirstObjectByType 사용 감지.
    - Suggestion: 초기 단계에서는 허용 가능. 호출 빈도가 높거나 확장되면 Inspector 참조 또는 이벤트 구조로 교체 검토.
 11. **FindFirstObjectByType Usage**
+   - Detail: Assets/_Project/Scripts/UI/HUDCanvasUI.cs에서 FindFirstObjectByType 사용 감지.
+   - Suggestion: 초기 단계에서는 허용 가능. 호출 빈도가 높거나 확장되면 Inspector 참조 또는 이벤트 구조로 교체 검토.
+12. **FindFirstObjectByType Usage**
    - Detail: Assets/_Project/Scripts/UI/LevelUpUI.cs에서 FindFirstObjectByType 사용 감지.
    - Suggestion: 초기 단계에서는 허용 가능. 호출 빈도가 높거나 확장되면 Inspector 참조 또는 이벤트 구조로 교체 검토.
-12. **Direct TimeScale Control**
-   - Detail: Assets/_Project/Scripts/UI/LevelUpUI.cs에서 Time.timeScale 직접 제어 감지.
-   - Suggestion: 여러 UI가 동시에 pause를 제어하면 충돌 가능. 나중에 PauseManager로 통합 검토.
 13. **FindFirstObjectByType Usage**
    - Detail: Assets/_Project/Scripts/UI/RelicSelectUI.cs에서 FindFirstObjectByType 사용 감지.
    - Suggestion: 초기 단계에서는 허용 가능. 호출 빈도가 높거나 확장되면 Inspector 참조 또는 이벤트 구조로 교체 검토.
-14. **Direct TimeScale Control**
-   - Detail: Assets/_Project/Scripts/UI/RelicSelectUI.cs에서 Time.timeScale 직접 제어 감지.
-   - Suggestion: 여러 UI가 동시에 pause를 제어하면 충돌 가능. 나중에 PauseManager로 통합 검토.
 
 ## Recommended Next Steps
 
@@ -1600,7 +1234,7 @@ Magic Bolt 해금과 전투 흐름을 안정화한다.
 ```text
 - Main Camera [Transform, Camera, AudioListener, UniversalAdditionalCameraData, CameraFollow2D]
 - Global Light 2D [Transform, Light2D]
-- Player [Transform, SpriteRenderer, Rigidbody2D, BoxCollider2D, PlayerController, PlayerMeleeAutoAttack, PlayerHealth, PlayerExp, PlayerPickupRange, PlayerRelicEffects, PlayerMagicBoltAutoAttack]
+- Player [Transform, SpriteRenderer, Rigidbody2D, BoxCollider2D, PlayerController, PlayerMeleeAutoAttack, PlayerHealth, PlayerExp, PlayerPickupRange, PlayerRelicEffects, PlayerMagicBoltAutoAttack, PlayerHolyAuraAutoAttack]
   - MeleeSlashVisual (inactive) [Transform, SpriteRenderer]
 - EnemySpawner [Transform, EnemySpawner]
 - WaveManager [Transform, WaveManager]
@@ -1667,7 +1301,7 @@ Magic Bolt 해금과 전투 흐름을 안정화한다.
 - Active: True
 - Tag: Untagged
 - Layer: Default
-- Components: Transform, SpriteRenderer, Rigidbody2D, BoxCollider2D, PlayerController, PlayerMeleeAutoAttack, PlayerHealth, PlayerExp, PlayerPickupRange, PlayerRelicEffects, PlayerMagicBoltAutoAttack
+- Components: Transform, SpriteRenderer, Rigidbody2D, BoxCollider2D, PlayerController, PlayerMeleeAutoAttack, PlayerHealth, PlayerExp, PlayerPickupRange, PlayerRelicEffects, PlayerMagicBoltAutoAttack, PlayerHolyAuraAutoAttack
 
 #### Transform
 ```text
@@ -1725,6 +1359,7 @@ knockbackForce: 5
 knockbackDuration: 0.15
 hitColor: RGBA(1.000, 0.000, 0.000, 1.000)
 blinkInterval: 0.08
+pauseManager: PauseManager (PauseManager)
 ```
 
 #### PlayerExp
@@ -1770,6 +1405,17 @@ minimumAttackInterval: 0.25
 maximumAttackRange: 10
 ```
 
+#### PlayerHolyAuraAutoAttack
+```text
+isUnlocked: False
+damage: 4
+attackInterval: 1
+attackRange: 2.5
+enemyLayer: 0
+minimumAttackInterval: 0.25
+maximumAttackRange: 5.5
+```
+
 ### Player/MeleeSlashVisual
 - Active: False
 - Tag: Untagged
@@ -1805,7 +1451,7 @@ Local Scale: (1.00, 1.00, 1.00)
 ```text
 playerTarget: Player (Transform)
 waveManager: WaveManager (WaveManager)
-enemySpawnEntries: Array/List Size: 2
+enemySpawnEntries: Array/List Size: 3
 spawnInterval: 2
 spawnRadius: 10
 maxEnemies: 10
@@ -1836,9 +1482,13 @@ healthPerWave: 5
 baseEnemyDamage: 8
 damagePerWave: 1
 baseExpReward: 5
+spawnIntervalDecreasePerWave: 0.05
+minSpawnInterval: 0.5
+maxEnemiesIncreasePerWave: 2
+maxEnemiesCap: 50
 firstMidBossSpawnTime: 300
-midBossHealthMultiplier: 3
-midBossDamageMultiplier: 1.5
+midBossHealthMultiplier: 10
+midBossDamageMultiplier: 1.7
 midBossExpMultiplier: 4
 ```
 
@@ -1850,7 +1500,7 @@ midBossExpMultiplier: 4
 
 #### RectTransform
 ```text
-Local Position: (573.00, 256.00, 0.00)
+Local Position: (573.00, 255.50, 0.00)
 Local Rotation: (0.00, 0.00, 0.00)
 Local Scale: (1.00, 1.00, 1.00)
 ```
@@ -1885,9 +1535,9 @@ infoText: InfoText (TextMeshProUGUI)
 relicButton01: RelicButton_01 (Button)
 relicButton02: RelicButton_02 (Button)
 relicButton03: RelicButton_03 (Button)
-relicButtonText01: None
-relicButtonText02: None
-relicButtonText03: None
+relicButtonText01: Text (TMP) (TextMeshProUGUI)
+relicButtonText02: Text (TMP) (TextMeshProUGUI)
+relicButtonText03: Text (TMP) (TextMeshProUGUI)
 ```
 
 ### RelicSelectUI/RelicSelectPanel
@@ -2226,11 +1876,13 @@ Local Scale: (1.00, 1.00, 1.00)
 #### GameFlowManager
 ```text
 playerHealth: Player (PlayerHealth)
+playerExp: Player (PlayerExp)
+waveManager: WaveManager (WaveManager)
 gameTimer: GameTimer (GameTimer)
-pauseManager: PauseManager (PauseManager)
 startMenuCanvas: StartMenuCanvas (GameObject)
 gameOverCanvas: GameOverCanvas (GameObject)
 hudCanvas: HUDCanvas (GameObject)
+gameOverText: Text (TMP) (TextMeshProUGUI)
 showStartMenuOnLoad: True
 ```
 
@@ -2242,7 +1894,7 @@ showStartMenuOnLoad: True
 
 #### RectTransform
 ```text
-Local Position: (573.00, 256.00, 0.00)
+Local Position: (573.00, 255.50, 0.00)
 Local Rotation: (0.00, 0.00, 0.00)
 Local Scale: (0.53, 0.53, 0.53)
 ```
@@ -2472,7 +2124,7 @@ checkPaddingRequired: False
 
 #### RectTransform
 ```text
-Local Position: (573.00, 256.00, 0.00)
+Local Position: (573.00, 255.50, 0.00)
 Local Rotation: (0.00, 0.00, 0.00)
 Local Scale: (1.00, 1.00, 1.00)
 ```
@@ -2500,16 +2152,17 @@ playerWeapon: Player (PlayerMeleeAutoAttack)
 playerController: Player (PlayerController)
 playerPickupRange: Player (PlayerPickupRange)
 playerMagicBolt: Player (PlayerMagicBoltAutoAttack)
-availableUpgrades: Array/List Size: 9
+playerHolyAura: Player (PlayerHolyAuraAutoAttack)
+availableUpgrades: Array/List Size: 10
 levelUpPanel: LevelUpPanel (GameObject)
 titleText: TitleText (TextMeshProUGUI)
 pendingText: PendingText (TextMeshProUGUI)
 damageButton: DamageButton (Button)
 attackSpeedButton: AttackSpeedButton (Button)
 attackRangeButton: AttackRangeButton (Button)
-damageButtonText: None
-attackSpeedButtonText: None
-attackRangeButtonText: None
+damageButtonText: Text (TMP) (TextMeshProUGUI)
+attackSpeedButtonText: Text (TMP) (TextMeshProUGUI)
+attackRangeButtonText: Text (TMP) (TextMeshProUGUI)
 ```
 
 ### LevelUpCanvas/LevelUpPanel
@@ -2771,7 +2424,7 @@ logInterval: 10
 
 #### RectTransform
 ```text
-Local Position: (573.00, 256.00, 0.00)
+Local Position: (573.00, 255.50, 0.00)
 Local Rotation: (0.00, 0.00, 0.00)
 Local Scale: (0.53, 0.53, 0.53)
 ```
@@ -2804,7 +2457,7 @@ expText: ExpText (TextMeshProUGUI)
 waveText: WaveText (TextMeshProUGUI)
 relicText: RelicText (TextMeshProUGUI)
 relicTitle: RELICS
-emptyRelicText: ""
+emptyRelicText: RELICS
 waveUiRefreshInterval: 0.2
 ```
 
@@ -2839,7 +2492,7 @@ No visible serialized fields
 
 #### RectTransform
 ```text
-Local Position: (-777.18, 426.25, 0.00)
+Local Position: (-778.24, 425.78, 0.00)
 Local Rotation: (0.00, 0.00, 0.00)
 Local Scale: (1.00, 1.00, 1.00)
 ```
@@ -2952,7 +2605,7 @@ No visible serialized fields
 
 #### RectTransform
 ```text
-Local Position: (-777.18, 426.25, 0.00)
+Local Position: (-778.24, 425.78, 0.00)
 Local Rotation: (0.00, 0.00, 0.00)
 Local Scale: (1.00, 1.00, 1.00)
 ```
@@ -2976,7 +2629,7 @@ checkPaddingRequired: False
 
 #### RectTransform
 ```text
-Local Position: (-777.18, 371.25, 0.00)
+Local Position: (-778.24, 370.78, 0.00)
 Local Rotation: (0.00, 0.00, 0.00)
 Local Scale: (1.00, 1.00, 1.00)
 ```
@@ -3089,7 +2742,7 @@ No visible serialized fields
 
 #### RectTransform
 ```text
-Local Position: (-777.18, 371.25, 0.00)
+Local Position: (-778.24, 370.78, 0.00)
 Local Rotation: (0.00, 0.00, 0.00)
 Local Scale: (1.00, 1.00, 1.00)
 ```
@@ -3113,7 +2766,7 @@ checkPaddingRequired: False
 
 #### RectTransform
 ```text
-Local Position: (-777.18, 321.25, 0.00)
+Local Position: (-778.24, 320.78, 0.00)
 Local Rotation: (0.00, 0.00, 0.00)
 Local Scale: (1.00, 1.00, 1.00)
 ```
@@ -3137,7 +2790,7 @@ checkPaddingRequired: False
 
 #### RectTransform
 ```text
-Local Position: (-1897.18, 711.25, 0.00)
+Local Position: (-1058.24, 350.78, 0.00)
 Local Rotation: (0.00, 0.00, 0.00)
 Local Scale: (1.00, 1.00, 1.00)
 ```
@@ -3161,7 +2814,7 @@ checkPaddingRequired: False
 
 #### RectTransform
 ```text
-Local Position: (0.00, 441.25, 0.00)
+Local Position: (0.00, 440.78, 0.00)
 Local Rotation: (0.00, 0.00, 0.00)
 Local Scale: (1.00, 1.00, 1.00)
 ```
@@ -3386,6 +3039,18 @@ floatValue: 0
 weaponId: ""
 ```
 
+### Assets/_Project/ScriptableObjects/Upgrades/Upgrade_HolyAura.asset
+- Type: UpgradeData
+```text
+upgradeName: HOLY AURA
+description:  Unlocks a holy aura that periodically damages nearby enemies.
+icon: None
+upgradeType: Damage
+intValue: 0
+floatValue: 0
+weaponId: holy_aura
+```
+
 ### Assets/_Project/ScriptableObjects/Upgrades/Upgrade_MagicBolt.asset
 - Type: UpgradeData
 ```text
@@ -3446,6 +3111,11 @@ weaponId: ""
 - Enemy_Bat_01 [Transform, SpriteRenderer, Rigidbody2D, BoxCollider2D, EnemyMovement, EnemyHealth, EnemyContactDamage]
 ```
 
+### Assets/_Project/Prefabs/Enemies/Enemy_Brute_01.prefab
+```text
+- Enemy_Brute_01 [Transform, SpriteRenderer, Rigidbody2D, BoxCollider2D, EnemyMovement, EnemyHealth, EnemyContactDamage]
+```
+
 ### Assets/_Project/Prefabs/Enemies/Enemy_Ghoul_01.prefab
 ```text
 - Enemy_Ghoul_01 [Transform, SpriteRenderer, Rigidbody2D, BoxCollider2D, EnemyMovement, EnemyHealth, EnemyContactDamage]
@@ -3471,7 +3141,7 @@ weaponId: ""
 - Added: 0
 - Modified: 0
 - Deleted: 0
-- Total tracked files: 66
+- Total tracked files: 69
 
 - 변경된 파일 없음
 
@@ -3508,6 +3178,7 @@ weaponId: ""
 - Assets/_Project/Scripts/UI/HUDCanvasUI.cs
 - Assets/_Project/Scripts/UI/LevelUpUI.cs
 - Assets/_Project/Scripts/UI/RelicSelectUI.cs
+- Assets/_Project/Scripts/Weapons/PlayerHolyAuraAutoAttack.cs
 - Assets/_Project/Scripts/Weapons/PlayerMagicBoltAutoAttack.cs
 - Assets/_Project/Scripts/Weapons/PlayerMeleeAutoAttack.cs
 ```
@@ -3528,16 +3199,16 @@ Methods:
 Classes:
 - GameFlowManager
 Methods:
+- Awake()
 - Start()
 - Update()
+- AutoBindIfNeeded()
 - ShowStartMenu()
 - StartGame()
 - GameOver()
+- UpdateGameOverText()
 - RestartGame()
 - QuitGame()
-- ValidateRequiredReferences()
-- RequestPause()
-- ReleasePause()
 ```
 
 
@@ -3812,6 +3483,8 @@ Methods:
 - InvincibleRoutine()
 - Die()
 - NotifyHealthChanged()
+- RequestPauseOnDeath()
+- LogMissingPauseManagerWarning()
 ```
 
 
@@ -3901,6 +3574,8 @@ Methods:
 - GetEnemyHealth()
 - GetEnemyDamage()
 - GetExpReward()
+- GetSpawnInterval()
+- GetMaxEnemies()
 ```
 
 
@@ -3945,6 +3620,7 @@ Methods:
 - OnDisable()
 - RequestPause()
 - ReleasePause()
+- LogMissingPauseManagerWarning()
 - ClosePanelOnly()
 - UpdateTexts()
 - SetButtonText()
@@ -3968,10 +3644,27 @@ Methods:
 - OnDisable()
 - RequestPause()
 - ReleasePause()
+- LogMissingPauseManagerWarning()
 - ApplyRelicEffect()
 - UpdateTexts()
 - SetButtonText()
 - ClosePanelOnly()
+```
+
+
+### Assets/_Project/Scripts/Weapons/PlayerHolyAuraAutoAttack.cs
+```text
+Classes:
+- PlayerHolyAuraAutoAttack
+Methods:
+- Awake()
+- Update()
+- Unlock()
+- AddDamage()
+- ImproveAttackSpeed()
+- ImproveAttackRange()
+- PerformAuraAttack()
+- OnDrawGizmosSelected()
 ```
 
 
@@ -4053,6 +3746,7 @@ public class CameraFollow2D : MonoBehaviour
 ### FILE: Assets/_Project/Scripts/Core/GameFlowManager.cs
 
 ```csharp
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -4060,13 +3754,17 @@ public class GameFlowManager : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private PlayerHealth playerHealth;
+    [SerializeField] private PlayerExp playerExp;
+    [SerializeField] private WaveManager waveManager;
     [SerializeField] private GameTimer gameTimer;
-    [SerializeField] private PauseManager pauseManager;
 
     [Header("UI")]
     [SerializeField] private GameObject startMenuCanvas;
     [SerializeField] private GameObject gameOverCanvas;
     [SerializeField] private GameObject hudCanvas;
+
+    [Header("Game Over UI")]
+    [SerializeField] private TMP_Text gameOverText;
 
     [Header("Settings")]
     [SerializeField] private bool showStartMenuOnLoad = true;
@@ -4074,10 +3772,13 @@ public class GameFlowManager : MonoBehaviour
     private bool isGameStarted;
     private bool isGameOver;
 
+    private void Awake()
+    {
+        AutoBindIfNeeded();
+    }
+
     private void Start()
     {
-        ValidateRequiredReferences();
-
         if (gameTimer != null)
         {
             gameTimer.ResetTimer();
@@ -4108,12 +3809,40 @@ public class GameFlowManager : MonoBehaviour
         }
     }
 
+    private void AutoBindIfNeeded()
+    {
+        if (playerHealth != null && playerExp == null)
+        {
+            playerExp = playerHealth.GetComponent<PlayerExp>();
+        }
+
+        if (waveManager == null)
+        {
+            waveManager = FindFirstObjectByType<WaveManager>();
+        }
+
+        if (gameTimer == null)
+        {
+            gameTimer = FindFirstObjectByType<GameTimer>();
+        }
+
+        if (gameOverText == null && gameOverCanvas != null)
+        {
+            Transform target = gameOverCanvas.transform.Find("GameOverPanel/Text (TMP)");
+
+            if (target != null)
+            {
+                gameOverText = target.GetComponent<TMP_Text>();
+            }
+        }
+    }
+
     private void ShowStartMenu()
     {
         isGameStarted = false;
         isGameOver = false;
 
-        RequestPause();
+        Time.timeScale = 0f;
 
         if (gameTimer != null)
         {
@@ -4136,7 +3865,7 @@ public class GameFlowManager : MonoBehaviour
         isGameStarted = true;
         isGameOver = false;
 
-        ReleasePause();
+        Time.timeScale = 1f;
 
         if (gameTimer != null)
         {
@@ -4166,22 +3895,41 @@ public class GameFlowManager : MonoBehaviour
             gameTimer.StopTimer();
         }
 
-        RequestPause();
+        UpdateGameOverText();
+
+        Time.timeScale = 0f;
 
         if (gameOverCanvas != null)
             gameOverCanvas.SetActive(true);
     }
 
+    private void UpdateGameOverText()
+    {
+        if (gameOverText == null)
+            return;
+
+        string survivalTime = gameTimer != null
+            ? gameTimer.GetFormattedGameplayTime()
+            : "00:00";
+
+        int level = playerExp != null
+            ? playerExp.Level
+            : 1;
+
+        int wave = waveManager != null
+            ? waveManager.CurrentWave
+            : 1;
+
+        gameOverText.text =
+            "GAME OVER\n\n" +
+            $"Survival Time: {survivalTime}\n" +
+            $"Level: {level}\n" +
+            $"Wave: {wave}";
+    }
+
     public void RestartGame()
     {
-        if (pauseManager != null)
-        {
-            pauseManager.ClearAllPauseRequests();
-        }
-        else
-        {
-            Time.timeScale = 1f;
-        }
+        Time.timeScale = 1f;
 
         Scene currentScene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(currentScene.buildIndex);
@@ -4194,56 +3942,6 @@ public class GameFlowManager : MonoBehaviour
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #endif
-    }
-
-    private void ValidateRequiredReferences()
-    {
-        if (pauseManager == null)
-        {
-            pauseManager = FindFirstObjectByType<PauseManager>();
-        }
-
-        if (playerHealth == null)
-        {
-            Debug.LogWarning("[GameFlowManager] playerHealth가 비어 있습니다. PlayerHealth 연결이 없으면 게임오버 감지가 동작하지 않을 수 있습니다.", this);
-        }
-
-        if (gameTimer == null)
-        {
-            Debug.LogWarning("[GameFlowManager] gameTimer가 비어 있습니다. 타이머 UI와 시간 측정이 동작하지 않을 수 있습니다.", this);
-        }
-
-        if (startMenuCanvas == null || gameOverCanvas == null || hudCanvas == null)
-        {
-            Debug.LogWarning("[GameFlowManager] UI Canvas 참조가 일부 비어 있습니다. startMenuCanvas / gameOverCanvas / hudCanvas 연결을 확인하세요.", this);
-        }
-
-        if (pauseManager == null)
-        {
-            Debug.LogWarning("[GameFlowManager] pauseManager가 비어 있습니다. PauseManager 연결을 권장합니다. (없으면 Time.timeScale 폴백 사용)", this);
-        }
-    }
-
-    private void RequestPause()
-    {
-        if (pauseManager != null)
-        {
-            pauseManager.RequestPause(this);
-            return;
-        }
-
-        Time.timeScale = 0f;
-    }
-
-    private void ReleasePause()
-    {
-        if (pauseManager != null)
-        {
-            pauseManager.ReleasePause(this);
-            return;
-        }
-
-        Time.timeScale = 1f;
     }
 }
 ```
@@ -6903,10 +6601,10 @@ public class EnemyHealth : MonoBehaviour
 
     [Header("Boss Visual")]
     [SerializeField] private float normalScale = 0.8f;
-    [SerializeField] private float midBossScale = 1.8f;
+    [SerializeField] private float midBossScale = 1.35f;
 
     [Tooltip("체크하면 중간보스에만 색상 강조를 적용합니다.")]
-    [SerializeField] private bool useMidBossTint = false;
+    [SerializeField] private bool useMidBossTint = true;
 
     [SerializeField] private Color midBossTintColor = new Color(1f, 0.65f, 0.12f, 1f);
 
@@ -7682,6 +7380,9 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private Color hitColor = Color.red;
     [SerializeField] private float blinkInterval = 0.08f;
 
+    [Header("References")]
+    [SerializeField] private PauseManager pauseManager;
+
     private int currentHealth;
     private bool isDead;
     private bool isInvincible;
@@ -7691,6 +7392,7 @@ public class PlayerHealth : MonoBehaviour
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
     private Color originalColor;
+    private bool hasLoggedMissingPauseManager;
 
     public int CurrentHealth => currentHealth;
     public int MaxHealth => maxHealth;
@@ -7704,6 +7406,11 @@ public class PlayerHealth : MonoBehaviour
 
         playerController = GetComponent<PlayerController>();
         playerWeapon = GetComponent<PlayerMeleeAutoAttack>();
+        if (pauseManager == null)
+        {
+            // 인스펙터 연결을 우선 사용하고, 누락된 경우에만 1회 자동 탐색합니다.
+            pauseManager = FindFirstObjectByType<PauseManager>();
+        }
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
 
@@ -7713,6 +7420,11 @@ public class PlayerHealth : MonoBehaviour
         }
 
         NotifyHealthChanged();
+
+        if (pauseManager == null)
+        {
+            Debug.LogWarning("[PlayerHealth] pauseManager가 비어 있습니다. 가능하면 Inspector에 PauseManager를 연결하세요.", this);
+        }
     }
 
     public void TakeDamage(int damage)
@@ -7839,7 +7551,7 @@ public class PlayerHealth : MonoBehaviour
         if (spriteRenderer != null)
             spriteRenderer.color = Color.gray;
 
-        Time.timeScale = 0f;
+        RequestPauseOnDeath();
         NotifyHealthChanged();
         OnDied?.Invoke();
 
@@ -7849,6 +7561,26 @@ public class PlayerHealth : MonoBehaviour
     private void NotifyHealthChanged()
     {
         OnHealthChanged?.Invoke();
+    }
+
+    private void RequestPauseOnDeath()
+    {
+        if (pauseManager != null)
+        {
+            pauseManager.RequestPause(this);
+            return;
+        }
+
+        LogMissingPauseManagerWarning();
+    }
+
+    private void LogMissingPauseManagerWarning()
+    {
+        if (hasLoggedMissingPauseManager)
+            return;
+
+        hasLoggedMissingPauseManager = true;
+        Debug.LogWarning("[PlayerHealth] PauseManager가 없어 사망 시 일시정지 제어를 수행할 수 없습니다. PlayerHealth.pauseManager 연결을 확인하세요.", this);
     }
 }
 ```
@@ -8212,7 +7944,7 @@ public class EnemySpawner : MonoBehaviour
 
     private void Update()
     {
-        if (playerTarget == null || waveManager == null)
+        if (playerTarget == null)
             return;
 
         if (!HasValidEnemyPrefab())
@@ -8228,7 +7960,7 @@ public class EnemySpawner : MonoBehaviour
         if (spawnTimer <= 0f)
         {
             TrySpawnEnemy();
-            spawnTimer = spawnInterval;
+            spawnTimer = waveManager != null ? waveManager.GetSpawnInterval(spawnInterval) : spawnInterval;
         }
     }
 
@@ -8258,14 +7990,16 @@ public class EnemySpawner : MonoBehaviour
 
     private void TrySpawnEnemy()
     {
-        if (waveManager.ShouldSpawnFirstMidBoss())
+        if (waveManager != null && waveManager.ShouldSpawnFirstMidBoss())
         {
             SpawnEnemy(true);
             waveManager.MarkFirstMidBossSpawned();
             return;
         }
 
-        if (spawnedEnemies.Count >= maxEnemies)
+        int currentMaxEnemies = waveManager != null ? waveManager.GetMaxEnemies(maxEnemies) : maxEnemies;
+
+        if (spawnedEnemies.Count >= currentMaxEnemies)
             return;
 
         SpawnEnemy(false);
@@ -8293,24 +8027,22 @@ public class EnemySpawner : MonoBehaviour
 
         if (enemyHealth != null)
         {
-            enemyHealth.Initialize(
-                waveManager.GetEnemyHealth(isMidBoss),
-                waveManager.GetExpReward(isMidBoss),
-                isMidBoss,
-                this
-            );
+            int health = waveManager != null ? waveManager.GetEnemyHealth(isMidBoss) : (isMidBoss ? 90 : 30);
+            int exp = waveManager != null ? waveManager.GetExpReward(isMidBoss) : (isMidBoss ? 20 : 5);
+            enemyHealth.Initialize(health, exp, isMidBoss, this);
         }
 
         EnemyContactDamage contactDamage = enemy.GetComponent<EnemyContactDamage>();
 
         if (contactDamage != null)
         {
-            contactDamage.Initialize(waveManager.GetEnemyDamage(isMidBoss));
+            int damage = waveManager != null ? waveManager.GetEnemyDamage(isMidBoss) : (isMidBoss ? 12 : 8);
+            contactDamage.Initialize(damage);
         }
 
         spawnedEnemies.Add(enemy);
 
-        if (isMidBoss)
+        if (isMidBoss && waveManager != null)
         {
             Debug.Log($"Mid Boss spawned at {waveManager.FirstMidBossSpawnTime} seconds.");
         }
@@ -8501,10 +8233,16 @@ public class WaveManager : MonoBehaviour
     [SerializeField] private int damagePerWave = 1;
     [SerializeField] private int baseExpReward = 5;
 
+    [Header("Spawn Difficulty")]
+    [SerializeField] private float spawnIntervalDecreasePerWave = 0.05f;
+    [SerializeField] private float minSpawnInterval = 0.5f;
+    [SerializeField] private int maxEnemiesIncreasePerWave = 2;
+    [SerializeField] private int maxEnemiesCap = 50;
+
     [Header("Timed Mid Boss")]
     [SerializeField] private float firstMidBossSpawnTime = 300f;
-    [SerializeField] private float midBossHealthMultiplier = 3f;
-    [SerializeField] private float midBossDamageMultiplier = 1.5f;
+    [SerializeField] private float midBossHealthMultiplier = 15f;
+    [SerializeField] private float midBossDamageMultiplier = 2f;
     [SerializeField] private float midBossExpMultiplier = 4f;
 
     private float waveTimer;
@@ -8597,6 +8335,18 @@ public class WaveManager : MonoBehaviour
             exp = Mathf.RoundToInt(exp * midBossExpMultiplier);
 
         return exp;
+    }
+
+    public float GetSpawnInterval(float baseInterval)
+    {
+        float interval = baseInterval - ((currentWave - 1) * spawnIntervalDecreasePerWave);
+        return Mathf.Max(interval, minSpawnInterval);
+    }
+
+    public int GetMaxEnemies(int baseMax)
+    {
+        int max = baseMax + ((currentWave - 1) * maxEnemiesIncreasePerWave);
+        return Mathf.Min(max, maxEnemiesCap);
     }
 }
 ```
@@ -8836,6 +8586,7 @@ public class LevelUpUI : MonoBehaviour
     [SerializeField] private PlayerController playerController;
     [SerializeField] private PlayerPickupRange playerPickupRange;
     [SerializeField] private PlayerMagicBoltAutoAttack playerMagicBolt;
+    [SerializeField] private PlayerHolyAuraAutoAttack playerHolyAura;
 
     [Header("Upgrade Data")]
     [SerializeField] private List<UpgradeData> availableUpgrades = new List<UpgradeData>();
@@ -8861,6 +8612,7 @@ public class LevelUpUI : MonoBehaviour
 
     private int pendingLevelUps;
     private bool isOpen;
+    private bool hasLoggedMissingPauseManager;
 
     private void Awake()
     {
@@ -8899,7 +8651,7 @@ public class LevelUpUI : MonoBehaviour
 
         if (pauseManager == null)
         {
-            Debug.LogWarning("[LevelUpUI] pauseManager가 비어 있습니다. PauseManager 연결을 권장합니다. (없으면 Time.timeScale 폴백 사용)", this);
+            Debug.LogWarning("[LevelUpUI] pauseManager가 비어 있습니다. PauseManager 연결이 필요합니다.", this);
         }
     }
 
@@ -8978,6 +8730,16 @@ public class LevelUpUI : MonoBehaviour
         if (playerMagicBolt == null && playerController != null)
         {
             playerMagicBolt = playerController.GetComponent<PlayerMagicBoltAutoAttack>();
+        }
+
+        if (playerHolyAura == null && playerHealth != null)
+        {
+            playerHolyAura = playerHealth.GetComponent<PlayerHolyAuraAutoAttack>();
+        }
+
+        if (playerHolyAura == null && playerController != null)
+        {
+            playerHolyAura = playerController.GetComponent<PlayerHolyAuraAutoAttack>();
         }
     }
 
@@ -9098,6 +8860,14 @@ public class LevelUpUI : MonoBehaviour
             return !playerMagicBolt.IsUnlocked;
         }
 
+        if (upgrade.WeaponId == "holy_aura")
+        {
+            if (playerHolyAura == null)
+                return true;
+
+            return !playerHolyAura.IsUnlocked;
+        }
+
         return true;
     }
 
@@ -9141,6 +8911,11 @@ public class LevelUpUI : MonoBehaviour
                 {
                     playerMagicBolt.AddDamage(upgrade.IntValue);
                 }
+
+                if (playerHolyAura != null)
+                {
+                    playerHolyAura.AddDamage(upgrade.IntValue);
+                }
                 break;
 
             case UpgradeType.AttackSpeed:
@@ -9153,6 +8928,11 @@ public class LevelUpUI : MonoBehaviour
                 {
                     playerMagicBolt.ImproveAttackSpeed(upgrade.FloatValue);
                 }
+
+                if (playerHolyAura != null)
+                {
+                    playerHolyAura.ImproveAttackSpeed(upgrade.FloatValue);
+                }
                 break;
 
             case UpgradeType.AttackRange:
@@ -9164,6 +8944,11 @@ public class LevelUpUI : MonoBehaviour
                 if (playerMagicBolt != null)
                 {
                     playerMagicBolt.ImproveAttackRange(upgrade.FloatValue);
+                }
+
+                if (playerHolyAura != null)
+                {
+                    playerHolyAura.ImproveAttackRange(upgrade.FloatValue);
                 }
                 break;
 
@@ -9229,6 +9014,17 @@ public class LevelUpUI : MonoBehaviour
                 }
                 break;
 
+            case "holy_aura":
+                if (playerHolyAura != null)
+                {
+                    playerHolyAura.Unlock();
+                }
+                else
+                {
+                    Debug.LogWarning("Holy Aura unlock failed. PlayerHolyAuraAutoAttack is not found on Player.");
+                }
+                break;
+
             default:
                 Debug.LogWarning($"Unknown weapon id: {weaponId}");
                 break;
@@ -9268,7 +9064,7 @@ public class LevelUpUI : MonoBehaviour
             return;
         }
 
-        Time.timeScale = 0f;
+        LogMissingPauseManagerWarning();
     }
 
     private void ReleasePause()
@@ -9279,7 +9075,16 @@ public class LevelUpUI : MonoBehaviour
             return;
         }
 
-        Time.timeScale = 1f;
+        LogMissingPauseManagerWarning();
+    }
+
+    private void LogMissingPauseManagerWarning()
+    {
+        if (hasLoggedMissingPauseManager)
+            return;
+
+        hasLoggedMissingPauseManager = true;
+        Debug.LogWarning("[LevelUpUI] PauseManager가 없어 일시정지 제어를 수행할 수 없습니다. LevelUpUI.pauseManager 연결을 확인하세요.", this);
     }
 
     private void ClosePanelOnly()
@@ -9372,6 +9177,7 @@ public class RelicSelectUI : MonoBehaviour
     private readonly List<RelicData> ownedRelics = new List<RelicData>();
 
     private bool isOpen;
+    private bool hasLoggedMissingPauseManager;
 
     public bool IsOpen => isOpen;
     public IReadOnlyList<RelicData> OwnedRelics => ownedRelics;
@@ -9413,7 +9219,7 @@ public class RelicSelectUI : MonoBehaviour
 
         if (pauseManager == null)
         {
-            Debug.LogWarning("[RelicSelectUI] pauseManager가 비어 있습니다. PauseManager 연결을 권장합니다. (없으면 Time.timeScale 폴백 사용)", this);
+            Debug.LogWarning("[RelicSelectUI] pauseManager가 비어 있습니다. PauseManager 연결이 필요합니다.", this);
         }
     }
 
@@ -9623,7 +9429,7 @@ public class RelicSelectUI : MonoBehaviour
             return;
         }
 
-        Time.timeScale = 0f;
+        LogMissingPauseManagerWarning();
     }
 
     private void ReleasePause()
@@ -9634,7 +9440,16 @@ public class RelicSelectUI : MonoBehaviour
             return;
         }
 
-        Time.timeScale = 1f;
+        LogMissingPauseManagerWarning();
+    }
+
+    private void LogMissingPauseManagerWarning()
+    {
+        if (hasLoggedMissingPauseManager)
+            return;
+
+        hasLoggedMissingPauseManager = true;
+        Debug.LogWarning("[RelicSelectUI] PauseManager가 없어 일시정지 제어를 수행할 수 없습니다. RelicSelectUI.pauseManager 연결을 확인하세요.", this);
     }
 
     private void ApplyRelicEffect(RelicData relic)
@@ -9729,6 +9544,129 @@ public class RelicSelectUI : MonoBehaviour
         }
     }
 }
+```
+
+### FILE: Assets/_Project/Scripts/Weapons/PlayerHolyAuraAutoAttack.cs
+
+```csharp
+using UnityEngine;
+
+public class PlayerHolyAuraAutoAttack : MonoBehaviour
+{
+    [Header("Weapon State")]
+    [SerializeField] private bool isUnlocked;
+
+    [Header("Attack")]
+    [SerializeField] private int damage = 4;
+    [SerializeField] private float attackInterval = 1.0f;
+    [SerializeField] private float attackRange = 2.5f;
+    [SerializeField] private LayerMask enemyLayer;
+
+    [Header("Limits")]
+    [SerializeField] private float minimumAttackInterval = 0.25f;
+    [SerializeField] private float maximumAttackRange = 5.5f;
+
+    private float attackTimer;
+
+    public bool IsUnlocked => isUnlocked;
+    public int Damage => damage;
+    public float AttackInterval => attackInterval;
+    public float AttackRange => attackRange;
+
+    private void Awake()
+    {
+        enabled = isUnlocked;
+    }
+
+    private void Update()
+    {
+        if (!isUnlocked)
+            return;
+
+        attackTimer -= Time.deltaTime;
+
+        if (attackTimer > 0f)
+            return;
+
+        PerformAuraAttack();
+
+        attackTimer = attackInterval;
+    }
+
+    public void Unlock()
+    {
+        if (isUnlocked)
+            return;
+
+        isUnlocked = true;
+        enabled = true;
+        attackTimer = 0f;
+
+        Debug.Log("Holy Aura unlocked.");
+    }
+
+    public void AddDamage(int amount)
+    {
+        if (!isUnlocked)
+            return;
+
+        if (amount <= 0)
+            return;
+
+        damage += amount;
+
+        Debug.Log($"Holy Aura damage increased. Damage: {damage}");
+    }
+
+    public void ImproveAttackSpeed(float bonusRate)
+    {
+        if (!isUnlocked)
+            return;
+
+        if (bonusRate <= 0f)
+            return;
+
+        attackInterval *= 1f - bonusRate;
+        attackInterval = Mathf.Max(attackInterval, minimumAttackInterval);
+
+        Debug.Log($"Holy Aura attack speed improved. Interval: {attackInterval}");
+    }
+
+    public void ImproveAttackRange(float bonusRate)
+    {
+        if (!isUnlocked)
+            return;
+
+        if (bonusRate <= 0f)
+            return;
+
+        attackRange *= 1f + bonusRate;
+        attackRange = Mathf.Min(attackRange, maximumAttackRange);
+
+        Debug.Log($"Holy Aura range improved. Range: {attackRange}");
+    }
+
+    private void PerformAuraAttack()
+    {
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, attackRange, enemyLayer);
+
+        for (int i = 0; i < hits.Length; i++)
+        {
+            EnemyHealth enemyHealth = hits[i].GetComponent<EnemyHealth>();
+            if (enemyHealth != null)
+            {
+                enemyHealth.TakeDamage(damage, transform.position);
+            }
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
+    }
+}
+
 ```
 
 ### FILE: Assets/_Project/Scripts/Weapons/PlayerMagicBoltAutoAttack.cs

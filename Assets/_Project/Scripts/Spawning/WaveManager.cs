@@ -19,10 +19,16 @@ public class WaveManager : MonoBehaviour
     [SerializeField] private int damagePerWave = 1;
     [SerializeField] private int baseExpReward = 5;
 
+    [Header("Spawn Difficulty")]
+    [SerializeField] private float spawnIntervalDecreasePerWave = 0.05f;
+    [SerializeField] private float minSpawnInterval = 0.5f;
+    [SerializeField] private int maxEnemiesIncreasePerWave = 2;
+    [SerializeField] private int maxEnemiesCap = 50;
+
     [Header("Timed Mid Boss")]
     [SerializeField] private float firstMidBossSpawnTime = 300f;
-    [SerializeField] private float midBossHealthMultiplier = 3f;
-    [SerializeField] private float midBossDamageMultiplier = 1.5f;
+    [SerializeField] private float midBossHealthMultiplier = 15f;
+    [SerializeField] private float midBossDamageMultiplier = 2f;
     [SerializeField] private float midBossExpMultiplier = 4f;
 
     private float waveTimer;
@@ -115,5 +121,17 @@ public class WaveManager : MonoBehaviour
             exp = Mathf.RoundToInt(exp * midBossExpMultiplier);
 
         return exp;
+    }
+
+    public float GetSpawnInterval(float baseInterval)
+    {
+        float interval = baseInterval - ((currentWave - 1) * spawnIntervalDecreasePerWave);
+        return Mathf.Max(interval, minSpawnInterval);
+    }
+
+    public int GetMaxEnemies(int baseMax)
+    {
+        int max = baseMax + ((currentWave - 1) * maxEnemiesIncreasePerWave);
+        return Mathf.Min(max, maxEnemiesCap);
     }
 }

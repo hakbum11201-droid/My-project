@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 7309395916290198670}
   - component: {fileID: 4713949976368228321}
   m_Layer: 6
-  m_Name: Enemy_Ghoul_01
+  m_Name: Enemy_Brute_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,7 +32,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 4, y: 0, z: 0}
-  m_LocalScale: {x: 0.8, y: 0.8, z: 1}
+  m_LocalScale: {x: 1.15, y: 1.15, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -182,7 +182,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
   target: {fileID: 0}
-  baseMoveSpeed: 2.4
+  baseMoveSpeed: 1.5
   stopDistance: 0.2
   targetOffsetMinRadius: 0.25
   targetOffsetMaxRadius: 1.05
@@ -204,9 +204,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 358051f86229b9047b522788f7198387, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
-  maxHealth: 30
+  maxHealth: 80
   expGemPrefab: {fileID: 7564674345207656813, guid: a8b6f0ba0f9e75042aaa0faf2b286f43, type: 3}
-  expReward: 5
+  expReward: 10
   smallHealPrefab: {fileID: 7564674345207656813, guid: 3176c26fce742a74bac60b15ffc6ddff, type: 3}
   smallHealDropChance: 0.07
   midBossAlwaysDropSmallHeal: 1
@@ -235,5 +235,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 105bc32979409214a96a2a6fbc0945af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyContactDamage
-  damage: 10
+  damage: 14
   damageInterval: 0.8

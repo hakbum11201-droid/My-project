@@ -12,6 +12,7 @@ public class LevelUpUI : MonoBehaviour
     [SerializeField] private PlayerController playerController;
     [SerializeField] private PlayerPickupRange playerPickupRange;
     [SerializeField] private PlayerMagicBoltAutoAttack playerMagicBolt;
+    [SerializeField] private PlayerHolyAuraAutoAttack playerHolyAura;
 
     [Header("Upgrade Data")]
     [SerializeField] private List<UpgradeData> availableUpgrades = new List<UpgradeData>();
@@ -156,6 +157,16 @@ public class LevelUpUI : MonoBehaviour
         {
             playerMagicBolt = playerController.GetComponent<PlayerMagicBoltAutoAttack>();
         }
+
+        if (playerHolyAura == null && playerHealth != null)
+        {
+            playerHolyAura = playerHealth.GetComponent<PlayerHolyAuraAutoAttack>();
+        }
+
+        if (playerHolyAura == null && playerController != null)
+        {
+            playerHolyAura = playerController.GetComponent<PlayerHolyAuraAutoAttack>();
+        }
     }
 
     private TMP_Text FindTMP(string objectName)
@@ -275,6 +286,14 @@ public class LevelUpUI : MonoBehaviour
             return !playerMagicBolt.IsUnlocked;
         }
 
+        if (upgrade.WeaponId == "holy_aura")
+        {
+            if (playerHolyAura == null)
+                return true;
+
+            return !playerHolyAura.IsUnlocked;
+        }
+
         return true;
     }
 
@@ -318,6 +337,11 @@ public class LevelUpUI : MonoBehaviour
                 {
                     playerMagicBolt.AddDamage(upgrade.IntValue);
                 }
+
+                if (playerHolyAura != null)
+                {
+                    playerHolyAura.AddDamage(upgrade.IntValue);
+                }
                 break;
 
             case UpgradeType.AttackSpeed:
@@ -330,6 +354,11 @@ public class LevelUpUI : MonoBehaviour
                 {
                     playerMagicBolt.ImproveAttackSpeed(upgrade.FloatValue);
                 }
+
+                if (playerHolyAura != null)
+                {
+                    playerHolyAura.ImproveAttackSpeed(upgrade.FloatValue);
+                }
                 break;
 
             case UpgradeType.AttackRange:
@@ -341,6 +370,11 @@ public class LevelUpUI : MonoBehaviour
                 if (playerMagicBolt != null)
                 {
                     playerMagicBolt.ImproveAttackRange(upgrade.FloatValue);
+                }
+
+                if (playerHolyAura != null)
+                {
+                    playerHolyAura.ImproveAttackRange(upgrade.FloatValue);
                 }
                 break;
 
@@ -403,6 +437,17 @@ public class LevelUpUI : MonoBehaviour
                 else
                 {
                     Debug.LogWarning("Magic Bolt unlock failed. PlayerMagicBoltAutoAttack is not found on Player.");
+                }
+                break;
+
+            case "holy_aura":
+                if (playerHolyAura != null)
+                {
+                    playerHolyAura.Unlock();
+                }
+                else
+                {
+                    Debug.LogWarning("Holy Aura unlock failed. PlayerHolyAuraAutoAttack is not found on Player.");
                 }
                 break;
 

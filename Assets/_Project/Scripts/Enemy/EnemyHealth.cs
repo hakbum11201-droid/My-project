@@ -21,10 +21,10 @@ public class EnemyHealth : MonoBehaviour
 
     [Header("Boss Visual")]
     [SerializeField] private float normalScale = 0.8f;
-    [SerializeField] private float midBossScale = 1.8f;
+    [SerializeField] private float midBossScale = 1.35f;
 
     [Tooltip("체크하면 중간보스에만 색상 강조를 적용합니다.")]
-    [SerializeField] private bool useMidBossTint = false;
+    [SerializeField] private bool useMidBossTint = true;
 
     [SerializeField] private Color midBossTintColor = new Color(1f, 0.65f, 0.12f, 1f);
 

@@ -210,9 +210,13 @@ MonoBehaviour:
   smallHealPrefab: {fileID: 7564674345207656813, guid: 3176c26fce742a74bac60b15ffc6ddff, type: 3}
   smallHealDropChance: 0.07
   midBossAlwaysDropSmallHeal: 1
+  smallHealDropOffsetMin: 0.35
+  smallHealDropOffsetMax: 0.75
+  expGemDropOffsetRadius: 0.15
+  minDistanceBetweenDrops: 0.3
   normalScale: 0.8
-  midBossScale: 1.8
-  useMidBossTint: 0
+  midBossScale: 1.5
+  useMidBossTint: 1
   midBossTintColor: {r: 1, g: 0.65, b: 0.12, a: 1}
   hitFlashColor: {r: 1, g: 0.3529412, b: 0.2509804, a: 1}
   hitFlashDuration: 0.08
